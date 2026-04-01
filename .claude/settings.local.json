@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(findstr:*)",
+      "Bash(scp:*)",
+      "Bash(curl:*)",
+      "Bash(nslookup:*)",
+      "Bash(node -e:*)",
+      "Bash(npm install:*)",
+      "Bash(set VITE_API_URL=https://avisosrecanto.com.br)",
+      "Bash(npm run build:*)",
+      "Bash(dir:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
