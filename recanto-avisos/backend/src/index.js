@@ -10,6 +10,7 @@ const { init: initFcm } = require('./services/fcm');
 const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
 const avisosRoutes = require('./routes/avisos');
+const solicitacoesRoutes = require('./routes/solicitacoes');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -84,6 +85,7 @@ app.use(rateLimit({
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/avisos', avisosRoutes);
+app.use('/api/solicitacoes', solicitacoesRoutes);
 
 app.get('/health',     (req, res) => res.json({ status: 'ok', timestamp: new Date() }));
 app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Date() }));

@@ -96,6 +96,7 @@
     <nav style="flex:1; padding:0.75rem; display:flex; flex-direction:column; gap:0.25rem;">
       <button id="nav-dashboard"    class="nav-btn" onclick="showPage('dashboard')">    <span class="material-symbols-outlined">analytics</span>    Dashboard</button>
       <button id="nav-avisos"       class="nav-btn" onclick="showPage('avisos')">       <span class="material-symbols-outlined">send</span>           Enviar Aviso</button>
+      <button id="nav-solicitacoes" class="nav-btn" onclick="showPage('solicitacoes')"> <span class="material-symbols-outlined">inbox</span>          Solicitações dos Pais</button>
       <button id="nav-importar"     class="nav-btn" onclick="showPage('importar')">     <span class="material-symbols-outlined">upload_file</span>    Importar CSV</button>
       <button id="nav-turmas"       class="nav-btn" onclick="showPage('turmas')">       <span class="material-symbols-outlined">qr_code</span>        Turmas &amp; QR Codes</button>
       <button id="nav-alunos"       class="nav-btn" onclick="showPage('alunos')">       <span class="material-symbols-outlined">groups</span>         Alunos</button>
@@ -420,6 +421,30 @@
         </div>
       </section>
 
+      <!-- ── SOLICITAÇÕES DOS PAIS ── -->
+      <section id="page-solicitacoes" style="display:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;gap:0.75rem;flex-wrap:wrap;">
+          <p style="font-size:0.875rem;color:#596065;margin:0;">Solicitações enviadas pelos pais através do app.</p>
+          <div style="display:flex;gap:0.5rem;">
+            <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.8rem;font-weight:600;color:#596065;cursor:pointer;">
+              <input type="checkbox" id="filtro-urgentes-sol" onchange="carregarSolicitacoes()" style="width:1rem;height:1rem;cursor:pointer;" />
+              Apenas urgentes
+            </label>
+            <button onclick="carregarSolicitacoes()" class="btn-outline" style="padding:0.5rem 1rem;font-size:0.8rem;display:flex;align-items:center;gap:0.375rem;">
+              <span class="material-symbols-outlined" style="font-size:1rem;">refresh</span> Atualizar
+            </button>
+          </div>
+        </div>
+        <div class="card" style="padding:0; overflow:hidden;">
+          <div style="overflow-x:auto;">
+            <table>
+              <thead><tr><th>Tipo</th><th>Aluno</th><th>Responsável</th><th>Mensagem</th><th>Data</th><th style="text-align:center;">Status</th><th></th></tr></thead>
+              <tbody id="sol-tbody"><tr><td colspan="7" style="text-align:center; padding:2.5rem; color:#596065;">Carregando...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
       <!-- ── GERENCIAR ADMINS (apenas master) ── -->
       <section id="page-admins" style="display:none; max-width:640px;">
         <div class="card" style="margin-bottom:1.25rem;">
@@ -506,9 +531,9 @@ function logout() {
 }
 
 // ── Nav ──────────────────────────────────────────────────────────────────────
-const PAGES = ['dashboard','avisos','importar','turmas','alunos','responsaveis','historico','admins']
-const TITLES = { dashboard:'Dashboard', avisos:'Enviar Aviso', importar:'Importar CSV', turmas:'Turmas & QR Codes', alunos:'Alunos', responsaveis:'Responsáveis', historico:'Histórico de Avisos', admins:'Gerenciar Administradores' }
-const LOADERS = { dashboard:loadDashboard, avisos:loadFormAvisos, turmas:loadTurmas, alunos:()=>loadAlunos(), responsaveis:loadResponsaveis, historico:loadHistorico, admins:loadAdmins }
+const PAGES = ['dashboard','avisos','solicitacoes','importar','turmas','alunos','responsaveis','historico','admins']
+const TITLES = { dashboard:'Dashboard', avisos:'Enviar Aviso', solicitacoes:'Solicitações dos Pais', importar:'Importar CSV', turmas:'Turmas & QR Codes', alunos:'Alunos', responsaveis:'Responsáveis', historico:'Histórico de Avisos', admins:'Gerenciar Administradores' }
+const LOADERS = { dashboard:loadDashboard, avisos:loadFormAvisos, solicitacoes:carregarSolicitacoes, turmas:loadTurmas, alunos:()=>loadAlunos(), responsaveis:loadResponsaveis, historico:loadHistorico, admins:loadAdmins }
 
 const PERFIL_LABELS = { master:'Master', coordenacao:'Coordenação', secretaria:'Secretaria Escolar', administrativo:'Administrativo' }
 const PERFIL_COLORS = { master:'#2d6197', coordenacao:'#2e7d52', secretaria:'#596065', administrativo:'#b45309' }
@@ -1365,6 +1390,110 @@ async function verEntregas(avisoId, titulo) {
             </div>
           </div>`).join('')}
       </div>`)
+  } catch(err) { toast(err.message,'error') }
+}
+
+// ── Solicitações dos Pais ────────────────────────────────────────────────────
+const TIPOS_SOLICITACAO_LABELS = {
+  falta_sem_atestado: 'Falta (sem atestado)',
+  falta_com_atestado: 'Falta (com atestado)',
+  vai_ter_aula: 'Vai ter aula hoje?',
+  quem_vai_buscar: 'Quem vai buscar',
+  atestado_frequencia: 'Atestado de Frequência',
+  atestado_matricula: 'Atestado de Matrícula',
+  historico_escolar: 'Histórico Escolar',
+  atualizar_contato: 'Atualizar contato',
+}
+
+async function carregarSolicitacoes() {
+  try {
+    const filtroUrgentes = document.getElementById('filtro-urgentes-sol').checked
+    const solicitacoes = await api('/solicitacoes/admin'); if (!solicitacoes) return
+
+    const filtradas = filtroUrgentes ? solicitacoes.filter(s => s.urgente) : solicitacoes
+
+    document.getElementById('sol-tbody').innerHTML = filtradas.length ? filtradas.map(s => `
+      <tr style="${s.urgente?'background:#fff3f2;':''}" onclick="verSolicitacao(${s.id})">
+        <td>
+          <div style="display:flex;align-items:center;gap:0.5rem;">
+            ${s.urgente?'<span class="badge badge-red" style="font-size:9px;">URGENTE</span>':''}
+            <span style="font-weight:600;${s.urgente?'color:#a83836;':''}">${TIPOS_SOLICITACAO_LABELS[s.tipo]||s.tipo}</span>
+          </div>
+        </td>
+        <td style="color:#596065;">${s.aluno_nome||'—'}</td>
+        <td style="color:#596065;">${s.responsavel_nome||'—'}</td>
+        <td style="max-width:300px;"><div class="line-clamp-2" style="font-size:0.8rem;color:#596065;">${s.mensagem||'—'}</div></td>
+        <td style="font-size:0.75rem;color:#abb3b9;">${new Date(s.criada_em).toLocaleDateString('pt-BR')} ${new Date(s.criada_em).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</td>
+        <td style="text-align:center;">
+          ${s.respondida ? '<span class="badge badge-green">Respondida</span>' : (s.lida ? '<span class="badge badge-blue">Lida</span>' : '<span class="badge badge-gray">Nova</span>')}
+        </td>
+        <td style="text-align:center;">
+          <button onclick="event.stopPropagation();verSolicitacao(${s.id})" style="background:none;border:none;cursor:pointer;color:#2d6197;padding:0.25rem;">
+            <span class="material-symbols-outlined" style="font-size:1.125rem;">visibility</span>
+          </button>
+        </td>
+      </tr>`).join('') : `<tr><td colspan="7" style="text-align:center;padding:2.5rem;color:#596065;">${filtroUrgentes?'Nenhuma solicitação urgente':'Nenhuma solicitação ainda'}</td></tr>`
+  } catch(err) { toast(err.message,'error') }
+}
+
+async function verSolicitacao(id) {
+  try {
+    const sol = await api('/solicitacoes/admin/'+id); if (!sol) return
+
+    // Marca como lida automaticamente
+    if (!sol.lida) {
+      await api('/solicitacoes/admin/'+id+'/lida', { method:'POST' })
+    }
+
+    showModal(`
+      <div style="margin-bottom:1.25rem;">
+        ${sol.urgente?'<div style="background:#fff3f2;color:#a83836;padding:0.75rem 1rem;border-radius:1rem;margin-bottom:1rem;font-weight:700;font-size:0.875rem;display:flex;align-items:center;gap:0.5rem;"><span class="material-symbols-outlined">warning</span> Solicitação Urgente</div>':''}
+        <h3 style="font-size:1.125rem;font-weight:800;color:#2c3338;margin:0 0 0.25rem;">${TIPOS_SOLICITACAO_LABELS[sol.tipo]||sol.tipo}</h3>
+        <p style="font-size:0.75rem;color:#596065;margin:0;">${new Date(sol.criada_em).toLocaleString('pt-BR')}</p>
+      </div>
+
+      <div style="background:#f7f9fc;padding:1rem;border-radius:1rem;margin-bottom:1rem;">
+        <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#596065;margin:0 0 0.375rem;">Aluno</p>
+        <p style="font-size:0.875rem;font-weight:600;color:#2c3338;margin:0;">${sol.aluno_nome||'—'}</p>
+      </div>
+
+      <div style="background:#f7f9fc;padding:1rem;border-radius:1rem;margin-bottom:1rem;">
+        <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#596065;margin:0 0 0.375rem;">Responsável</p>
+        <p style="font-size:0.875rem;font-weight:600;color:#2c3338;margin:0;">${sol.responsavel_nome||'—'}</p>
+      </div>
+
+      <div style="background:#f7f9fc;padding:1rem;border-radius:1rem;margin-bottom:1rem;">
+        <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#596065;margin:0 0 0.375rem;">Mensagem</p>
+        <p style="font-size:0.875rem;color:#2c3338;margin:0;white-space:pre-wrap;">${sol.mensagem||'—'}</p>
+      </div>
+
+      ${sol.respondida?`
+      <div style="background:#f0faf4;padding:1rem;border-radius:1rem;margin-bottom:1rem;border:1.5px solid rgba(46,125,82,0.2);">
+        <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#2e7d52;margin:0 0 0.375rem;">Resposta enviada</p>
+        <p style="font-size:0.875rem;color:#2c3338;margin:0;white-space:pre-wrap;">${sol.resposta}</p>
+        <p style="font-size:0.75rem;color:#596065;margin:0.5rem 0 0;">${new Date(sol.respondida_em).toLocaleString('pt-BR')}</p>
+      </div>
+      `:`
+      <div style="margin-top:1.25rem;">
+        <label class="field-label">Responder solicitação (opcional)</label>
+        <textarea id="resposta-sol" class="field-input" rows="3" placeholder="Digite sua resposta aqui..." style="margin-bottom:0.75rem;"></textarea>
+        <button onclick="responderSolicitacao(${id})" class="btn-primary" style="width:100%;padding:0.75rem;font-size:0.875rem;">Enviar resposta</button>
+      </div>
+      `}
+
+      <button onclick="closeModal();carregarSolicitacoes()" class="btn-outline" style="width:100%;padding:0.75rem;font-size:0.875rem;margin-top:0.75rem;">Fechar</button>
+    `)
+  } catch(err) { toast(err.message,'error') }
+}
+
+async function responderSolicitacao(id) {
+  const resposta = document.getElementById('resposta-sol').value.trim()
+  if (!resposta) { toast('Digite uma resposta','error'); return }
+  try {
+    await api('/solicitacoes/admin/'+id+'/responder', { method:'POST', body:JSON.stringify({ resposta }) })
+    toast('Resposta enviada')
+    closeModal()
+    carregarSolicitacoes()
   } catch(err) { toast(err.message,'error') }
 }
 

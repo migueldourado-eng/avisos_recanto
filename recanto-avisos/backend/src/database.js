@@ -96,6 +96,21 @@ function migrate() {
       aberto_em DATETIME,
       UNIQUE(aviso_id, responsavel_id)
     );
+
+    CREATE TABLE IF NOT EXISTS solicitacoes_pais (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      responsavel_id INTEGER REFERENCES responsaveis(id),
+      aluno_id INTEGER REFERENCES alunos(id),
+      tipo TEXT NOT NULL,
+      mensagem TEXT,
+      urgente BOOLEAN DEFAULT 0,
+      lida BOOLEAN DEFAULT 0,
+      lida_em DATETIME,
+      respondida BOOLEAN DEFAULT 0,
+      resposta TEXT,
+      respondida_em DATETIME,
+      criada_em DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
   `);
 
   // Migrações incrementais — seguro rodar múltiplas vezes (ignoram se coluna já existe)

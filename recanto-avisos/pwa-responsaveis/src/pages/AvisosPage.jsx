@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import api from '../api/axios'
 import { requestNotificationPermission } from '../firebase'
+import SolicitacoesModal from './SolicitacoesModal'
 
 function formatarData(dateStr) {
   const date  = new Date(dateStr)
@@ -77,6 +78,7 @@ export default function AvisosPage({ onLogout }) {
   const [loading,    setLoading]    = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [tab,        setTab]        = useState('avisos') // 'avisos' | 'perfil'
+  const [mostrarModal, setMostrarModal] = useState(false)
 
   const containerRef = useRef(null)
   const touchStartY  = useRef(0)
@@ -289,6 +291,38 @@ export default function AvisosPage({ onLogout }) {
           </div>
         )}
       </main>
+
+      {/* Botão flutuante para solicitações */}
+      {tab === 'avisos' && (
+        <button
+          onClick={() => setMostrarModal(true)}
+          className="fixed z-40 active:scale-95 transition-transform"
+          style={{
+            right: '20px',
+            bottom: 'calc(env(safe-area-inset-bottom) + 90px)',
+            width: '56px',
+            height: '56px',
+            borderRadius: '16px',
+            background: 'linear-gradient(135deg, #2d6197 0%, #92c1fe 100%)',
+            boxShadow: '0 8px 24px rgba(45, 97, 151, 0.35)',
+            border: 'none',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <span
+            className="material-symbols-outlined text-white"
+            style={{ fontSize: '28px', fontVariationSettings: "'FILL' 0, 'wght' 400" }}
+          >
+            add
+          </span>
+        </button>
+      )}
+
+      {/* Modal de solicitações */}
+      {mostrarModal && <SolicitacoesModal onClose={() => setMostrarModal(false)} />}
 
       {/* BottomNavBar */}
       <nav
