@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node src/scripts/check-admins.js)",
+      "Bash(curl -s -X POST http://localhost:3001/api/admin/login -H \"Content-Type: application/json\" -d '{\"\"\"\"usuario\"\"\"\":\"\"\"\"gestao_escolar\"\"\"\",\"\"\"\"senha\"\"\"\":\"\"\"\"Recanto@82463179\"\"\"\"}')",
+      "Bash(curl -s http://localhost:3001/health)",
+      "Bash(curl -s -X POST http://localhost:3001/api/admin/login -H \"Content-Type: application/json\" -d '{\"\"usuario\"\":\"\"gestao_escolar\"\",\"\"senha\"\":\"\"Recanto@82463179\"\"}')",
+      "Bash(start \"\" \"http://localhost:3001/admin\")",
+      "Bash(tasklist /FI \"IMAGENAME eq node.exe\")",
+      "Bash(tasklist)",
+      "Bash(netstat -ano)",
+      "Bash(kill -f 8896)",
+      "Bash(taskkill //PID 8896 //F)",
+      "Bash(start \"\" \"http://localhost:3001/admin/teste\")",
+      "Bash(taskkill //PID 7688 //F)",
+      "Read(//c/Users/Coordenação/OneDrive/APP/Aviso Recanto/recanto-avisos/admin-panel/**)",
+      "Bash(node -e \"const d=JSON.parse\\(require\\(''''fs''''\\).readFileSync\\(''''/dev/stdin'''',''''utf8''''\\)\\); process.stdout.write\\(d.token||''''''''\\)\")",
+      "Bash(curl -s http://localhost:3001/api/admin/templates)",
+      "Bash(node -e \"const d=JSON.parse\\(require\\(''''fs''''\\).readFileSync\\(0,''''utf8''''\\)\\); console.log\\(''''Total templates:'''',d.length\\); d.filter\\(t=>[34,35,36].includes\\(t.id\\)\\).forEach\\(t=>console.log\\('''' ✓'''',t.id,t.titulo\\)\\)\")"
+    ]
+  }
+}
