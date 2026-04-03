@@ -91,7 +91,8 @@ export default function AvisosPage({ onLogout }) {
   const [avisos,     setAvisos]     = useState([])
   const [loading,    setLoading]    = useState(true)
   const [refreshing, setRefreshing] = useState(false)
-  const [tab,        setTab]        = useState('avisos') // 'avisos' | 'perfil'
+  const [tab,        setTab]        = useState('avisos') // 'avisos' | 'vida-escolar'
+  const [vidaEscolarTab, setVidaEscolarTab] = useState('faltas') // 'faltas' | 'comportamento' | 'observacoes'
   const [mostrarModal, setMostrarModal] = useState(false)
   const [resumoAluno, setResumoAluno] = useState(null)
 
@@ -270,14 +271,14 @@ export default function AvisosPage({ onLogout }) {
           </div>
         )}
 
-        {/* Aba Perfil */}
-        {tab === 'perfil' && (
+        {/* Aba Vida Escolar */}
+        {tab === 'vida-escolar' && (
           <div className="px-5">
             <section className="mb-8">
               <h2 className="text-[0.6875rem] font-bold uppercase tracking-[0.05rem] text-on-surface-variant/80 mb-0.5">
-                Minha Conta
+                Acompanhamento do Aluno
               </h2>
-              <h1 className="text-2xl font-extrabold tracking-tight text-on-surface">Perfil</h1>
+              <h1 className="text-2xl font-extrabold tracking-tight text-on-surface">Vida Escolar</h1>
             </section>
 
             {/* Card de perfil */}
@@ -302,27 +303,63 @@ export default function AvisosPage({ onLogout }) {
             </div>
 
             <div className="bg-surface-container-lowest rounded-[2rem] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.03)] mb-4">
-              <p className="text-[11px] font-bold uppercase tracking-[0.05rem] text-on-surface-variant mb-3">Vida Escolar</p>
-              <div className="grid grid-cols-2 gap-3 mb-3">
-                <div className="bg-surface-container-low rounded-xl px-3 py-2">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.05rem] text-outline-variant">Faltas no mÃªs</p>
-                  <p className="text-lg font-extrabold text-on-surface">{resumoAluno?.faltas_mes ?? 0}</p>
+              <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
+                <button
+                  onClick={() => setVidaEscolarTab('faltas')}
+                  className={`px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-[0.05rem] whitespace-nowrap transition-all ${
+                    vidaEscolarTab === 'faltas'
+                      ? 'text-white shadow-lg shadow-primary/20'
+                      : 'bg-surface-container-low text-on-surface-variant'
+                  }`}
+                  style={vidaEscolarTab === 'faltas' ? { background: 'linear-gradient(135deg, #2d6197, #92c1fe)' } : {}}
+                >
+                  Faltas
+                </button>
+                <button
+                  onClick={() => setVidaEscolarTab('comportamento')}
+                  className={`px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-[0.05rem] whitespace-nowrap transition-all ${
+                    vidaEscolarTab === 'comportamento'
+                      ? 'text-white shadow-lg shadow-primary/20'
+                      : 'bg-surface-container-low text-on-surface-variant'
+                  }`}
+                  style={vidaEscolarTab === 'comportamento' ? { background: 'linear-gradient(135deg, #2d6197, #92c1fe)' } : {}}
+                >
+                  Comportamento
+                </button>
+                <button
+                  onClick={() => setVidaEscolarTab('observacoes')}
+                  className={`px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-[0.05rem] whitespace-nowrap transition-all ${
+                    vidaEscolarTab === 'observacoes'
+                      ? 'text-white shadow-lg shadow-primary/20'
+                      : 'bg-surface-container-low text-on-surface-variant'
+                  }`}
+                  style={vidaEscolarTab === 'observacoes' ? { background: 'linear-gradient(135deg, #2d6197, #92c1fe)' } : {}}
+                >
+                  ObservaÃ§Ãµes
+                </button>
+              </div>
+              {vidaEscolarTab === 'faltas' && (
+                <div className="bg-surface-container-low rounded-[1.5rem] px-4 py-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.05rem] text-outline-variant mb-1">Total de faltas</p>
+                  <p className="text-3xl font-extrabold tracking-tight text-on-surface">{resumoAluno?.faltas_total ?? 0}</p>
+                  <p className="text-xs text-on-surface-variant mt-2">Esse nÃºmero mostra o acumulado informado pela escola.</p>
                 </div>
-                <div className="bg-surface-container-low rounded-xl px-3 py-2">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.05rem] text-outline-variant">Faltas total</p>
-                  <p className="text-lg font-extrabold text-on-surface">{resumoAluno?.faltas_total ?? 0}</p>
+              )}
+              {vidaEscolarTab === 'comportamento' && (
+                <div className="bg-[#eef4fb] rounded-[1.5rem] px-4 py-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.05rem] text-outline-variant mb-2">Comportamento</p>
+                  <p className="text-base font-bold text-on-surface">{resumoAluno?.comportamento_label || 'Nao avaliado'}</p>
+                  <p className="text-xs text-on-surface-variant mt-2">Acompanhe aqui a avaliação mais recente registrada pela escola.</p>
                 </div>
-              </div>
-              <div className="bg-[#eef4fb] rounded-xl px-3 py-2 mb-3">
-                <p className="text-[10px] font-bold uppercase tracking-[0.05rem] text-outline-variant mb-1">Comportamento</p>
-                <p className="text-sm font-semibold text-on-surface">{resumoAluno?.comportamento_label || 'âšª NÃ£o avaliado'}</p>
-              </div>
-              <div className="bg-surface-container-low rounded-xl px-3 py-2">
-                <p className="text-[10px] font-bold uppercase tracking-[0.05rem] text-outline-variant mb-1">ObservaÃ§Ãµes</p>
-                <p className="text-sm text-on-surface-variant whitespace-pre-wrap">
-                  {resumoAluno?.observacoes?.trim() ? resumoAluno.observacoes : 'Sem observaÃ§Ãµes no momento.'}
-                </p>
-              </div>
+              )}
+              {vidaEscolarTab === 'observacoes' && (
+                <div className="bg-surface-container-low rounded-[1.5rem] px-4 py-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.05rem] text-outline-variant mb-2">Observações</p>
+                  <p className="text-sm text-on-surface-variant whitespace-pre-wrap">
+                    {resumoAluno?.observacoes?.trim() ? resumoAluno.observacoes : 'Sem observações no momento.'}
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* BotÃ£o sair */}
@@ -404,23 +441,26 @@ export default function AvisosPage({ onLogout }) {
         </button>
 
         <button
-          onClick={() => setTab('perfil')}
+          onClick={() => setTab('vida-escolar')}
           className={`flex flex-col items-center justify-center p-3 rounded-2xl transition-all duration-300 active:scale-90 ${
-            tab === 'perfil'
+            tab === 'vida-escolar'
               ? 'text-white shadow-lg shadow-primary/20'
               : 'text-outline-variant'
           }`}
-          style={tab === 'perfil' ? { background: 'linear-gradient(135deg, #2d6197, #92c1fe)' } : {}}
+          style={tab === 'vida-escolar' ? { background: 'linear-gradient(135deg, #2d6197, #92c1fe)' } : {}}
         >
           <span
             className="material-symbols-outlined"
-            style={{ fontVariationSettings: tab === 'perfil' ? "'FILL' 1" : "'FILL' 0" }}
+            style={{ fontVariationSettings: tab === 'vida-escolar' ? "'FILL' 1" : "'FILL' 0" }}
           >
-            person
+            school
           </span>
-          <span className="text-[10px] font-bold uppercase tracking-[0.05rem] mt-1">Perfil</span>
+          <span className="text-[10px] font-bold uppercase tracking-[0.05rem] mt-1">Vida Escolar</span>
         </button>
       </nav>
     </div>
   )
 }
+
+
+
