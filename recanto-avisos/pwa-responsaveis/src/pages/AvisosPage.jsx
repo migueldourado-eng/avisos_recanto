@@ -17,10 +17,10 @@ function formatarData(dateStr) {
   return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
 
-function AvisoCard({ aviso }) {
+function AvisoCard({ aviso, onDelete }) {
   if (aviso.urgente) {
     return (
-      <div className="bg-[#fff3f2] rounded-[2rem] p-5 shadow-[0_8px_30px_rgba(168,56,54,0.08)]">
+      <div className="bg-[#fff3f2] rounded-[2rem] p-5 shadow-[0_8px_30px_rgba(168,56,54,0.08)] relative">
         <div className="flex items-start gap-4 mb-3">
           <div
             className="w-12 h-12 rounded-[1.25rem] flex items-center justify-center shrink-0 shadow-md"
@@ -37,6 +37,13 @@ function AvisoCard({ aviso }) {
             <p className="text-[10px] font-bold uppercase tracking-wider text-error mb-0.5">Urgente</p>
             <h3 className="text-[0.9375rem] font-bold text-on-surface leading-snug">{aviso.titulo}</h3>
           </div>
+          <button
+            onClick={() => onDelete(aviso.id)}
+            className="shrink-0 w-8 h-8 rounded-full bg-error/10 hover:bg-error/20 active:scale-95 transition-all flex items-center justify-center"
+            aria-label="Apagar aviso"
+          >
+            <span className="material-symbols-outlined text-error text-[18px]">close</span>
+          </button>
         </div>
         <p className="text-on-surface-variant text-sm leading-relaxed">{aviso.mensagem}</p>
         <p className="text-[11px] font-bold text-error/70 mt-3">— Equipe Gestora</p>
@@ -46,7 +53,7 @@ function AvisoCard({ aviso }) {
   }
 
   return (
-    <div className="bg-surface-container-lowest rounded-[2rem] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+    <div className="bg-surface-container-lowest rounded-[2rem] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative">
       <div className="flex items-start gap-4 mb-3">
         <div
           className="w-12 h-12 rounded-[1.25rem] flex items-center justify-center shrink-0"
@@ -63,6 +70,13 @@ function AvisoCard({ aviso }) {
           <p className="text-[10px] font-bold uppercase tracking-wider text-primary mb-0.5">Aviso</p>
           <h3 className="text-[0.9375rem] font-bold text-on-surface leading-snug">{aviso.titulo}</h3>
         </div>
+        <button
+          onClick={() => onDelete(aviso.id)}
+          className="shrink-0 w-8 h-8 rounded-full bg-outline-variant/10 hover:bg-outline-variant/20 active:scale-95 transition-all flex items-center justify-center"
+          aria-label="Apagar aviso"
+        >
+          <span className="material-symbols-outlined text-outline-variant text-[18px]">close</span>
+        </button>
       </div>
       <p className="text-on-surface-variant text-sm leading-relaxed">{aviso.mensagem}</p>
       <p className="text-[11px] font-bold text-primary/60 mt-3">— Equipe Gestora</p>
@@ -79,6 +93,7 @@ export default function AvisosPage({ onLogout }) {
   const [refreshing, setRefreshing] = useState(false)
   const [tab,        setTab]        = useState('avisos') // 'avisos' | 'perfil'
   const [mostrarModal, setMostrarModal] = useState(false)
+  const [resumoAluno, setResumoAluno] = useState(null)
 
   const containerRef = useRef(null)
   const touchStartY  = useRef(0)
@@ -98,15 +113,38 @@ export default function AvisosPage({ onLogout }) {
     }
   }, [onLogout])
 
+  const apagarAviso = async (avisoId) => {
+    try {
+      await api.delete(`/avisos/${avisoId}`)
+      setAvisos(prev => prev.filter(a => a.id !== avisoId))
+    } catch (err) {
+      console.error('Erro ao apagar aviso:', err)
+      alert('Não foi possível apagar o aviso. Tente novamente.')
+    }
+  }
+
+  const carregarResumoAluno = useCallback(async () => {
+    try {
+      const { data } = await api.get('/avisos/resumo-aluno')
+      setResumoAluno(data)
+    } catch (err) {
+      if (err.response?.status === 401) onLogout()
+    }
+  }, [onLogout])
+
   useEffect(() => {
     carregarAvisos()
+    carregarResumoAluno()
     requestNotificationPermission().catch(() => {})
     const handleVisibility = () => {
-      if (document.visibilityState === 'visible') carregarAvisos()
+      if (document.visibilityState === 'visible') {
+        carregarAvisos()
+        carregarResumoAluno()
+      }
     }
     document.addEventListener('visibilitychange', handleVisibility)
     return () => document.removeEventListener('visibilitychange', handleVisibility)
-  }, [carregarAvisos])
+  }, [carregarAvisos, carregarResumoAluno])
 
   function handleTouchStart(e) { touchStartY.current = e.touches[0].clientY }
   function handleTouchEnd(e) {
@@ -115,9 +153,11 @@ export default function AvisosPage({ onLogout }) {
     if (delta > 72 && scrollTop === 0 && !refreshing) { setRefreshing(true); carregarAvisos() }
   }
 
-  const urgentes  = avisos.filter(a =>  a.urgente)
-  const normais   = avisos.filter(a => !a.urgente)
-  const hasUrgent = urgentes.length > 0
+  // Ordenar avisos por data (mais recente primeiro)
+  const avisosOrdenados = [...avisos].sort((a, b) =>
+    new Date(b.criado_em) - new Date(a.criado_em)
+  )
+  const hasUrgent = avisos.some(a => a.urgente)
 
   const iniciais = (userInfo.aluno_nome || 'A')
     .split(' ').slice(0, 2).map(n => n[0]).join('').toUpperCase()
@@ -222,22 +262,9 @@ export default function AvisosPage({ onLogout }) {
               </div>
 
             ) : (
-              /* Lista de avisos */
+              /* Lista única ordenada por data (mais recente primeiro) */
               <div className="space-y-3">
-                {urgentes.length > 0 && (
-                  <>
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-error px-1 mb-2">
-                      Urgentes
-                    </p>
-                    {urgentes.map(a => <AvisoCard key={a.id} aviso={a} />)}
-                    {normais.length > 0 && (
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant px-1 mt-5 mb-2">
-                        Avisos
-                      </p>
-                    )}
-                  </>
-                )}
-                {normais.map(a => <AvisoCard key={a.id} aviso={a} />)}
+                {avisosOrdenados.map(a => <AvisoCard key={a.id} aviso={a} onDelete={apagarAviso} />)}
               </div>
             )}
           </div>
@@ -274,6 +301,30 @@ export default function AvisosPage({ onLogout }) {
               )}
             </div>
 
+            <div className="bg-surface-container-lowest rounded-[2rem] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.03)] mb-4">
+              <p className="text-[11px] font-bold uppercase tracking-[0.05rem] text-on-surface-variant mb-3">Vida Escolar</p>
+              <div className="grid grid-cols-2 gap-3 mb-3">
+                <div className="bg-surface-container-low rounded-xl px-3 py-2">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.05rem] text-outline-variant">Faltas no mês</p>
+                  <p className="text-lg font-extrabold text-on-surface">{resumoAluno?.faltas_mes ?? 0}</p>
+                </div>
+                <div className="bg-surface-container-low rounded-xl px-3 py-2">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.05rem] text-outline-variant">Faltas total</p>
+                  <p className="text-lg font-extrabold text-on-surface">{resumoAluno?.faltas_total ?? 0}</p>
+                </div>
+              </div>
+              <div className="bg-[#eef4fb] rounded-xl px-3 py-2 mb-3">
+                <p className="text-[10px] font-bold uppercase tracking-[0.05rem] text-outline-variant mb-1">Comportamento</p>
+                <p className="text-sm font-semibold text-on-surface">{resumoAluno?.comportamento_label || '⚪ Não avaliado'}</p>
+              </div>
+              <div className="bg-surface-container-low rounded-xl px-3 py-2">
+                <p className="text-[10px] font-bold uppercase tracking-[0.05rem] text-outline-variant mb-1">Observações</p>
+                <p className="text-sm text-on-surface-variant whitespace-pre-wrap">
+                  {resumoAluno?.observacoes?.trim() ? resumoAluno.observacoes : 'Sem observações no momento.'}
+                </p>
+              </div>
+            </div>
+
             {/* Botão sair */}
             <button
               onClick={onLogout}
@@ -300,9 +351,10 @@ export default function AvisosPage({ onLogout }) {
           style={{
             right: '20px',
             bottom: 'calc(env(safe-area-inset-bottom) + 90px)',
-            width: '56px',
             height: '56px',
-            borderRadius: '16px',
+            paddingLeft: '20px',
+            paddingRight: '20px',
+            borderRadius: '28px',
             background: 'linear-gradient(135deg, #2d6197 0%, #92c1fe 100%)',
             boxShadow: '0 8px 24px rgba(45, 97, 151, 0.35)',
             border: 'none',
@@ -310,13 +362,17 @@ export default function AvisosPage({ onLogout }) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            gap: '8px',
           }}
         >
           <span
             className="material-symbols-outlined text-white"
-            style={{ fontSize: '28px', fontVariationSettings: "'FILL' 0, 'wght' 400" }}
+            style={{ fontSize: '24px', fontVariationSettings: "'FILL' 0, 'wght' 400" }}
           >
-            add
+            send
+          </span>
+          <span style={{ color: 'white', fontSize: '14px', fontWeight: 700, whiteSpace: 'nowrap' }}>
+            Falar com a Escola
           </span>
         </button>
       )}

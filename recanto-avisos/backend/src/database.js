@@ -111,6 +111,17 @@ function migrate() {
       respondida_em DATETIME,
       criada_em DATETIME DEFAULT CURRENT_TIMESTAMP
     );
+
+    CREATE TABLE IF NOT EXISTS aluno_vida_escolar (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      aluno_id INTEGER UNIQUE REFERENCES alunos(id),
+      faltas_mes INTEGER NOT NULL DEFAULT 0,
+      faltas_total INTEGER NOT NULL DEFAULT 0,
+      comportamento TEXT NOT NULL DEFAULT 'nao_avaliado',
+      observacoes TEXT,
+      atualizado_por_admin_id INTEGER REFERENCES admins(id),
+      atualizado_em DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
   `);
 
   // Migrações incrementais — seguro rodar múltiplas vezes (ignoram se coluna já existe)

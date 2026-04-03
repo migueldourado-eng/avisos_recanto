@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Recanto Avisos — Admin</title>
+  <title>Recanto Avisos - Admin</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -45,7 +45,7 @@
 </head>
 <body style="background:#f7f9fc; color:#2c3338; min-height:100vh; -webkit-font-smoothing:antialiased;">
 
-<!-- ══════════════════════════ LOGIN ══════════════════════════ -->
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• LOGIN â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
 <div id="login-screen" style="min-height:100vh; display:flex; align-items:center; justify-content:center; padding:1rem;">
   <div style="width:100%; max-width:420px;">
     <div style="text-align:center; margin-bottom:2rem;">
@@ -64,7 +64,7 @@
         </div>
         <div style="margin-bottom:1.5rem;">
           <label class="field-label">Senha</label>
-          <input id="login-senha" class="field-input" type="password" required placeholder="••••••••" />
+          <input id="login-senha" class="field-input" type="password" required placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" />
         </div>
         <div id="login-erro" style="display:none; margin-bottom:1rem; padding:0.875rem 1rem; background:#fff2f2; border-radius:1rem; border:1.5px solid rgba(168,56,54,0.25); font-size:0.875rem; font-weight:600; color:#a83836;">
           <span id="login-erro-msg"></span>
@@ -77,7 +77,7 @@
   </div>
 </div>
 
-<!-- ══════════════════════════ APP ══════════════════════════ -->
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• APP â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
 <div id="app" style="display:none; height:100vh; overflow:hidden; flex-direction:row;">
 
   <!-- SIDEBAR -->
@@ -100,6 +100,7 @@
       <button id="nav-importar"     class="nav-btn" onclick="showPage('importar')">     <span class="material-symbols-outlined">upload_file</span>    Importar CSV</button>
       <button id="nav-turmas"       class="nav-btn" onclick="showPage('turmas')">       <span class="material-symbols-outlined">qr_code</span>        Turmas &amp; QR Codes</button>
       <button id="nav-alunos"       class="nav-btn" onclick="showPage('alunos')">       <span class="material-symbols-outlined">groups</span>         Alunos</button>
+      <button id="nav-vida-escolar" class="nav-btn" onclick="showPage('vida-escolar')"> <span class="material-symbols-outlined">psychology</span>     Comportamento</button>
       <button id="nav-responsaveis" class="nav-btn" onclick="showPage('responsaveis')"> <span class="material-symbols-outlined">contacts</span>       Responsáveis</button>
       <button id="nav-historico"    class="nav-btn" onclick="showPage('historico')">    <span class="material-symbols-outlined">history</span>        Histórico</button>
       <button id="nav-admins" class="nav-btn" style="display:none;" onclick="showPage('admins')"><span class="material-symbols-outlined">manage_accounts</span> Gerenciar Admins</button>
@@ -128,7 +129,7 @@
 
     <main style="flex:1; overflow-y:auto; padding:2rem;">
 
-      <!-- ── DASHBOARD ── -->
+      <!-- â”€â”€ DASHBOARD â”€â”€ -->
       <section id="page-dashboard" style="display:none;">
         <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:1.5rem;">
           <div class="card" style="display:flex; flex-direction:column; gap:0.75rem;">
@@ -136,7 +137,7 @@
               <span class="material-symbols-outlined" style="color:#2d6197; font-variation-settings:'FILL' 1;">groups</span>
               <span class="badge badge-blue">Total</span>
             </div>
-            <div><p id="stat-alunos" style="font-size:2.5rem; font-weight:800; color:#2c3338; margin:0;">—</p>
+            <div><p id="stat-alunos" style="font-size:2.5rem; font-weight:800; color:#2c3338; margin:0;">â€”</p>
             <p style="font-size:0.75rem; font-weight:600; color:#596065; margin:0.25rem 0 0;">Alunos cadastrados</p></div>
           </div>
           <div class="card" style="display:flex; flex-direction:column; gap:0.75rem;">
@@ -144,7 +145,7 @@
               <span class="material-symbols-outlined" style="color:#49636f; font-variation-settings:'FILL' 1;">contacts</span>
               <span class="badge badge-gray">Total</span>
             </div>
-            <div><p id="stat-responsaveis" style="font-size:2.5rem; font-weight:800; color:#2c3338; margin:0;">—</p>
+            <div><p id="stat-responsaveis" style="font-size:2.5rem; font-weight:800; color:#2c3338; margin:0;">â€”</p>
             <p style="font-size:0.75rem; font-weight:600; color:#596065; margin:0.25rem 0 0;">Responsáveis</p></div>
           </div>
           <div class="card" style="display:flex; flex-direction:column; gap:0.75rem;">
@@ -152,7 +153,7 @@
               <span class="material-symbols-outlined" style="color:#2e7d52; font-variation-settings:'FILL' 1;">phone_iphone</span>
               <span class="badge badge-green">App</span>
             </div>
-            <div><p id="stat-com-app" style="font-size:2.5rem; font-weight:800; color:#2c3338; margin:0;">—</p>
+            <div><p id="stat-com-app" style="font-size:2.5rem; font-weight:800; color:#2c3338; margin:0;">â€”</p>
             <p style="font-size:0.75rem; font-weight:600; color:#596065; margin:0.25rem 0 0;">Com app instalado</p></div>
           </div>
           <div class="card" style="display:flex; flex-direction:column; gap:0.75rem;">
@@ -160,7 +161,7 @@
               <span class="material-symbols-outlined" style="color:#a83836; font-variation-settings:'FILL' 1;">notifications_active</span>
               <span class="badge badge-red">Hoje</span>
             </div>
-            <div><p id="stat-avisos-hoje" style="font-size:2.5rem; font-weight:800; color:#2c3338; margin:0;">—</p>
+            <div><p id="stat-avisos-hoje" style="font-size:2.5rem; font-weight:800; color:#2c3338; margin:0;">â€”</p>
             <p style="font-size:0.75rem; font-weight:600; color:#596065; margin:0.25rem 0 0;">Avisos enviados hoje</p></div>
           </div>
         </div>
@@ -177,7 +178,7 @@
         </div>
       </section>
 
-      <!-- ── ENVIAR AVISO ── -->
+      <!-- â”€â”€ ENVIAR AVISO â”€â”€ -->
       <section id="page-avisos" style="display:none; max-width:640px;">
 
         <!-- Indicador de etapas -->
@@ -198,7 +199,7 @@
           </div>
         </div>
 
-        <!-- ── ETAPA 1: Destinatários ── -->
+        <!-- â”€â”€ ETAPA 1: Destinatários â”€â”€ -->
         <div id="aviso-step1" class="card" style="margin-bottom:1.25rem;">
           <p style="font-size:0.875rem; font-weight:700; color:#2c3338; margin:0 0 1rem;">Para quem é este aviso?</p>
           <div style="display:flex; flex-direction:column; gap:0.625rem;">
@@ -240,7 +241,7 @@
           </button>
         </div>
 
-        <!-- ── ETAPA 2: Templates ── -->
+        <!-- â”€â”€ ETAPA 2: Templates â”€â”€ -->
         <div id="aviso-step2" style="display:none;">
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.75rem;">
             <button type="button" onclick="voltarEtapa1()" style="font-size:0.75rem; font-weight:700; color:#596065; background:none; border:none; cursor:pointer; display:flex; align-items:center; gap:0.25rem;">
@@ -291,7 +292,7 @@
           </div>
         </div>
 
-        <!-- ── ETAPA 3: Revisar e enviar ── -->
+        <!-- â”€â”€ ETAPA 3: Revisar e enviar â”€â”€ -->
         <form id="form-aviso" onsubmit="enviarAviso(event)" style="display:none;">
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.75rem;">
             <button type="button" onclick="voltarEtapa2()" style="font-size:0.75rem; font-weight:700; color:#596065; background:none; border:none; cursor:pointer; display:flex; align-items:center; gap:0.25rem;">
@@ -310,7 +311,7 @@
 
           <div style="margin-bottom:1.25rem;">
             <label class="field-label">Título do aviso</label>
-            <input id="aviso-titulo" class="field-input" type="text" required placeholder="Ex: Reunião de pais — Sexta-feira" />
+            <input id="aviso-titulo" class="field-input" type="text" required placeholder="Ex: Reunião de pais â€” Sexta-feira" />
           </div>
 
           <div style="margin-bottom:1.25rem;">
@@ -338,7 +339,7 @@
         </form>
       </section>
 
-      <!-- ── IMPORTAR CSV ── -->
+      <!-- â”€â”€ IMPORTAR CSV â”€â”€ -->
       <section id="page-importar" style="display:none; max-width:640px;">
         <div class="card" style="margin-bottom:1.25rem;">
           <p style="font-size:0.875rem; font-weight:700; color:#2c3338; margin:0 0 0.5rem;">Importar planilha do Google Contatos</p>
@@ -360,12 +361,12 @@
         <div id="csv-resultado"></div>
       </section>
 
-      <!-- ── TURMAS ── -->
+      <!-- â”€â”€ TURMAS â”€â”€ -->
       <section id="page-turmas" style="display:none;">
         <div id="turmas-grid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:1rem;"></div>
       </section>
 
-      <!-- ── ALUNOS ── -->
+      <!-- â”€â”€ ALUNOS â”€â”€ -->
       <section id="page-alunos" style="display:none;">
         <div style="display:flex; gap:0.75rem; margin-bottom:1rem; flex-wrap:wrap;">
           <input id="busca-aluno" class="field-input" type="text" placeholder="Buscar por nome..." oninput="loadAlunos()" style="flex:1; min-width:180px;" />
@@ -386,19 +387,81 @@
         </div>
       </section>
 
-      <!-- ── RESPONSÁVEIS ── -->
-      <section id="page-responsaveis" style="display:none;">
+      <section id="page-vida-escolar" style="display:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;gap:0.75rem;flex-wrap:wrap;">
+          <p style="font-size:0.875rem;color:#596065;margin:0;">Classifique o comportamento por turma e ajuste casos individuais.</p>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+            <select id="filtro-turma-vida" class="field-input" style="min-width:200px;padding:0.5rem 0.75rem;font-size:0.8rem;" onchange="loadVidaEscolar()">
+              <option value="">Todas as turmas</option>
+            </select>
+            <select id="comportamento-lote" class="field-input" style="min-width:300px;padding:0.5rem 0.75rem;font-size:0.8rem;">
+              <option value="nao_avaliado">⚪ Não avaliado</option>
+              <option value="muito_positivo">🌟 Comportamento muito positivo, serve de exemplo</option>
+              <option value="adequado">✅ Comportamento adequado e esperado para a idade</option>
+              <option value="dificuldades_com_apoio">🟡 Às vezes apresenta dificuldades, mas consegue melhorar com apoio</option>
+              <option value="muitas_dificuldades">🟠 Apresenta muitas dificuldades, precisa de acompanhamento constante</option>
+              <option value="preocupante">🔴 Comportamento preocupante, requer atenção imediata</option>
+            </select>
+            <button onclick="aplicarComportamentoTurma()" class="btn-outline" style="padding:0.5rem 1rem;font-size:0.8rem;display:flex;align-items:center;gap:0.375rem;">
+              <span class="material-symbols-outlined" style="font-size:1rem;">group</span> Aplicar na turma
+            </button>
+            <button onclick="loadVidaEscolar()" class="btn-outline" style="padding:0.5rem 1rem;font-size:0.8rem;display:flex;align-items:center;gap:0.375rem;">
+              <span class="material-symbols-outlined" style="font-size:1rem;">refresh</span> Atualizar
+            </button>
+          </div>
+        </div>
         <div class="card" style="padding:0; overflow:hidden;">
           <div style="overflow-x:auto;">
             <table>
-              <thead><tr><th>Nome</th><th>Aluno</th><th>Turma</th><th>Telefone</th><th style="text-align:center;">App</th><th>Último acesso</th></tr></thead>
-              <tbody id="resp-tbody"><tr><td colspan="6" style="text-align:center; padding:2.5rem; color:#596065;">Carregando...</td></tr></tbody>
+              <thead>
+                <tr>
+                  <th>Aluno</th>
+                  <th>Turma</th>
+                  <th style="width:120px;">Faltas Mês</th>
+                  <th style="width:120px;">Faltas Total</th>
+                  <th style="min-width:320px;">Comportamento</th>
+                  <th style="min-width:240px;">Observações</th>
+                  <th style="text-align:center;">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="vida-escolar-tbody">
+                <tr><td colspan="7" style="text-align:center; padding:2.5rem; color:#596065;">Carregando...</td></tr>
+              </tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <!-- ── HISTÓRICO ── -->
+      <!-- â”€â”€ RESPONSÁVEIS â”€â”€ -->
+      <section id="page-responsaveis" style="display:none;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;gap:0.75rem;flex-wrap:wrap;">
+    <p style="font-size:0.875rem;color:#596065;margin:0;">Desvincule notificações por responsável, selecionados ou turma inteira.</p>
+    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+      <button id="btn-desvincular-selecionados-resp" onclick="desvincularSelecionadosResponsaveis()" style="display:none;padding:0.5rem 1rem;font-size:0.8rem;font-weight:700;border-radius:0.75rem;border:1.5px solid #fca5a5;background:#fff3f2;color:#a83836;cursor:pointer;align-items:center;gap:0.375rem;">
+        <span class="material-symbols-outlined" style="font-size:1rem;">notifications_off</span> Desvincular selecionados
+      </button>
+      <select id="filtro-turma-resp" class="field-input" style="min-width:180px;padding:0.5rem 0.75rem;font-size:0.8rem;" onchange="loadResponsaveis()">
+        <option value="">Todas as turmas</option>
+      </select>
+      <button onclick="desvincularTurmaResponsaveis()" class="btn-outline" style="padding:0.5rem 1rem;font-size:0.8rem;display:flex;align-items:center;gap:0.375rem;">
+        <span class="material-symbols-outlined" style="font-size:1rem;">group_off</span> Desvincular turma
+      </button>
+      <button onclick="loadResponsaveis()" class="btn-outline" style="padding:0.5rem 1rem;font-size:0.8rem;display:flex;align-items:center;gap:0.375rem;">
+        <span class="material-symbols-outlined" style="font-size:1rem;">refresh</span> Atualizar
+      </button>
+    </div>
+  </div>
+  <div class="card" style="padding:0; overflow:hidden;">
+    <div style="overflow-x:auto;">
+      <table>
+        <thead><tr><th style="width:40px;"><input type="checkbox" id="select-all-resp" onchange="toggleSelectAllResponsaveis()" style="width:1rem;height:1rem;cursor:pointer;" /></th><th>Nome</th><th>Aluno</th><th>Turma</th><th>Telefone</th><th style="text-align:center;">App</th><th>Último acesso</th><th style="text-align:center;">Ações</th></tr></thead>
+        <tbody id="resp-tbody"><tr><td colspan="8" style="text-align:center; padding:2.5rem; color:#596065;">Carregando...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+      <!-- â”€â”€ HISTÃ“RICO â”€â”€ -->
       <section id="page-historico" style="display:none;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;gap:0.75rem;flex-wrap:wrap;">
           <p style="font-size:0.875rem;color:#596065;margin:0;">Clique em um aviso para ver os destinatários.</p>
@@ -421,11 +484,14 @@
         </div>
       </section>
 
-      <!-- ── SOLICITAÇÕES DOS PAIS ── -->
+      <!-- â”€â”€ SOLICITAÃ‡Ã•ES DOS PAIS â”€â”€ -->
       <section id="page-solicitacoes" style="display:none;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;gap:0.75rem;flex-wrap:wrap;">
           <p style="font-size:0.875rem;color:#596065;margin:0;">Solicitações enviadas pelos pais através do app.</p>
           <div style="display:flex;gap:0.5rem;">
+            <button id="btn-apagar-selecionadas" onclick="apagarSolicitacoesSelecionadas()" style="display:none;padding:0.5rem 1rem;font-size:0.8rem;font-weight:700;border-radius:0.75rem;border:1.5px solid #fca5a5;background:#fff3f2;color:#a83836;cursor:pointer;align-items:center;gap:0.375rem;">
+              <span class="material-symbols-outlined" style="font-size:1rem;">delete</span> Apagar Selecionadas
+            </button>
             <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.8rem;font-weight:600;color:#596065;cursor:pointer;">
               <input type="checkbox" id="filtro-urgentes-sol" onchange="carregarSolicitacoes()" style="width:1rem;height:1rem;cursor:pointer;" />
               Apenas urgentes
@@ -438,14 +504,14 @@
         <div class="card" style="padding:0; overflow:hidden;">
           <div style="overflow-x:auto;">
             <table>
-              <thead><tr><th>Tipo</th><th>Aluno</th><th>Responsável</th><th>Mensagem</th><th>Data</th><th style="text-align:center;">Status</th><th></th></tr></thead>
-              <tbody id="sol-tbody"><tr><td colspan="7" style="text-align:center; padding:2.5rem; color:#596065;">Carregando...</td></tr></tbody>
+              <thead><tr><th style="width:40px;"><input type="checkbox" id="select-all-sol" onchange="toggleSelectAll()" style="width:1rem;height:1rem;cursor:pointer;" /></th><th>Tipo</th><th>Aluno</th><th>Responsável</th><th>Mensagem</th><th>Data</th><th style="text-align:center;">Status</th><th></th></tr></thead>
+              <tbody id="sol-tbody"><tr><td colspan="8" style="text-align:center; padding:2.5rem; color:#596065;">Carregando...</td></tr></tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <!-- ── GERENCIAR ADMINS (apenas master) ── -->
+      <!-- â”€â”€ GERENCIAR ADMINS (apenas master) â”€â”€ -->
       <section id="page-admins" style="display:none; max-width:640px;">
         <div class="card" style="margin-bottom:1.25rem;">
           <p style="font-size:0.875rem;font-weight:700;color:#2c3338;margin:0 0 1rem;">Usuários do painel administrativo</p>
@@ -468,24 +534,51 @@
   </div>
 </div>
 
-<!-- ══════════════════════════ MODAL ══════════════════════════ -->
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• MODAL â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
 <div id="modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); backdrop-filter:blur(4px); align-items:center; justify-content:center; z-index:50; padding:1rem;">
   <div id="modal-content" style="background:white; border-radius:2rem; padding:1.75rem; width:100%; max-width:480px; max-height:90vh; overflow-y:auto; box-shadow:0 24px 60px rgba(0,0,0,0.18);"></div>
 </div>
 
-<!-- ══════════════════════════ TOAST ══════════════════════════ -->
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• TOAST â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
 <div id="toast" style="display:none; position:fixed; bottom:1.5rem; right:1.5rem; padding:0.875rem 1.25rem; border-radius:1rem; box-shadow:0 8px 24px rgba(0,0,0,0.18); z-index:100; font-size:0.875rem; font-weight:700; color:white; font-family:'Manrope',system-ui,sans-serif;"></div>
 
 <script>
-// ── Config ─────────────────────────────────────────────────────────────────
+// â”€â”€ Config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+document.title = 'Recanto Avisos - Admin'
+
 const API_BASE = window.location.protocol === 'file:'
   ? 'http://localhost:3001/api'
-  : '/api'
+  : (window.location.origin + '/api')
+
+if ('serviceWorker' in navigator && window.location.pathname === '/admin') {
+  window.addEventListener('load', async () => {
+    try {
+      const reg = await navigator.serviceWorker.getRegistration('/')
+      if (!reg || !navigator.serviceWorker.controller) return
+
+      const scriptUrl = reg.active?.scriptURL || reg.waiting?.scriptURL || reg.installing?.scriptURL || ''
+      if (!scriptUrl.includes('/sw.js')) return
+
+      await reg.unregister()
+      if ('caches' in window) {
+        const keys = await caches.keys()
+        await Promise.all(keys
+          .filter((key) => key.includes('workbox') || key.includes('api-cache') || key.includes('static-assets'))
+          .map((key) => caches.delete(key)))
+      }
+
+      if (!sessionStorage.getItem('admin_sw_reset')) {
+        sessionStorage.setItem('admin_sw_reset', '1')
+        window.location.reload()
+      }
+    } catch (_) {}
+  })
+}
 
 let TOKEN     = localStorage.getItem('admin_jwt')
 let adminInfo = JSON.parse(localStorage.getItem('admin_info') || '{}')
 
-// ── API ─────────────────────────────────────────────────────────────────────
+// â”€â”€ API â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function api(path, options = {}) {
   const isFormData = options.body instanceof FormData
   const headers = {}
@@ -494,12 +587,17 @@ async function api(path, options = {}) {
   const res = await fetch(API_BASE + path, { ...options, headers: { ...headers, ...(options.headers||{}) } })
   // 401 durante login deve lançar erro com a mensagem do servidor, não chamar logout
   if (res.status === 401 && TOKEN) { logout(); return null }
-  const data = await res.json()
+  const contentType = (res.headers.get('content-type') || '').toLowerCase()
+  const raw = await res.text()
+  if (!contentType.includes('application/json')) {
+    throw new Error(`Resposta inválida do servidor em ${path}. Atualize a página (Ctrl+F5).`)
+  }
+  const data = JSON.parse(raw)
   if (!res.ok) throw new Error(data.error || `Erro ${res.status}`)
   return data
 }
 
-// ── Auth ─────────────────────────────────────────────────────────────────────
+// â”€â”€ Auth â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function handleLogin(e) {
   e.preventDefault()
   const btn = document.getElementById('btn-login')
@@ -530,10 +628,10 @@ function logout() {
   document.getElementById('login-screen').style.display = 'flex'
 }
 
-// ── Nav ──────────────────────────────────────────────────────────────────────
-const PAGES = ['dashboard','avisos','solicitacoes','importar','turmas','alunos','responsaveis','historico','admins']
-const TITLES = { dashboard:'Dashboard', avisos:'Enviar Aviso', solicitacoes:'Solicitações dos Pais', importar:'Importar CSV', turmas:'Turmas & QR Codes', alunos:'Alunos', responsaveis:'Responsáveis', historico:'Histórico de Avisos', admins:'Gerenciar Administradores' }
-const LOADERS = { dashboard:loadDashboard, avisos:loadFormAvisos, solicitacoes:carregarSolicitacoes, turmas:loadTurmas, alunos:()=>loadAlunos(), responsaveis:loadResponsaveis, historico:loadHistorico, admins:loadAdmins }
+// â”€â”€ Nav â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+const PAGES = ['dashboard','avisos','solicitacoes','importar','turmas','alunos','vida-escolar','responsaveis','historico','admins']
+const TITLES = { dashboard:'Dashboard', avisos:'Enviar Aviso', solicitacoes:'Solicitações dos Pais', importar:'Importar CSV', turmas:'Turmas & QR Codes', alunos:'Alunos', 'vida-escolar':'Comportamento', responsaveis:'Responsáveis', historico:'Histórico de Avisos', admins:'Gerenciar Administradores' }
+const LOADERS = { dashboard:loadDashboard, avisos:loadFormAvisos, solicitacoes:carregarSolicitacoes, turmas:loadTurmas, alunos:()=>loadAlunos(), 'vida-escolar':loadVidaEscolar, responsaveis:loadResponsaveis, historico:loadHistorico, admins:loadAdmins }
 
 const PERFIL_LABELS = { master:'Master', coordenacao:'Coordenação', secretaria:'Secretaria Escolar', administrativo:'Administrativo' }
 const PERFIL_COLORS = { master:'#2d6197', coordenacao:'#2e7d52', secretaria:'#596065', administrativo:'#b45309' }
@@ -566,7 +664,7 @@ function showApp() {
   showPage('dashboard')
 }
 
-// ── Toast ────────────────────────────────────────────────────────────────────
+// â”€â”€ Toast â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function toast(msg, type) {
   const el = document.getElementById('toast')
   el.textContent = msg
@@ -576,7 +674,7 @@ function toast(msg, type) {
   el._t = setTimeout(() => { el.style.display = 'none' }, 4000)
 }
 
-// ── Modal ────────────────────────────────────────────────────────────────────
+// â”€â”€ Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function showModal(html) {
   document.getElementById('modal-content').innerHTML = html
   document.getElementById('modal').style.display = 'flex'
@@ -584,7 +682,7 @@ function showModal(html) {
 function closeModal() { document.getElementById('modal').style.display = 'none' }
 document.getElementById('modal').addEventListener('click', e => { if (e.target === document.getElementById('modal')) closeModal() })
 
-// ── Dashboard ────────────────────────────────────────────────────────────────
+// â”€â”€ Dashboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function loadDashboard() {
   try {
     const s = await api('/admin/stats'); if (!s) return
@@ -602,18 +700,36 @@ async function loadDashboard() {
   } catch(err) { toast(err.message,'error') }
 }
 
-// ── Enviar Aviso — Estado ─────────────────────────────────────────────────────
+// â”€â”€ Enviar Aviso â€” Estado â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 let _turmasList    = []
 let _templatesList = []
 let _templateAtivo = null
 let _destinatario  = { tipo: null, ids: [], turmasNomes: [], alunosNomes: [] }
 let _alunosSelecionados = [] // [{ id, nome, turma_nome }]
+let _responsaveisCache = []
+const COMPORTAMENTOS_VIDA_ESCOLAR = [
+  { id: 'nao_avaliado', label: '⚪ Não avaliado' },
+  { id: 'muito_positivo', label: '🌟 Comportamento muito positivo, serve de exemplo' },
+  { id: 'adequado', label: '✅ Comportamento adequado e esperado para a idade' },
+  { id: 'dificuldades_com_apoio', label: '🟡 Às vezes apresenta dificuldades, mas consegue melhorar com apoio' },
+  { id: 'muitas_dificuldades', label: '🟠 Apresenta muitas dificuldades, precisa de acompanhamento constante' },
+  { id: 'preocupante', label: '🔴 Comportamento preocupante, requer atenção imediata' },
+]
+
+function escapeHtml(texto) {
+  return String(texto ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
+}
 
 async function loadFormAvisos() {
   try {
     const [turmas, porCategoria] = await Promise.all([
       api('/admin/turmas').catch(()=>[]),
-      api('/templates?agrupado=1').catch(()=>({}))
+      api('/admin/templates?agrupado=1').catch(()=>({}))
     ])
     _turmasList = turmas || []
 
@@ -673,7 +789,7 @@ function toggleCategoria(id) {
   el.style.display = el.style.display === 'none' ? 'flex' : 'none'
 }
 
-// ── Etapa 1: Destinatários ────────────────────────────────────────────────────
+// â”€â”€ Etapa 1: Destinatários â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function selecionarTipoDestinatario(tipo) {
   const cards = ['todos','turmas','alunos']
   cards.forEach(c => {
@@ -737,7 +853,7 @@ function atualizarListaAlunosSelecionados() {
   lista.innerHTML = _alunosSelecionados.map(a => `
     <span style="display:inline-flex;align-items:center;gap:0.25rem;padding:0.25rem 0.625rem;background:#2d6197;color:white;border-radius:999px;font-size:0.75rem;font-weight:700;">
       ${a.nome}
-      <button type="button" onclick="removerAluno(${a.id})" style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.8);padding:0;line-height:1;font-size:0.875rem;">✕</button>
+      <button type="button" onclick="removerAluno(${a.id})" style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.8);padding:0;line-height:1;font-size:0.875rem;">âœ•</button>
     </span>`).join('')
 }
 
@@ -761,7 +877,7 @@ function irParaEtapa2() {
   const resumoTexto = tipo === 'todos' ? 'Toda a escola'
     : tipo === 'turmas' ? _destinatario.turmasNomes.join(', ')
     : _alunosSelecionados.map(a => a.nome).join(', ')
-  document.getElementById('step2-resumo-dest').textContent = '→ ' + resumoTexto
+  document.getElementById('step2-resumo-dest').textContent = 'â†’ ' + resumoTexto
 
   document.getElementById('aviso-step1').style.display = 'none'
   document.getElementById('aviso-step2').style.display = ''
@@ -792,7 +908,7 @@ function ativarStep(n) {
   })
 }
 
-// ── Etapa 2 → 3: Templates ────────────────────────────────────────────────────
+// â”€â”€ Etapa 2 â†’ 3: Templates â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const PLACEHOLDER_CONFIG = {
   'DATA':          { label: 'Data',               type: 'date'   },
   'DATA INÍCIO':   { label: 'Data de início',     type: 'date'   },
@@ -802,8 +918,8 @@ const PLACEHOLDER_CONFIG = {
   'HORÁRIO':       { label: 'Horário',            type: 'time'   },
   'HORÁRIO INÍCIO':{ label: 'Horário de início',  type: 'time'   },
   'HORÁRIO FIM':   { label: 'Horário de término', type: 'time'   },
-  'MÊS':           { label: 'Mês', type: 'select', options: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'] },
-  'NÚMERO':        { label: 'Número de faltas',   type: 'number' },
+  'MÃŠS':           { label: 'Mês', type: 'select', options: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'] },
+  'NÃšMERO':        { label: 'Número de faltas',   type: 'number' },
   'TELEFONE':      { label: 'Telefone da escola', type: 'tel', placeholder: '(00) 0000-0000' },
 }
 
@@ -816,7 +932,7 @@ function formatarValorPlaceholder(chave, valor) {
 }
 
 function autoFillSet() {
-  // Placeholders preenchidos automaticamente pelo contexto — não viram campo manual
+  // Placeholders preenchidos automaticamente pelo contexto â€” não viram campo manual
   const s = new Set()
   const tipo = _destinatario.tipo
   // TURMA e NOME DO ALUNO sempre auto-preenchidos (o valor varia por tipo)
@@ -867,7 +983,7 @@ function _mostrarEtapa3(t) {
   const resumoTexto = _destinatario.tipo === 'todos' ? 'Toda a escola'
     : _destinatario.tipo === 'turmas' ? _destinatario.turmasNomes.join(', ')
     : _alunosSelecionados.map(a => a.nome).join(', ')
-  document.getElementById('step3-resumo-dest').textContent = '→ ' + resumoTexto
+  document.getElementById('step3-resumo-dest').textContent = 'â†’ ' + resumoTexto
   document.getElementById('aviso-step2').style.display = 'none'
   document.getElementById('form-aviso').style.display  = ''
 }
@@ -908,7 +1024,7 @@ function aplicarTemplate(i) {
   atualizarMensagemComCampos()
 }
 
-// ── Templates personalizados (localStorage) ───────────────────────────────────
+// â”€â”€ Templates personalizados (localStorage) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function carregarTemplatesPersonalizados() {
   try { return JSON.parse(localStorage.getItem('templates_custom') || '[]') } catch { return [] }
 }
@@ -991,7 +1107,7 @@ function usarNovoAviso() {
 }
 
 function usarAvisoPersonalizado() {
-  // mantida por compatibilidade — não usada mais na UI
+  // mantida por compatibilidade â€” não usada mais na UI
   _templateAtivo = null
   _mostrarEtapa3(null)
   document.getElementById('campos-template').style.display = 'none'
@@ -1001,7 +1117,7 @@ function usarAvisoPersonalizado() {
   document.getElementById('aviso-urgente').checked = false
 }
 
-// ── Etapa 3: Enviar ───────────────────────────────────────────────────────────
+// â”€â”€ Etapa 3: Enviar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function enviarAviso(e) {
   e.preventDefault()
   const { tipo, ids } = _destinatario
@@ -1057,7 +1173,7 @@ function resetarFormulario() {
   if (document.getElementById('form-aviso')) document.getElementById('form-aviso').reset()
 }
 
-// ── Importar CSV ─────────────────────────────────────────────────────────────
+// â”€â”€ Importar CSV â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function atualizarNomeArquivo(input) {
   const el = document.getElementById('csv-nome-arquivo')
   if (input.files[0]) { el.textContent = input.files[0].name; el.style.display = 'block' }
@@ -1077,7 +1193,7 @@ async function importarCsv() {
   const btn = document.getElementById('btn-importar')
   btn.disabled=true; btn.innerHTML='<span class="material-symbols-outlined animate-spin">progress_activity</span> Importando...'
   try {
-    const res = await fetch(API_BASE+'/importar-csv', { method:'POST', headers:{'Authorization':'Bearer '+TOKEN}, body:formData })
+    const res = await fetch(API_BASE+'/admin/importar-csv', { method:'POST', headers:{'Authorization':'Bearer '+TOKEN}, body:formData })
     const data = await res.json(); if (!res.ok) throw new Error(data.error)
     document.getElementById('csv-resultado').innerHTML = `
       <div class="card">
@@ -1100,15 +1216,15 @@ async function importarCsv() {
             <p style="font-size:10px;font-weight:700;text-transform:uppercase;color:#596065;margin:0.25rem 0 0;">Sem turma</p>
           </div>
         </div>
-        ${data.nao_vinculados?.length?`<details style="margin-top:0.5rem;"><summary style="font-size:0.875rem;font-weight:700;color:#596065;cursor:pointer;">Ver não encontrados (${data.nao_vinculados.length})</summary><div style="margin-top:0.75rem;display:flex;flex-direction:column;gap:0.5rem;">${data.nao_vinculados.map(n=>`<div style="font-size:0.75rem;color:#596065;padding:0.625rem 1rem;background:#f7f9fc;border-radius:0.75rem;"><strong style="color:#2c3338;">${n.nome_aluno_csv}</strong> — Turma <strong>${n.turma_csv}</strong> — ${n.nome_responsavel}${n.telefone?' — '+n.telefone:''}</div>`).join('')}</div></details>`:''}
-        ${data.sem_turma_lista?.length?`<details style="margin-top:0.5rem;" open><summary style="font-size:0.875rem;font-weight:700;color:#b45309;cursor:pointer;display:flex;align-items:center;gap:0.375rem;"><span class="material-symbols-outlined" style="font-size:1rem;">warning</span> Sem turma identificada — requerem correção (${data.sem_turma_lista.length})</summary><div style="margin-top:0.75rem;display:flex;flex-direction:column;gap:0.5rem;">${data.sem_turma_lista.map(n=>`<div style="font-size:0.75rem;color:#596065;padding:0.625rem 1rem;background:#fff8e6;border-left:3px solid #f59e0b;border-radius:0 0.75rem 0.75rem 0;"><strong style="color:#2c3338;">${n.nome_responsavel||'(sem nome responsável)'}</strong>${n.nome_csv&&n.nome_csv!=='(sem nome)'?' — aluno: '+n.nome_csv:''}<br><span style="color:#b45309;">Turma no CSV: <strong>${n.turma_csv||'—'}</strong></span>${n.telefone?'<br>Telefone: '+n.telefone:''}</div>`).join('')}</div><p style="font-size:0.75rem;color:#b45309;margin:0.75rem 0 0;padding:0.625rem 1rem;background:#fff8e6;border-radius:0.75rem;">Adicione estes alunos à turma correta manualmente na aba <strong>Alunos</strong> e reimporte o CSV.</p></details>`:''}
+        ${data.nao_vinculados?.length?`<details style="margin-top:0.5rem;"><summary style="font-size:0.875rem;font-weight:700;color:#596065;cursor:pointer;">Ver não encontrados (${data.nao_vinculados.length})</summary><div style="margin-top:0.75rem;display:flex;flex-direction:column;gap:0.5rem;">${data.nao_vinculados.map(n=>`<div style="font-size:0.75rem;color:#596065;padding:0.625rem 1rem;background:#f7f9fc;border-radius:0.75rem;"><strong style="color:#2c3338;">${n.nome_aluno_csv}</strong> â€” Turma <strong>${n.turma_csv}</strong> â€” ${n.nome_responsavel}${n.telefone?' â€” '+n.telefone:''}</div>`).join('')}</div></details>`:''}
+        ${data.sem_turma_lista?.length?`<details style="margin-top:0.5rem;" open><summary style="font-size:0.875rem;font-weight:700;color:#b45309;cursor:pointer;display:flex;align-items:center;gap:0.375rem;"><span class="material-symbols-outlined" style="font-size:1rem;">warning</span> Sem turma identificada â€” requerem correção (${data.sem_turma_lista.length})</summary><div style="margin-top:0.75rem;display:flex;flex-direction:column;gap:0.5rem;">${data.sem_turma_lista.map(n=>`<div style="font-size:0.75rem;color:#596065;padding:0.625rem 1rem;background:#fff8e6;border-left:3px solid #f59e0b;border-radius:0 0.75rem 0.75rem 0;"><strong style="color:#2c3338;">${n.nome_responsavel||'(sem nome responsável)'}</strong>${n.nome_csv&&n.nome_csv!=='(sem nome)'?' â€” aluno: '+n.nome_csv:''}<br><span style="color:#b45309;">Turma no CSV: <strong>${n.turma_csv||'â€”'}</strong></span>${n.telefone?'<br>Telefone: '+n.telefone:''}</div>`).join('')}</div><p style="font-size:0.75rem;color:#b45309;margin:0.75rem 0 0;padding:0.625rem 1rem;background:#fff8e6;border-radius:0.75rem;">Adicione estes alunos à turma correta manualmente na aba <strong>Alunos</strong> e reimporte o CSV.</p></details>`:''}
       </div>`
     toast(data.vinculados + ' responsáveis vinculados com sucesso')
   } catch(err) { toast(err.message,'error') }
   finally { btn.disabled=false; btn.innerHTML='<span class="material-symbols-outlined">cloud_upload</span> Importar CSV' }
 }
 
-// ── Turmas ───────────────────────────────────────────────────────────────────
+// â”€â”€ Turmas â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function loadTurmas() {
   try {
     const turmas = await api('/admin/turmas'); if (!turmas) return
@@ -1149,7 +1265,7 @@ async function verQrCode(id, codigo, nome) {
     showModal(`
       <div style="text-align:center;">
         <span class="badge badge-blue" style="margin-bottom:0.75rem;display:inline-block;">QR Code</span>
-        <h3 style="font-size:1.25rem;font-weight:800;color:#2c3338;margin:0 0 0.25rem;">${codigo} — ${nome}</h3>
+        <h3 style="font-size:1.25rem;font-weight:800;color:#2c3338;margin:0 0 0.25rem;">${codigo} â€” ${nome}</h3>
         <p style="font-size:0.875rem;color:#596065;margin:0 0 1.5rem;">Imprima e entregue para os responsáveis escanearem</p>
         <div id="qr-canvas" style="display:flex;justify-content:center;margin-bottom:1.25rem;"></div>
         <div style="background:#f0f4f8;border-radius:0.75rem;padding:0.75rem 1rem;font-size:0.75rem;color:#596065;word-break:break-all;text-align:left;margin-bottom:1.25rem;">${url}</div>
@@ -1162,7 +1278,7 @@ async function verQrCode(id, codigo, nome) {
   } catch(err) { toast(err.message,'error') }
 }
 
-// ── Alunos ───────────────────────────────────────────────────────────────────
+// â”€â”€ Alunos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function loadAlunos() {
   const busca    = document.getElementById('busca-aluno')?.value || ''
   const turma_id = document.getElementById('filtro-turma-aluno')?.value || ''
@@ -1174,16 +1290,16 @@ async function loadAlunos() {
     // Preencher select de turmas na primeira vez
     const sel = document.getElementById('filtro-turma-aluno')
     if (sel.options.length <= 1 && _turmasList.length) {
-      _turmasList.forEach(t => { const o=document.createElement('option'); o.value=t.id; o.textContent=t.codigo+' — '+t.nome; sel.appendChild(o) })
+      _turmasList.forEach(t => { const o=document.createElement('option'); o.value=t.id; o.textContent=t.codigo+' â€” '+t.nome; sel.appendChild(o) })
     } else if (sel.options.length <= 1) {
-      api('/admin/turmas').then(turmas => { if(!turmas) return; _turmasList=turmas; turmas.forEach(t => { const o=document.createElement('option'); o.value=t.id; o.textContent=t.codigo+' — '+t.nome; sel.appendChild(o) }) })
+      api('/admin/turmas').then(turmas => { if(!turmas) return; _turmasList=turmas; turmas.forEach(t => { const o=document.createElement('option'); o.value=t.id; o.textContent=t.codigo+' â€” '+t.nome; sel.appendChild(o) }) })
     }
     document.getElementById('alunos-tbody').innerHTML = alunos.length ? alunos.map(a => `
       <tr>
         <td style="font-weight:600;">${a.nome}</td>
-        <td><span class="badge badge-blue">${a.turma_codigo||'—'}</span></td>
+        <td><span class="badge badge-blue">${a.turma_codigo||'â€”'}</span></td>
         <td style="color:#596065;">${a.responsavel_nome||'<span style="color:#abb3b9;font-style:italic;">Sem responsável</span>'}</td>
-        <td style="text-align:center;">${a.tem_app?'<span class="badge badge-green">✓ Com app</span>':'<span class="badge badge-gray">Sem app</span>'}</td>
+        <td style="text-align:center;">${a.tem_app?'<span class="badge badge-green">âœ“ Com app</span>':'<span class="badge badge-gray">Sem app</span>'}</td>
         <td style="text-align:center; white-space:nowrap;">
           <button onclick="vincularResponsavel(${a.id},'${a.nome.replace(/'/g,"\\'")}','${(a.responsavel_nome||'').replace(/'/g,"\\'")}')\"
             style="font-size:0.75rem;font-weight:700;color:#2d6197;background:none;border:none;cursor:pointer;margin-right:0.5rem;">Vincular</button>
@@ -1196,7 +1312,7 @@ async function loadAlunos() {
 
 function abrirModalNovoAluno() {
   const opcoesTormas = (_turmasList.length ? _turmasList : []).map(t =>
-    `<option value="${t.id}">${t.codigo} — ${t.nome}</option>`).join('')
+    `<option value="${t.id}">${t.codigo} â€” ${t.nome}</option>`).join('')
   showModal(`
     <h3 style="font-size:1.125rem;font-weight:800;color:#2c3338;margin:0 0 1.25rem;">Adicionar Aluno</h3>
     <div style="display:flex;flex-direction:column;gap:0.875rem;">
@@ -1297,23 +1413,216 @@ async function salvarVinculo(alunoId) {
   } catch(err) { toast(err.message,'error') }
 }
 
-// ── Responsáveis ─────────────────────────────────────────────────────────────
-async function loadResponsaveis() {
+// â”€â”€ Comportamento â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+async function loadVidaEscolar() {
   try {
-    const resp = await api('/admin/responsaveis'); if (!resp) return
-    document.getElementById('resp-tbody').innerHTML = resp.length ? resp.map(r => `
+    if (_turmasList.length === 0) {
+      _turmasList = await api('/admin/turmas').catch(() => [])
+    }
+
+    const filtroTurmaEl = document.getElementById('filtro-turma-vida')
+    if (filtroTurmaEl && filtroTurmaEl.options.length <= 1 && _turmasList.length) {
+      const opcoes = _turmasList.map(t => `<option value="${t.id}">${t.codigo} — ${t.nome}</option>`).join('')
+      filtroTurmaEl.innerHTML = '<option value="">Todas as turmas</option>' + opcoes
+    }
+
+    const turmaId = filtroTurmaEl?.value || ''
+    const params = new URLSearchParams()
+    if (turmaId) params.set('turma_id', turmaId)
+
+    const query = params.toString()
+    const alunos = await api('/admin/alunos' + (query ? '?' + query : '')); if (!alunos) return
+    let vidaEscolar = []
+    try {
+      vidaEscolar = await api('/admin/vida-escolar' + (query ? '?' + query : '')) || []
+    } catch (err) {
+      console.warn('Falha ao carregar /admin/vida-escolar. Usando lista base de alunos.', err)
+    }
+
+    const vidaEscolarPorAluno = new Map((vidaEscolar || []).map(item => [Number(item.aluno_id), item]))
+    const lista = (alunos || []).map(aluno => {
+      const registro = vidaEscolarPorAluno.get(Number(aluno.id))
+      return {
+        aluno_id: aluno.id,
+        aluno_nome: aluno.nome,
+        turma_id: aluno.turma_id,
+        turma_nome: aluno.turma_nome,
+        turma_codigo: aluno.turma_codigo,
+        faltas_mes: Number(registro?.faltas_mes || 0),
+        faltas_total: Number(registro?.faltas_total || 0),
+        comportamento: registro?.comportamento || 'nao_avaliado',
+        observacoes: registro?.observacoes || '',
+      }
+    })
+    const opcoesComportamento = COMPORTAMENTOS_VIDA_ESCOLAR.map(c => `<option value="${c.id}">${c.label}</option>`).join('')
+
+    document.getElementById('vida-escolar-tbody').innerHTML = lista.length ? lista.map(item => `
       <tr>
-        <td style="font-weight:600;">${r.nome}</td>
-        <td style="color:#596065;">${r.aluno_nome||'—'}</td>
-        <td><span class="badge badge-blue">${r.turma_codigo||'—'}</span></td>
-        <td style="color:#596065;">${r.telefone||'—'}</td>
-        <td style="text-align:center;">${r.tem_app?'<span class="badge badge-green">✓ Com app</span>':'<span class="badge badge-gray">Sem app</span>'}</td>
-        <td style="font-size:0.75rem;color:#abb3b9;">${r.ultimo_acesso?new Date(r.ultimo_acesso).toLocaleDateString('pt-BR'):'—'}</td>
-      </tr>`).join('') : '<tr><td colspan="6" style="text-align:center;padding:2.5rem;color:#596065;">Nenhum responsável cadastrado</td></tr>'
+        <td style="font-weight:600;">${escapeHtml(item.aluno_nome)}</td>
+        <td><span class="badge badge-blue">${escapeHtml(item.turma_codigo || '—')}</span></td>
+        <td><input id="vida-fm-${item.aluno_id}" type="number" min="0" step="1" value="${Number(item.faltas_mes || 0)}" class="field-input" style="margin:0;padding:0.5rem 0.625rem;min-width:88px;" /></td>
+        <td><input id="vida-ft-${item.aluno_id}" type="number" min="0" step="1" value="${Number(item.faltas_total || 0)}" class="field-input" style="margin:0;padding:0.5rem 0.625rem;min-width:88px;" /></td>
+        <td>
+          <select id="vida-comp-${item.aluno_id}" class="field-input" style="margin:0;padding:0.5rem 0.625rem;">
+            ${opcoesComportamento}
+          </select>
+        </td>
+        <td>
+          <textarea id="vida-obs-${item.aluno_id}" class="field-input" rows="2" style="margin:0;resize:vertical;min-width:220px;">${escapeHtml(item.observacoes || '')}</textarea>
+        </td>
+        <td style="text-align:center;white-space:nowrap;">
+          <button onclick="salvarVidaEscolarAluno(${item.aluno_id})" class="btn-outline" style="padding:0.5rem 0.75rem;font-size:0.75rem;">Salvar</button>
+        </td>
+      </tr>`).join('') : '<tr><td colspan="7" style="text-align:center;padding:2.5rem;color:#596065;">Nenhum aluno encontrado</td></tr>'
+
+    for (const item of lista) {
+      const el = document.getElementById(`vida-comp-${item.aluno_id}`)
+      if (el) el.value = item.comportamento || 'nao_avaliado'
+    }
   } catch(err) { toast(err.message,'error') }
 }
 
-// ── Histórico ─────────────────────────────────────────────────────────────────
+async function salvarVidaEscolarAluno(alunoId) {
+  const faltasMesEl = document.getElementById(`vida-fm-${alunoId}`)
+  const faltasTotalEl = document.getElementById(`vida-ft-${alunoId}`)
+  const comportamentoEl = document.getElementById(`vida-comp-${alunoId}`)
+  const observacoesEl = document.getElementById(`vida-obs-${alunoId}`)
+
+  const faltas_mes = Number(faltasMesEl?.value || 0)
+  const faltas_total = Number(faltasTotalEl?.value || 0)
+  const comportamento = comportamentoEl?.value || 'nao_avaliado'
+  const observacoes = (observacoesEl?.value || '').trim()
+
+  if (!Number.isInteger(faltas_mes) || faltas_mes < 0 || !Number.isInteger(faltas_total) || faltas_total < 0) {
+    toast('Faltas devem ser números inteiros >= 0','error')
+    return
+  }
+
+  try {
+    await api('/admin/vida-escolar/aluno/' + alunoId, {
+      method: 'PUT',
+      body: JSON.stringify({ faltas_mes, faltas_total, comportamento, observacoes }),
+    })
+    toast('Registro atualizado com sucesso')
+  } catch(err) { toast(err.message,'error') }
+}
+
+async function aplicarComportamentoTurma() {
+  const turmaId = document.getElementById('filtro-turma-vida')?.value
+  const comportamento = document.getElementById('comportamento-lote')?.value || 'nao_avaliado'
+  if (!turmaId) { toast('Selecione uma turma para aplicar','error'); return }
+  if (!confirm('Aplicar este comportamento para todos os alunos da turma selecionada?')) return
+
+  try {
+    const r = await api('/admin/vida-escolar/turma/' + Number(turmaId) + '/comportamento', {
+      method: 'POST',
+      body: JSON.stringify({ comportamento }),
+    })
+    toast(`${r.atualizados || 0} aluno(s) atualizados`)
+    loadVidaEscolar()
+  } catch(err) { toast(err.message,'error') }
+}
+
+// â”€â”€ Responsáveis â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+async function loadResponsaveis() {
+  try {
+    if (_turmasList.length === 0) {
+      _turmasList = await api('/admin/turmas').catch(() => [])
+    }
+
+    const filtroTurmaEl = document.getElementById('filtro-turma-resp')
+    if (filtroTurmaEl && filtroTurmaEl.options.length <= 1 && _turmasList.length) {
+      const opcoes = _turmasList.map(t => `<option value="${t.id}">${t.codigo} — ${t.nome}</option>`).join('')
+      filtroTurmaEl.innerHTML = '<option value="">Todas as turmas</option>' + opcoes
+    }
+
+    const filtroTurma = filtroTurmaEl?.value || ''
+    const resp = await api('/admin/responsaveis'); if (!resp) return
+    _responsaveisCache = filtroTurma
+      ? resp.filter(r => String(r.turma_id || '') === String(filtroTurma))
+      : resp
+
+    document.getElementById('select-all-resp').checked = false
+    updateBotaoDesvincularResponsaveis()
+
+    document.getElementById('resp-tbody').innerHTML = _responsaveisCache.length ? _responsaveisCache.map(r => `
+      <tr>
+        <td><input type="checkbox" class="resp-checkbox" data-id="${r.id}" onchange="updateBotaoDesvincularResponsaveis()" style="width:1rem;height:1rem;cursor:pointer;" /></td>
+        <td style="font-weight:600;">${r.nome}</td>
+        <td style="color:#596065;">${r.aluno_nome||'â€”'}</td>
+        <td><span class="badge badge-blue">${r.turma_codigo||'â€”'}</span></td>
+        <td style="color:#596065;">${r.telefone||'â€”'}</td>
+        <td style="text-align:center;">${r.tem_app?'<span class="badge badge-green">âœ“ Com app</span>':'<span class="badge badge-gray">Sem app</span>'}</td>
+        <td style="font-size:0.75rem;color:#abb3b9;">${r.ultimo_acesso?new Date(r.ultimo_acesso).toLocaleDateString('pt-BR'):'â€”'}</td>
+        <td style="text-align:center;">
+          <button onclick="desvincularResponsavel(${r.id}, '${(r.nome||'').replace(/'/g,"\\'")}')" style="font-size:0.75rem;font-weight:700;color:#a83836;background:none;border:none;cursor:pointer;">Desvincular</button>
+        </td>
+      </tr>`).join('') : '<tr><td colspan="8" style="text-align:center;padding:2.5rem;color:#596065;">Nenhum responsável cadastrado</td></tr>'
+  } catch(err) { toast(err.message,'error') }
+}
+
+function toggleSelectAllResponsaveis() {
+  const selectAll = document.getElementById('select-all-resp')
+  const checkboxes = document.querySelectorAll('.resp-checkbox')
+  checkboxes.forEach(cb => cb.checked = selectAll.checked)
+  updateBotaoDesvincularResponsaveis()
+}
+
+function updateBotaoDesvincularResponsaveis() {
+  const selecionados = document.querySelectorAll('.resp-checkbox:checked').length
+  const btn = document.getElementById('btn-desvincular-selecionados-resp')
+  if (!btn) return
+  btn.style.display = selecionados > 0 ? 'flex' : 'none'
+}
+
+async function desvincularResponsavel(id, nome) {
+  if (!confirm(`Desvincular notificações de ${nome}?`)) return
+  try {
+    const r = await api('/admin/responsaveis/desvincular-notificacoes', {
+      method: 'POST',
+      body: JSON.stringify({ tipo: 'responsavel', responsavel_id: id })
+    })
+    toast(`${r.desvinculados || 0} responsável(is) desvinculado(s)`)
+    loadResponsaveis()
+    loadDashboard()
+  } catch(err) { toast(err.message,'error') }
+}
+
+async function desvincularSelecionadosResponsaveis() {
+  const ids = Array.from(document.querySelectorAll('.resp-checkbox:checked')).map(cb => Number(cb.dataset.id))
+  if (ids.length === 0) { toast('Selecione ao menos um responsável','error'); return }
+  if (!confirm(`Desvincular notificações de ${ids.length} responsável(is)?`)) return
+
+  try {
+    const r = await api('/admin/responsaveis/desvincular-notificacoes', {
+      method: 'POST',
+      body: JSON.stringify({ tipo: 'responsaveis', responsavel_ids: ids })
+    })
+    toast(`${r.desvinculados || 0} responsável(is) desvinculado(s)`)
+    loadResponsaveis()
+    loadDashboard()
+  } catch(err) { toast(err.message,'error') }
+}
+
+async function desvincularTurmaResponsaveis() {
+  const turmaId = document.getElementById('filtro-turma-resp')?.value
+  if (!turmaId) { toast('Selecione uma turma para desvincular','error'); return }
+  const turma = _turmasList.find(t => String(t.id) === String(turmaId))
+  const nomeTurma = turma ? `${turma.codigo} â€” ${turma.nome}` : 'turma selecionada'
+  if (!confirm(`Desvincular notificações da turma ${nomeTurma}?`)) return
+
+  try {
+    const r = await api('/admin/responsaveis/desvincular-notificacoes', {
+      method: 'POST',
+      body: JSON.stringify({ tipo: 'turma', turma_id: Number(turmaId) })
+    })
+    toast(`${r.desvinculados || 0} responsável(is) desvinculado(s)`)
+    loadResponsaveis()
+    loadDashboard()
+  } catch(err) { toast(err.message,'error') }
+}
+
+// â”€â”€ Histórico â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function loadHistorico() {
   try {
     const avisos = await api('/admin/avisos'); if (!avisos) return
@@ -1321,7 +1630,7 @@ async function loadHistorico() {
       <tr>
         <td style="cursor:pointer;" onclick="verEntregas(${a.id},'${a.titulo.replace(/'/g,"\\'")}')">
           <div style="display:flex;align-items:center;gap:0.5rem;">${a.urgente?'<span class="badge badge-red">Urgente</span>':''}<span style="font-weight:600;">${a.titulo}</span></div>
-          ${a.enviado_por?`<div style="font-size:0.7rem;color:#596065;margin-top:0.2rem;"><span class="material-symbols-outlined" style="font-size:0.75rem;vertical-align:middle;">person</span> ${a.enviado_por} <span style="color:#abb3b9;">— ${a.admin_nome||''}</span></div>`:''}
+          ${a.enviado_por?`<div style="font-size:0.7rem;color:#596065;margin-top:0.2rem;"><span class="material-symbols-outlined" style="font-size:0.75rem;vertical-align:middle;">person</span> ${a.enviado_por} <span style="color:#abb3b9;">â€” ${a.admin_nome||''}</span></div>`:''}
         </td>
         <td style="text-align:center;color:#596065;">${a.total_entregas||0}</td>
         <td style="text-align:center;"><span class="badge badge-blue">${a.push_enviados||0}</span></td>
@@ -1357,7 +1666,7 @@ async function limparHistorico() {
 
 async function exportarHistorico() {
   try {
-    const res = await fetch(API_BASE + '/avisos/exportar', {
+    const res = await fetch(API_BASE + '/admin/avisos/exportar', {
       headers: { 'Authorization': 'Bearer ' + TOKEN }
     })
     if (!res.ok) { toast('Erro ao exportar', 'error'); return }
@@ -1382,7 +1691,7 @@ async function verEntregas(avisoId, titulo) {
           <div style="display:flex;align-items:center;justify-content:space-between;padding:0.75rem 1rem;background:#f7f9fc;border-radius:1rem;">
             <div>
               <p style="font-size:0.875rem;font-weight:600;color:#2c3338;margin:0;">${e.responsavel_nome}</p>
-              <p style="font-size:0.75rem;color:#596065;margin:0.1rem 0 0;">${e.aluno_nome} — ${e.turma_codigo||''}</p>
+              <p style="font-size:0.75rem;color:#596065;margin:0.1rem 0 0;">${e.aluno_nome} â€” ${e.turma_codigo||''}</p>
             </div>
             <div style="display:flex;gap:0.375rem;">
               ${e.push_enviado?'<span class="badge badge-blue">Enviado</span>':'<span class="badge badge-gray">Não enviado</span>'}
@@ -1393,7 +1702,7 @@ async function verEntregas(avisoId, titulo) {
   } catch(err) { toast(err.message,'error') }
 }
 
-// ── Solicitações dos Pais ────────────────────────────────────────────────────
+// â”€â”€ Solicitações dos Pais â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const TIPOS_SOLICITACAO_LABELS = {
   falta_sem_atestado: 'Falta (sem atestado)',
   falta_com_atestado: 'Falta (com atestado)',
@@ -1414,25 +1723,31 @@ async function carregarSolicitacoes() {
 
     document.getElementById('sol-tbody').innerHTML = filtradas.length ? filtradas.map(s => `
       <tr style="${s.urgente?'background:#fff3f2;':''}" onclick="verSolicitacao(${s.id})">
+        <td onclick="event.stopPropagation();" style="width:40px;">
+          <input type="checkbox" class="sol-checkbox" data-id="${s.id}" onchange="updateBotaoApagar()" style="width:1rem;height:1rem;cursor:pointer;" />
+        </td>
         <td>
           <div style="display:flex;align-items:center;gap:0.5rem;">
             ${s.urgente?'<span class="badge badge-red" style="font-size:9px;">URGENTE</span>':''}
             <span style="font-weight:600;${s.urgente?'color:#a83836;':''}">${TIPOS_SOLICITACAO_LABELS[s.tipo]||s.tipo}</span>
           </div>
         </td>
-        <td style="color:#596065;">${s.aluno_nome||'—'}</td>
-        <td style="color:#596065;">${s.responsavel_nome||'—'}</td>
-        <td style="max-width:300px;"><div class="line-clamp-2" style="font-size:0.8rem;color:#596065;">${s.mensagem||'—'}</div></td>
+        <td style="color:#596065;">${s.aluno_nome||'â€”'}</td>
+        <td style="color:#596065;">${s.responsavel_nome||'â€”'}</td>
+        <td style="max-width:300px;"><div class="line-clamp-2" style="font-size:0.8rem;color:#596065;">${s.mensagem||'â€”'}</div></td>
         <td style="font-size:0.75rem;color:#abb3b9;">${new Date(s.criada_em).toLocaleDateString('pt-BR')} ${new Date(s.criada_em).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</td>
         <td style="text-align:center;">
           ${s.respondida ? '<span class="badge badge-green">Respondida</span>' : (s.lida ? '<span class="badge badge-blue">Lida</span>' : '<span class="badge badge-gray">Nova</span>')}
         </td>
         <td style="text-align:center;">
-          <button onclick="event.stopPropagation();verSolicitacao(${s.id})" style="background:none;border:none;cursor:pointer;color:#2d6197;padding:0.25rem;">
+          <button onclick="event.stopPropagation();verSolicitacao(${s.id})" style="background:none;border:none;cursor:pointer;color:#2d6197;padding:0.25rem;" title="Ver detalhes">
             <span class="material-symbols-outlined" style="font-size:1.125rem;">visibility</span>
           </button>
+          <button onclick="event.stopPropagation();apagarSolicitacao(${s.id})" style="background:none;border:none;cursor:pointer;color:#a83836;padding:0.25rem;" title="Apagar">
+            <span class="material-symbols-outlined" style="font-size:1.125rem;">delete</span>
+          </button>
         </td>
-      </tr>`).join('') : `<tr><td colspan="7" style="text-align:center;padding:2.5rem;color:#596065;">${filtroUrgentes?'Nenhuma solicitação urgente':'Nenhuma solicitação ainda'}</td></tr>`
+      </tr>`).join('') : `<tr><td colspan="8" style="text-align:center;padding:2.5rem;color:#596065;">${filtroUrgentes?'Nenhuma solicitação urgente':'Nenhuma solicitação ainda'}</td></tr>`
   } catch(err) { toast(err.message,'error') }
 }
 
@@ -1454,17 +1769,17 @@ async function verSolicitacao(id) {
 
       <div style="background:#f7f9fc;padding:1rem;border-radius:1rem;margin-bottom:1rem;">
         <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#596065;margin:0 0 0.375rem;">Aluno</p>
-        <p style="font-size:0.875rem;font-weight:600;color:#2c3338;margin:0;">${sol.aluno_nome||'—'}</p>
+        <p style="font-size:0.875rem;font-weight:600;color:#2c3338;margin:0;">${sol.aluno_nome||'â€”'}</p>
       </div>
 
       <div style="background:#f7f9fc;padding:1rem;border-radius:1rem;margin-bottom:1rem;">
         <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#596065;margin:0 0 0.375rem;">Responsável</p>
-        <p style="font-size:0.875rem;font-weight:600;color:#2c3338;margin:0;">${sol.responsavel_nome||'—'}</p>
+        <p style="font-size:0.875rem;font-weight:600;color:#2c3338;margin:0;">${sol.responsavel_nome||'â€”'}</p>
       </div>
 
       <div style="background:#f7f9fc;padding:1rem;border-radius:1rem;margin-bottom:1rem;">
         <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#596065;margin:0 0 0.375rem;">Mensagem</p>
-        <p style="font-size:0.875rem;color:#2c3338;margin:0;white-space:pre-wrap;">${sol.mensagem||'—'}</p>
+        <p style="font-size:0.875rem;color:#2c3338;margin:0;white-space:pre-wrap;">${sol.mensagem||'â€”'}</p>
       </div>
 
       ${sol.respondida?`
@@ -1497,7 +1812,43 @@ async function responderSolicitacao(id) {
   } catch(err) { toast(err.message,'error') }
 }
 
-// ── Gerenciar Admins ──────────────────────────────────────────────────────────
+function toggleSelectAll() {
+  const selectAll = document.getElementById('select-all-sol')
+  const checkboxes = document.querySelectorAll('.sol-checkbox')
+  checkboxes.forEach(cb => cb.checked = selectAll.checked)
+  updateBotaoApagar()
+}
+
+function updateBotaoApagar() {
+  const checkboxes = document.querySelectorAll('.sol-checkbox:checked')
+  const btn = document.getElementById('btn-apagar-selecionadas')
+  btn.style.display = checkboxes.length > 0 ? 'flex' : 'none'
+}
+
+async function apagarSolicitacao(id) {
+  if (!confirm('Tem certeza que deseja apagar esta solicitação?')) return
+  try {
+    await api('/solicitacoes/admin/'+id, { method:'DELETE' })
+    toast('Solicitação apagada')
+    carregarSolicitacoes()
+  } catch(err) { toast(err.message,'error') }
+}
+
+async function apagarSolicitacoesSelecionadas() {
+  const checkboxes = document.querySelectorAll('.sol-checkbox:checked')
+  const ids = Array.from(checkboxes).map(cb => parseInt(cb.dataset.id))
+  if (ids.length === 0) { toast('Selecione ao menos uma solicitação','error'); return }
+  if (!confirm(`Tem certeza que deseja apagar ${ids.length} solicitação(ões)?`)) return
+
+  try {
+    await Promise.all(ids.map(id => api('/solicitacoes/admin/'+id, { method:'DELETE' })))
+    toast(`${ids.length} solicitação(ões) apagada(s)`)
+    document.getElementById('select-all-sol').checked = false
+    carregarSolicitacoes()
+  } catch(err) { toast(err.message,'error') }
+}
+
+// â”€â”€ Gerenciar Admins â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function loadAdmins() {
   try {
     const admins = await api('/admin/admins'); if (!admins) return
@@ -1549,7 +1900,7 @@ async function alterarMinhaSenha() {
   } catch(err) { toast(err.message,'error') }
 }
 
-// ── Init ──────────────────────────────────────────────────────────────────────
+// â”€â”€ Init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 if (TOKEN) { showApp() }
 </script>
 </body>

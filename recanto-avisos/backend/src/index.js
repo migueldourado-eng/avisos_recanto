@@ -81,6 +81,9 @@ app.use(rateLimit({
   legacyHeaders: false,
   message: { error: 'Muitas requisições. Tente novamente em 15 minutos.' },
   validate: { trustProxy: false }, // Desabilita validação estrita do trust proxy
+  // O painel admin já possui limitação própria nas rotas sensíveis.
+  // Sem esta exceção, a navegação normal do admin podia estourar o limite global.
+  skip: (req) => req.originalUrl.startsWith('/api/admin/'),
 }));
 
 app.use('/api/auth', authRoutes);

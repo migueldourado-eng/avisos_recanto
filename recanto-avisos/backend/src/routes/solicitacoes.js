@@ -1,6 +1,7 @@
 const express = require('express');
 const { autenticarResponsavel, autenticarAdmin } = require('../middleware/auth');
 const { getDb } = require('../database');
+const { enviarPush } = require('../services/fcm');
 
 const router = express.Router();
 
@@ -33,7 +34,12 @@ const MENSAGENS_PADRAO = {
 // ══════════════════════════════════════════════════════════════════════════════
 router.post('/enviar', autenticarResponsavel, (req, res) => {
   const { tipo, mensagem_adicional } = req.body;
-  const { responsavel_id, aluno_id } = req.responsavel;
+  const responsavel_id = req.responsavel?.responsavel_id || req.responsavel?.id;
+  const aluno_id = req.responsavel?.aluno_id;
+
+  if (!responsavel_id) {
+    return res.status(401).json({ erro: 'Token de responsável inválido' });
+  }
 
   if (!tipo || !TIPOS_SOLICITACAO[tipo.toUpperCase()]) {
     return res.status(400).json({ erro: 'Tipo de solicitação inválido' });
@@ -72,7 +78,7 @@ router.post('/enviar', autenticarResponsavel, (req, res) => {
 // LISTAR SOLICITAÇÕES (Responsável)
 // ══════════════════════════════════════════════════════════════════════════════
 router.get('/minhas', autenticarResponsavel, (req, res) => {
-  const { id: responsavel_id } = req.responsavel;
+  const { responsavel_id } = req.responsavel;
   const db = getDb();
 
   const solicitacoes = db.prepare(`
@@ -87,6 +93,26 @@ router.get('/minhas', autenticarResponsavel, (req, res) => {
   `).all(responsavel_id);
 
   res.json(solicitacoes);
+});
+
+// Apagar solicitação (Responsável)
+router.delete('/minhas/:id', autenticarResponsavel, (req, res) => {
+  const { id } = req.params;
+  const { responsavel_id } = req.responsavel;
+  const db = getDb();
+
+  const deleteStmt = db.prepare(`
+    DELETE FROM solicitacoes_pais
+    WHERE id = ? AND responsavel_id = ?
+  `);
+
+  const result = deleteStmt.run(id, responsavel_id);
+
+  if (result.changes === 0) {
+    return res.status(404).json({ erro: 'Solicitação não encontrada ou você não tem permissão para apagá-la' });
+  }
+
+  res.json({ sucesso: true, mensagem: 'Solicitação apagada' });
 });
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -152,7 +178,7 @@ router.post('/admin/:id/lida', autenticarAdmin, (req, res) => {
 });
 
 // Responder solicitação (Admin)
-router.post('/admin/:id/responder', autenticarAdmin, (req, res) => {
+router.post('/admin/:id/responder', autenticarAdmin, async (req, res) => {
   const { id } = req.params;
   const { resposta } = req.body;
 
@@ -162,6 +188,19 @@ router.post('/admin/:id/responder', autenticarAdmin, (req, res) => {
 
   const db = getDb();
 
+  // Buscar informações da solicitação antes de atualizar
+  const solicitacao = db.prepare(`
+    SELECT s.*, r.fcm_token, r.nome as responsavel_nome, a.nome as aluno_nome
+    FROM solicitacoes_pais s
+    LEFT JOIN responsaveis r ON s.responsavel_id = r.id
+    LEFT JOIN alunos a ON s.aluno_id = a.id
+    WHERE s.id = ?
+  `).get(id);
+
+  if (!solicitacao) {
+    return res.status(404).json({ erro: 'Solicitação não encontrada' });
+  }
+
   const update = db.prepare(`
     UPDATE solicitacoes_pais
     SET respondida = 1, resposta = ?, respondida_em = datetime('now'), lida = 1, lida_em = COALESCE(lida_em, datetime('now'))
@@ -170,7 +209,47 @@ router.post('/admin/:id/responder', autenticarAdmin, (req, res) => {
 
   update.run(resposta.trim(), id);
 
+  // Enviar notificação push para o responsável
+  if (solicitacao.fcm_token) {
+    try {
+      const titulo = 'Resposta da Escola';
+      const mensagem = `Sua solicitação foi respondida: ${resposta.trim().substring(0, 100)}${resposta.trim().length > 100 ? '...' : ''}`;
+
+      await enviarPush(
+        [solicitacao.fcm_token],
+        titulo,
+        mensagem,
+        false, // não é urgente
+        id // ID da solicitação
+      );
+
+      console.log(`✉️  Notificação de resposta enviada para ${solicitacao.responsavel_nome}`);
+    } catch (err) {
+      console.error('Erro ao enviar notificação de resposta:', err);
+      // Não falha a requisição se a notificação falhar
+    }
+  }
+
   res.json({ sucesso: true, mensagem: 'Resposta enviada' });
+});
+
+// Apagar solicitação (Admin)
+router.delete('/admin/:id', autenticarAdmin, (req, res) => {
+  const { id } = req.params;
+  const db = getDb();
+
+  const deleteStmt = db.prepare(`
+    DELETE FROM solicitacoes_pais
+    WHERE id = ?
+  `);
+
+  const result = deleteStmt.run(id);
+
+  if (result.changes === 0) {
+    return res.status(404).json({ erro: 'Solicitação não encontrada' });
+  }
+
+  res.json({ sucesso: true, mensagem: 'Solicitação apagada' });
 });
 
 module.exports = router;

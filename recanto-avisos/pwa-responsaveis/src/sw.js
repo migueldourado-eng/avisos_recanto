@@ -1,6 +1,23 @@
+// Service Worker v5.0 - Force update com timestamp cache busting
 import { precacheAndRoute, cleanupOutdatedCaches } from 'workbox-precaching'
 import { registerRoute } from 'workbox-routing'
 import { NetworkFirst, CacheFirst } from 'workbox-strategies'
+
+// Força ativação imediata do novo service worker
+self.addEventListener('install', () => {
+  self.skipWaiting()
+})
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(self.clients.claim())
+})
+
+// Responde a mensagem SKIP_WAITING do app
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting()
+  }
+})
 
 // Precache todos os assets gerados pelo Vite
 precacheAndRoute(self.__WB_MANIFEST)
@@ -8,7 +25,8 @@ cleanupOutdatedCaches()
 
 // /api/* → sempre tenta rede primeiro
 registerRoute(
-  ({ url }) => url.pathname.startsWith('/api/'),
+  // O admin usa a mesma origem; nao cachear /api/admin evita respostas HTML/404 indevidas no painel.
+  ({ url }) => url.pathname.startsWith('/api/') && !url.pathname.startsWith('/api/admin/'),
   new NetworkFirst({
     cacheName: 'api-cache',
     networkTimeoutSeconds: 10,

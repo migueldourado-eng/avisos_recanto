@@ -10,17 +10,23 @@ export default defineConfig({
       srcDir: 'src',
       filename: 'sw.js',
       registerType: 'autoUpdate',
+      workbox: {
+        cleanupOutdatedCaches: true,
+        skipWaiting: true,
+        clientsClaim: true,
+      },
       injectManifest: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        maximumFileSizeToCacheInBytes: 5000000,
       },
       manifest: {
-        name: 'Recanto Avisos',
-        short_name: 'Avisos',
-        description: 'Avisos da Escola Municipal Recanto das Margaridas',
-        theme_color: '#1e40af',
+        name: 'Recanto Avisos v5',
+        short_name: 'Recanto v5',
+        description: 'Avisos Escolares - Recanto das Margaridas',
+        theme_color: '#2d6197',
         background_color: '#ffffff',
         display: 'standalone',
-        start_url: '/',
+        start_url: '/?v=5',
         icons: [
           { src: '/icons/icon-72x72.png',   sizes: '72x72',   type: 'image/png' },
           { src: '/icons/icon-96x96.png',   sizes: '96x96',   type: 'image/png' },

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../api/axios';
 
 const CATEGORIAS = [
@@ -64,10 +64,13 @@ const CATEGORIAS = [
 ];
 
 export default function SolicitacoesModal({ onClose }) {
+  const [aba, setAba] = useState('nova'); // 'nova' | 'historico'
   const [etapa, setEtapa] = useState('lista'); // 'lista' | 'campo' | 'aviso'
   const [categoriaEscolhida, setCategoriaEscolhida] = useState(null);
   const [mensagemAdicional, setMensagemAdicional] = useState('');
   const [enviando, setEnviando] = useState(false);
+  const [minhasSolicitacoes, setMinhasSolicitacoes] = useState([]);
+  const [carregando, setCarregando] = useState(false);
 
   const handleEscolherCategoria = (categoria) => {
     setCategoriaEscolhida(categoria);
@@ -111,6 +114,52 @@ export default function SolicitacoesModal({ onClose }) {
     }
   };
 
+  const carregarSolicitacoes = async (silencioso = false) => {
+    if (!silencioso) {
+      setCarregando(true);
+    }
+    try {
+      const response = await api.get('/solicitacoes/minhas');
+      setMinhasSolicitacoes(response.data);
+    } catch (err) {
+      console.error('Erro ao carregar solicitações:', err);
+    } finally {
+      if (!silencioso) {
+        setCarregando(false);
+      }
+    }
+  };
+
+  const apagarSolicitacao = async (id) => {
+    if (!confirm('Tem certeza que deseja apagar esta solicitação?')) return;
+
+    try {
+      await api.delete(`/solicitacoes/minhas/${id}`);
+      setMinhasSolicitacoes(prev => prev.filter(s => s.id !== id));
+    } catch (err) {
+      console.error('Erro ao apagar solicitação:', err);
+      alert('Não foi possível apagar a solicitação. Tente novamente.');
+    }
+  };
+
+  const irParaRespostas = () => {
+    setAba('historico');
+  };
+
+  useEffect(() => {
+    if (aba === 'historico') {
+      carregarSolicitacoes(false);
+    }
+  }, [aba]);
+
+  useEffect(() => {
+    if (aba !== 'historico') return undefined;
+    const interval = setInterval(() => {
+      carregarSolicitacoes(true);
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [aba]);
+
   return (
     <div
       style={{
@@ -145,38 +194,77 @@ export default function SolicitacoesModal({ onClose }) {
           style={{
             background: 'linear-gradient(135deg, #1e558b 0%, #2d6197 100%)',
             color: 'white',
-            padding: '20px',
             borderRadius: '16px 16px 0 0',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
           }}
         >
-          <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 600 }}>
-            {etapa === 'lista' && 'Enviar solicitação'}
-            {etapa === 'aviso' && categoriaEscolhida?.titulo}
-            {etapa === 'campo' && categoriaEscolhida?.titulo}
-          </h2>
-          <button
-            onClick={onClose}
+          <div
             style={{
-              background: 'none',
-              border: 'none',
-              color: 'white',
-              fontSize: '28px',
-              cursor: 'pointer',
-              padding: 0,
-              lineHeight: 1,
+              padding: '20px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
             }}
           >
-            ×
-          </button>
+            <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 600 }}>
+              Falar com a Escola
+            </h2>
+            <button
+              onClick={onClose}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'white',
+                fontSize: '28px',
+                cursor: 'pointer',
+                padding: 0,
+                lineHeight: 1,
+              }}
+            >
+              ×
+            </button>
+          </div>
+
+          {/* Abas */}
+          <div style={{ display: 'flex', borderTop: '1px solid rgba(255,255,255,0.2)' }}>
+            <button
+              onClick={() => setAba('nova')}
+              style={{
+                flex: 1,
+                padding: '12px',
+                background: aba === 'nova' ? 'rgba(255,255,255,0.2)' : 'transparent',
+                border: 'none',
+                borderBottom: aba === 'nova' ? '3px solid white' : '3px solid transparent',
+                color: 'white',
+                fontSize: '14px',
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              Nova Solicitação
+            </button>
+            <button
+              onClick={() => setAba('historico')}
+              style={{
+                flex: 1,
+                padding: '12px',
+                background: aba === 'historico' ? 'rgba(255,255,255,0.2)' : 'transparent',
+                border: 'none',
+                borderBottom: aba === 'historico' ? '3px solid white' : '3px solid transparent',
+                color: 'white',
+                fontSize: '14px',
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              Respostas
+            </button>
+          </div>
         </div>
 
         {/* Conteúdo */}
         <div style={{ padding: '20px' }}>
-          {/* ETAPA: Lista de categorias */}
-          {etapa === 'lista' && (
+          {/* ABA: Nova Solicitação */}
+          {aba === 'nova' && etapa === 'lista' && (
             <div
               style={{
                 display: 'grid',
@@ -233,11 +321,29 @@ export default function SolicitacoesModal({ onClose }) {
                   )}
                 </button>
               ))}
+
+              <button
+                onClick={irParaRespostas}
+                style={{
+                  gridColumn: '1 / -1',
+                  marginTop: '4px',
+                  backgroundColor: '#eef4fb',
+                  color: '#1e558b',
+                  border: '2px solid #cfe2ff',
+                  borderRadius: '10px',
+                  padding: '12px',
+                  fontSize: '14px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                Ver Respostas da Escola
+              </button>
             </div>
           )}
 
-          {/* ETAPA: Aviso */}
-          {etapa === 'aviso' && (
+          {/* ABA: Nova Solicitação - Etapa Aviso */}
+          {aba === 'nova' && etapa === 'aviso' && (
             <div style={{ textAlign: 'center' }}>
               <div
                 style={{
@@ -274,8 +380,8 @@ export default function SolicitacoesModal({ onClose }) {
             </div>
           )}
 
-          {/* ETAPA: Campo de texto */}
-          {etapa === 'campo' && (
+          {/* ABA: Nova Solicitação - Etapa Campo */}
+          {aba === 'nova' && etapa === 'campo' && (
             <div>
               <label
                 style={{
@@ -348,8 +454,101 @@ export default function SolicitacoesModal({ onClose }) {
               </div>
             </div>
           )}
+
+          {/* ABA: Histórico */}
+          {aba === 'historico' && (
+            <div>
+              {carregando ? (
+                <div style={{ textAlign: 'center', padding: '40px', color: '#6c757d' }}>
+                  Carregando...
+                </div>
+              ) : minhasSolicitacoes.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '40px', color: '#6c757d' }}>
+                  <p style={{ fontSize: '48px', marginBottom: '16px' }}>📭</p>
+                  <p style={{ fontSize: '16px' }}>Nenhuma solicitação enviada ainda</p>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {minhasSolicitacoes.map((sol) => (
+                    <div
+                      key={sol.id}
+                      style={{
+                        backgroundColor: sol.respondida ? '#f0f9ff' : '#f8f9fa',
+                        border: `2px solid ${sol.respondida ? '#2d6197' : '#e9ecef'}`,
+                        borderRadius: '12px',
+                        padding: '16px',
+                      }}
+                    >
+                      {/* Cabeçalho da solicitação */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                            {sol.urgente === 1 && (
+                              <span style={{ fontSize: '16px' }}>🚨</span>
+                            )}
+                            <span style={{ fontSize: '12px', fontWeight: 700, color: sol.respondida ? '#2d6197' : '#6c757d', textTransform: 'uppercase' }}>
+                              {sol.respondida ? '✓ Respondida' : 'Aguardando'}
+                            </span>
+                          </div>
+                          <p style={{ fontSize: '11px', color: '#6c757d', margin: 0 }}>
+                            {new Date(sol.criada_em).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => apagarSolicitacao(sol.id)}
+                          style={{
+                            backgroundColor: '#fff3f2',
+                            border: '1px solid #f5c2c7',
+                            color: '#dc3545',
+                            cursor: 'pointer',
+                            padding: '6px 10px',
+                            borderRadius: '8px',
+                            fontSize: '12px',
+                            fontWeight: 700,
+                          }}
+                          title="Apagar solicitação"
+                        >
+                          Apagar
+                        </button>
+                      </div>
+
+                      {/* Mensagem enviada */}
+                      <div style={{ marginBottom: sol.respondida ? '12px' : '0' }}>
+                        <p style={{ fontSize: '14px', color: '#495057', lineHeight: 1.5, margin: 0, whiteSpace: 'pre-wrap' }}>
+                          {sol.mensagem}
+                        </p>
+                      </div>
+
+                      {/* Resposta (se houver) */}
+                      {sol.respondida && sol.resposta && (
+                        <div style={{
+                          marginTop: '12px',
+                          paddingTop: '12px',
+                          borderTop: '1px solid #cfe2ff',
+                        }}>
+                          <p style={{ fontSize: '12px', fontWeight: 700, color: '#2d6197', marginBottom: '8px' }}>
+                            📢 Resposta da Escola:
+                          </p>
+                          <p style={{ fontSize: '14px', color: '#495057', lineHeight: 1.5, margin: 0, whiteSpace: 'pre-wrap' }}>
+                            {sol.resposta}
+                          </p>
+                          {sol.respondida_em && (
+                            <p style={{ fontSize: '11px', color: '#6c757d', marginTop: '8px', margin: 0 }}>
+                              {new Date(sol.respondida_em).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 }
+
+

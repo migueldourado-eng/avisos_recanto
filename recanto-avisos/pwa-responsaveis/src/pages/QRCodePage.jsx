@@ -1,10 +1,15 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Html5QrcodeScanner } from 'html5-qrcode'
 
 export default function QRCodePage() {
   const navigate = useNavigate()
   const [manualCode, setManualCode] = useState('')
   const [showManual, setShowManual] = useState(false)
+  const [scanning, setScanning] = useState(false)
+  const [error, setError] = useState('')
+  const scannerRef = useRef(null)
+  const qrScannerRef = useRef(null)
 
   useEffect(() => {
     // Verifica se chegou via QR Code (parâmetro ?turma=XXX na URL)
@@ -14,6 +19,64 @@ export default function QRCodePage() {
     if (qrToken) {
       // QR Code detectado! Redireciona para login com o token
       navigate(`/login?turma=${qrToken}`)
+      return
+    }
+
+    // Inicializa o scanner quando o componente monta
+    if (!qrScannerRef.current && scannerRef.current) {
+      try {
+        const scanner = new Html5QrcodeScanner(
+          "qr-reader",
+          {
+            fps: 10,
+            qrbox: { width: 250, height: 250 },
+            aspectRatio: 1.0,
+            rememberLastUsedCamera: true,
+            showTorchButtonIfSupported: true
+          },
+          false
+        )
+
+        scanner.render(
+          (decodedText) => {
+            // Sucesso ao escanear
+            scanner.clear()
+
+            // Extrair o token do QR Code
+            // Pode ser uma URL completa ou apenas o token
+            let token = decodedText
+            try {
+              const url = new URL(decodedText)
+              const paramToken = url.searchParams.get('turma')
+              if (paramToken) token = paramToken
+            } catch {
+              // Não é URL, usa o texto direto
+            }
+
+            navigate(`/login?turma=${token}`)
+          },
+          (errorMessage) => {
+            // Erro de scanning (normal, acontece toda frame)
+            // Não precisa fazer nada aqui
+          }
+        )
+
+        qrScannerRef.current = scanner
+        setScanning(true)
+        setError('')
+      } catch (err) {
+        console.error('Erro ao iniciar scanner:', err)
+        setError('Não foi possível acessar a câmera. Verifique as permissões.')
+        setScanning(false)
+      }
+    }
+
+    return () => {
+      // Cleanup: para o scanner quando o componente desmonta
+      if (qrScannerRef.current) {
+        qrScannerRef.current.clear().catch(console.error)
+        qrScannerRef.current = null
+      }
     }
   }, [navigate])
 
@@ -53,89 +116,52 @@ export default function QRCodePage() {
           Escanear QR Code
         </h1>
         <p style={{ fontSize: '0.875rem', color: '#596065', fontWeight: 500 }}>
-          Aponte a câmera para o QR Code fornecido pela escola
+          {scanning ? 'Posicione o QR Code na área de leitura' : 'Aponte a câmera para o QR Code fornecido pela escola'}
         </p>
       </div>
 
-      {/* Card de instruções */}
+      {/* Scanner de QR Code */}
       <div style={{
         background: 'white',
         borderRadius: '2rem',
-        padding: '2rem',
+        padding: '1.5rem',
         boxShadow: '0 12px 40px rgba(44, 51, 56, 0.08)',
         border: '1px solid #e3e9ee',
-        marginBottom: '2rem',
-        textAlign: 'center'
+        marginBottom: '2rem'
       }}>
+        <div
+          id="qr-reader"
+          ref={scannerRef}
+          style={{ width: '100%' }}
+        />
 
-        {/* Ícone grande */}
-        <div style={{
-          width: '8rem',
-          height: '8rem',
-          borderRadius: '2rem',
-          background: 'linear-gradient(135deg, #2d6197, #92c1fe)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          margin: '0 auto 1.5rem',
-          boxShadow: '0 12px 40px rgba(45, 97, 151, 0.25)'
-        }}>
-          <span
-            className="material-symbols-outlined"
-            style={{
-              fontSize: '4rem',
-              color: 'white',
-              fontVariationSettings: "'FILL' 1, 'wght' 300"
-            }}
-          >
-            qr_code_scanner
-          </span>
-        </div>
-
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#2c3338', marginBottom: '1rem' }}>
-          Como obter o QR Code?
-        </h2>
-
-        {/* Lista de passos */}
-        <div style={{ textAlign: 'left', marginTop: '1.5rem' }}>
-          {[
-            { icon: 'school', text: 'Vá até a secretaria da escola' },
-            { icon: 'assignment', text: 'Solicite o QR Code da turma do seu filho(a)' },
-            { icon: 'qr_code', text: 'Escaneie o QR Code com este aplicativo' },
-            { icon: 'check_circle', text: 'Pronto! Você receberá os avisos' }
-          ].map((step, index) => (
-            <div
-              key={index}
+        {error && (
+          <div style={{
+            marginTop: '1rem',
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: '0.75rem',
+            padding: '1rem',
+            background: '#fff2f2',
+            borderRadius: '1rem',
+            border: '1px solid rgba(220, 38, 38, 0.3)'
+          }}>
+            <span
+              className="material-symbols-outlined"
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '1rem',
-                padding: '1rem',
-                background: index % 2 === 0 ? '#f7f9fc' : 'transparent',
-                borderRadius: '1rem',
-                marginBottom: '0.5rem'
+                color: '#dc2626',
+                fontSize: '1.25rem',
+                flexShrink: 0,
+                fontVariationSettings: "'FILL' 1"
               }}
             >
-              <div style={{
-                width: '2.5rem',
-                height: '2.5rem',
-                borderRadius: '0.75rem',
-                background: 'linear-gradient(135deg, #2d6197, #92c1fe)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0
-              }}>
-                <span className="material-symbols-outlined" style={{ color: 'white', fontSize: '1.25rem', fontVariationSettings: "'FILL' 1" }}>
-                  {step.icon}
-                </span>
-              </div>
-              <p style={{ fontSize: '0.875rem', fontWeight: 600, color: '#2c3338', flex: 1 }}>
-                {step.text}
-              </p>
-            </div>
-          ))}
-        </div>
+              error
+            </span>
+            <p style={{ fontSize: '0.875rem', fontWeight: 600, color: '#dc2626', lineHeight: 1.4, flex: 1 }}>
+              {error}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Opção manual */}
@@ -143,7 +169,8 @@ export default function QRCodePage() {
         background: 'white',
         borderRadius: '2rem',
         padding: '1.5rem',
-        border: '1px solid #e3e9ee'
+        border: '1px solid #e3e9ee',
+        marginBottom: '2rem'
       }}>
         <button
           onClick={() => setShowManual(!showManual)}
@@ -227,20 +254,24 @@ export default function QRCodePage() {
 
       {/* Info adicional */}
       <div style={{
-        marginTop: '2rem',
         padding: '1rem',
-        background: '#fff3f0',
+        background: '#f0f7ff',
         borderRadius: '1rem',
-        border: '1px solid rgba(255, 152, 0, 0.2)',
+        border: '1px solid rgba(45, 97, 151, 0.2)',
         display: 'flex',
         gap: '0.75rem'
       }}>
-        <span className="material-symbols-outlined" style={{ color: '#ff9800', fontSize: '1.25rem', flexShrink: 0 }}>
+        <span className="material-symbols-outlined" style={{ color: '#2d6197', fontSize: '1.25rem', flexShrink: 0 }}>
           info
         </span>
-        <p style={{ fontSize: '0.75rem', color: '#596065', fontWeight: 600, lineHeight: 1.5 }}>
-          <strong>Atenção:</strong> Cada turma possui um QR Code único. Certifique-se de escanear o código correto da turma do seu filho(a).
-        </p>
+        <div style={{ flex: 1 }}>
+          <p style={{ fontSize: '0.75rem', color: '#596065', fontWeight: 600, lineHeight: 1.5, marginBottom: '0.5rem' }}>
+            <strong>Não tem o QR Code?</strong>
+          </p>
+          <p style={{ fontSize: '0.75rem', color: '#596065', fontWeight: 500, lineHeight: 1.5 }}>
+            Solicite o QR Code da turma do seu filho(a) na secretaria da escola
+          </p>
+        </div>
       </div>
 
     </div>

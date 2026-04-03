@@ -64,6 +64,21 @@ Sistema de comunicação escolar da **Escola Recanto das Margaridas**. Permite q
 - [x] SSL/HTTPS configurado com Let's Encrypt
 - [x] Sistema testado e funcionando
 
+### Atualizações recentes
+
+**Data:** 02/04/2026
+
+- Restauração da lógica de templates no painel admin para o fluxo de envio de avisos
+- Correção do acesso aos templates via rota `/api/admin/templates?agrupado=1`
+- Rebuild e redistribuição da PWA dos responsáveis com as melhorias do app dos pais
+- Ajuste do fluxo de solicitações dos pais, incluindo abas “Nova Solicitação” e “Minhas Solicitações”
+- Histórico de respostas da escola disponível no app dos pais
+- Botão de exclusão de solicitações/mensagens no app dos pais
+- Correção do envio de resposta da escola para os responsáveis via FCM
+- Remoção do loop de atualização do Service Worker que causava piscadas na interface
+- Proteção contra tradução automática do navegador no app dos pais
+- Ajuste do rate limit global do backend para não bloquear rotas administrativas como `/api/admin/turmas`
+
 ### Como Acessar o Servidor
 
 No PowerShell ou terminal:
@@ -448,6 +463,7 @@ cat /var/log/recanto/error.log # logs de erro
 - Senhas armazenadas com **bcrypt** (12 rounds)
 - Autenticação via **JWT** (8h para admins, 30 dias para responsáveis)
 - Rate limiting: 10 tentativas de login/hora, 10 avisos/minuto, 100 req/15min globais
+- Rotas `/api/admin/*` ficam fora do rate limit global para evitar bloqueio do painel administrativo
 - Content Security Policy via Helmet:
   - Rotas `/admin*`: CSP relaxado (permite CDNs: Tailwind, FontAwesome, Google Fonts; inline scripts)
   - Demais rotas: CSP estrito
@@ -476,6 +492,9 @@ cat /var/log/recanto/error.log # logs de erro
 
 ### Aluno adicionado manualmente — QR Code funciona?
 Sim. Após adicionar o aluno com o responsável vinculado, o responsável escaneia o QR Code da turma e digita o nome do aluno. O sistema encontra o aluno e vincula o responsável existente ao acesso via app.
+
+### QR Code do admin mostra 429
+Se a tela de `Turmas & QR Codes` exibir `429 Too Many Requests`, verifique se o backend publicado inclui a exceção para `/api/admin/*` no rate limit global. A rota `GET /api/admin/turmas` precisa responder normalmente para carregar a tela e gerar os QR Codes.
 
 ### Backup do banco de dados
 ```bash

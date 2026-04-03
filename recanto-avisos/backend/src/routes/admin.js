@@ -11,6 +11,15 @@ const { enviarPush } = require('../services/fcm');
 const { TEMPLATES, templatesPorCategoria } = require('../data/templates');
 
 const router = express.Router();
+const COMPORTAMENTOS_VIDA_ESCOLAR = new Set([
+  'nao_avaliado',
+  'muito_positivo',
+  'adequado',
+  'dificuldades_com_apoio',
+  'muitas_dificuldades',
+  'preocupante',
+]);
+
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
@@ -52,6 +61,13 @@ function normalizarTexto(str) {
 
 function normalizarNome(str) {
   return normalizarTexto(str).toUpperCase();
+}
+
+function parseNaoNegativo(v) {
+  if (v === undefined || v === null || v === '') return null;
+  const n = Number(v);
+  if (!Number.isInteger(n) || n < 0) return null;
+  return n;
 }
 
 // Regex para detectar o ponto de corte no Middle Name:
@@ -324,6 +340,7 @@ router.get('/responsaveis', (req, res) => {
       r.id, r.nome, r.telefone, r.ultimo_acesso, r.criado_em,
       r.fcm_token IS NOT NULL AS tem_app,
       a.nome   AS aluno_nome,
+      t.id     AS turma_id,
       t.nome   AS turma_nome,
       t.codigo AS turma_codigo
     FROM responsaveis r
@@ -333,6 +350,170 @@ router.get('/responsaveis', (req, res) => {
   `).all();
 
   res.json(responsaveis);
+});
+
+// â”€â”€â”€ GET /api/admin/vida-escolar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+router.get('/vida-escolar', (req, res) => {
+  const db = getDb();
+  const { turma_id } = req.query;
+
+  let sql = `
+    SELECT
+      a.id AS aluno_id,
+      a.nome AS aluno_nome,
+      a.turma_id,
+      t.nome AS turma_nome,
+      t.codigo AS turma_codigo,
+      COALESCE(v.faltas_mes, 0) AS faltas_mes,
+      COALESCE(v.faltas_total, 0) AS faltas_total,
+      COALESCE(v.comportamento, 'nao_avaliado') AS comportamento,
+      COALESCE(v.observacoes, '') AS observacoes,
+      v.atualizado_em
+    FROM alunos a
+    LEFT JOIN turmas t ON t.id = a.turma_id
+    LEFT JOIN aluno_vida_escolar v ON v.aluno_id = a.id
+    WHERE a.ativo = 1
+  `;
+  const params = [];
+  if (turma_id) {
+    sql += ' AND a.turma_id = ?';
+    params.push(Number(turma_id));
+  }
+  sql += ' ORDER BY t.nome, a.nome';
+
+  res.json(db.prepare(sql).all(...params));
+});
+
+// â”€â”€â”€ PUT /api/admin/vida-escolar/aluno/:aluno_id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+router.put('/vida-escolar/aluno/:aluno_id', (req, res) => {
+  const alunoId = Number(req.params.aluno_id);
+  if (!Number.isInteger(alunoId) || alunoId <= 0) {
+    return res.status(400).json({ error: 'aluno_id invÃ¡lido.' });
+  }
+
+  const db = getDb();
+  const aluno = db.prepare('SELECT id FROM alunos WHERE id = ?').get(alunoId);
+  if (!aluno) return res.status(404).json({ error: 'Aluno nÃ£o encontrado.' });
+
+  const faltas_mes = parseNaoNegativo(req.body?.faltas_mes);
+  const faltas_total = parseNaoNegativo(req.body?.faltas_total);
+  const observacoes = typeof req.body?.observacoes === 'string' ? req.body.observacoes.trim() : '';
+  const comportamento = typeof req.body?.comportamento === 'string'
+    ? req.body.comportamento
+    : 'nao_avaliado';
+
+  if (faltas_mes === null || faltas_total === null) {
+    return res.status(400).json({ error: 'faltas_mes e faltas_total devem ser inteiros >= 0.' });
+  }
+  if (!COMPORTAMENTOS_VIDA_ESCOLAR.has(comportamento)) {
+    return res.status(400).json({ error: 'comportamento invÃ¡lido.' });
+  }
+
+  db.prepare(`
+    INSERT INTO aluno_vida_escolar (
+      aluno_id, faltas_mes, faltas_total, comportamento, observacoes, atualizado_por_admin_id, atualizado_em
+    ) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+    ON CONFLICT(aluno_id) DO UPDATE SET
+      faltas_mes = excluded.faltas_mes,
+      faltas_total = excluded.faltas_total,
+      comportamento = excluded.comportamento,
+      observacoes = excluded.observacoes,
+      atualizado_por_admin_id = excluded.atualizado_por_admin_id,
+      atualizado_em = CURRENT_TIMESTAMP
+  `).run(alunoId, faltas_mes, faltas_total, comportamento, observacoes || null, req.admin.id);
+
+  res.json({ ok: true });
+});
+
+// â”€â”€â”€ POST /api/admin/vida-escolar/turma/:turma_id/comportamento â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+router.post('/vida-escolar/turma/:turma_id/comportamento', (req, res) => {
+  const turmaId = Number(req.params.turma_id);
+  if (!Number.isInteger(turmaId) || turmaId <= 0) {
+    return res.status(400).json({ error: 'turma_id invÃ¡lido.' });
+  }
+
+  const comportamento = typeof req.body?.comportamento === 'string'
+    ? req.body.comportamento
+    : '';
+  if (!COMPORTAMENTOS_VIDA_ESCOLAR.has(comportamento)) {
+    return res.status(400).json({ error: 'comportamento invÃ¡lido.' });
+  }
+
+  const db = getDb();
+  const alunos = db.prepare('SELECT id FROM alunos WHERE turma_id = ? AND ativo = 1').all(turmaId);
+  if (alunos.length === 0) {
+    return res.json({ ok: true, atualizados: 0 });
+  }
+
+  const upsert = db.prepare(`
+    INSERT INTO aluno_vida_escolar (
+      aluno_id, comportamento, atualizado_por_admin_id, atualizado_em
+    ) VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+    ON CONFLICT(aluno_id) DO UPDATE SET
+      comportamento = excluded.comportamento,
+      atualizado_por_admin_id = excluded.atualizado_por_admin_id,
+      atualizado_em = CURRENT_TIMESTAMP
+  `);
+
+  db.transaction(() => {
+    for (const a of alunos) upsert.run(a.id, comportamento, req.admin.id);
+  })();
+
+  res.json({ ok: true, atualizados: alunos.length });
+});
+
+// ─── POST /api/admin/responsaveis/desvincular-notificacoes ───────────────────
+router.post('/responsaveis/desvincular-notificacoes', (req, res) => {
+  const { tipo, responsavel_id, responsavel_ids, turma_id } = req.body || {};
+  const db = getDb();
+
+  let ids = [];
+
+  if (tipo === 'responsavel') {
+    if (!Number.isInteger(Number(responsavel_id))) {
+      return res.status(400).json({ error: 'responsavel_id inválido.' });
+    }
+    ids = [Number(responsavel_id)];
+  } else if (tipo === 'responsaveis') {
+    if (!Array.isArray(responsavel_ids) || responsavel_ids.length === 0) {
+      return res.status(400).json({ error: 'responsavel_ids é obrigatório.' });
+    }
+    ids = responsavel_ids
+      .map(id => Number(id))
+      .filter(id => Number.isInteger(id));
+    if (ids.length === 0) {
+      return res.status(400).json({ error: 'responsavel_ids inválido.' });
+    }
+  } else if (tipo === 'turma') {
+    if (!Number.isInteger(Number(turma_id))) {
+      return res.status(400).json({ error: 'turma_id inválido.' });
+    }
+    ids = db.prepare(`
+      SELECT r.id
+      FROM responsaveis r
+      JOIN alunos a ON a.id = r.aluno_id
+      WHERE a.turma_id = ?
+    `).all(Number(turma_id)).map(r => r.id);
+  } else {
+    return res.status(400).json({ error: 'tipo inválido. Use: responsavel, responsaveis ou turma.' });
+  }
+
+  if (ids.length === 0) {
+    return res.json({ ok: true, total_alvo: 0, desvinculados: 0 });
+  }
+
+  const placeholders = ids.map(() => '?').join(',');
+  const result = db.prepare(`
+    UPDATE responsaveis
+    SET fcm_token = NULL
+    WHERE id IN (${placeholders}) AND fcm_token IS NOT NULL
+  `).run(...ids);
+
+  res.json({
+    ok: true,
+    total_alvo: ids.length,
+    desvinculados: result.changes || 0,
+  });
 });
 
 // ─── POST /api/admin/avisos ───────────────────────────────────────────────────
