@@ -1,7 +1,7 @@
 # Relatorio de Correcoes
 
 **Projeto:** Recanto Avisos  
-**Data:** 02/04/2026
+**Data:** 03/04/2026
 
 Este documento resume os problemas corrigidos recentemente, a causa raiz de cada um e os cuidados adotados para reduzir a chance de regressao.
 
@@ -14,6 +14,7 @@ Este documento resume os problemas corrigidos recentemente, a causa raiz de cada
 | Push de respostas | 1.1.0 | Corrigido e publicado |
 | Solicitacoes no admin | 1.1.0 | Corrigido e publicado |
 | QR Code com 429 | 1.1.0 | Corrigido e publicado |
+| Onboarding da PWA | 1.2.0 | Corrigido e publicado |
 
 ---
 
@@ -79,7 +80,7 @@ Este documento resume os problemas corrigidos recentemente, a causa raiz de cada
 
 ---
 
-## 4. Solicitudes dos pais nao apareciam no admin
+## 4. Solicitacoes dos pais nao apareciam no admin
 
 ### Problema corrigido
 - Solicitacoes enviadas pelo app dos pais estavam chegando ao backend, mas podiam nao aparecer na tela do admin em alguns filtros.
@@ -134,6 +135,35 @@ Este documento resume os problemas corrigidos recentemente, a causa raiz de cada
 - Manter separacao clara entre telas novas e funcoes ja existentes.
 - Fazer validacao de fluxo antes e depois de cada deploy.
 - Revisar cache da PWA e comportamento do Service Worker em cada publicacao.
+
+---
+
+## 7. Onboarding da PWA reorganizado
+
+### Problema corrigido
+- O fluxo de entrada do app estava pouco claro para o responsavel.
+- O pedido para instalar o atalho aparecia cedo demais, antes do aceite e antes da permissao de notificacoes.
+- Faltava uma explicacao objetiva sobre o que o app faz e o que ele nao acessa no celular.
+
+### Causa raiz
+- O onboarding estava distribuido entre telas diferentes.
+- O banner de instalacao ficava na home e no login, sem contexto suficiente.
+- O aceite de privacidade existia, mas sem uma explicacao mais pratica do uso do aplicativo.
+
+### Correcao aplicada
+- Mantido o fluxo de login com `QR Code da turma + nome do aluno`.
+- Criada uma landing de entrada centrada no QR Code.
+- Criada uma tela de login dedicada para confirmar o nome do aluno depois da leitura do QR.
+- Criado onboarding em 3 etapas apos o login:
+  - explicacao de privacidade e uso do app;
+  - pedido de notificacoes;
+  - pedido de atalho na tela inicial.
+- Removido o pedido de instalacao da home e do login.
+
+### Como evitar a repeticao
+- Concentrar onboarding em uma unica etapa controlada do fluxo.
+- Nao pedir instalacao ou permissao antes de o usuario entender o objetivo do app.
+- Revisar sempre a ordem de: identificacao, explicacao, aceite, notificacoes e instalacao.
 
 ---
 
