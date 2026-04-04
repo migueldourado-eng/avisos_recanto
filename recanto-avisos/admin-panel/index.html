@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
@@ -45,7 +45,7 @@
 </head>
 <body style="background:#f7f9fc; color:#2c3338; min-height:100vh; -webkit-font-smoothing:antialiased;">
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• LOGIN â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<!-- LOGIN -->
 <div id="login-screen" style="min-height:100vh; display:flex; align-items:center; justify-content:center; padding:1rem;">
   <div style="width:100%; max-width:420px;">
     <div style="text-align:center; margin-bottom:2rem;">
@@ -64,7 +64,7 @@
         </div>
         <div style="margin-bottom:1.5rem;">
           <label class="field-label">Senha</label>
-          <input id="login-senha" class="field-input" type="password" required placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" />
+          <input id="login-senha" class="field-input" type="password" required placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;" />
         </div>
         <div id="login-erro" style="display:none; margin-bottom:1rem; padding:0.875rem 1rem; background:#fff2f2; border-radius:1rem; border:1.5px solid rgba(168,56,54,0.25); font-size:0.875rem; font-weight:600; color:#a83836;">
           <span id="login-erro-msg"></span>
@@ -77,7 +77,7 @@
   </div>
 </div>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• APP â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<!-- APP -->
 <div id="app" style="display:none; height:100vh; overflow:hidden; flex-direction:row;">
 
   <!-- SIDEBAR -->
@@ -129,7 +129,7 @@
 
     <main style="flex:1; overflow-y:auto; padding:2rem;">
 
-      <!-- â”€â”€ DASHBOARD â”€â”€ -->
+      <!-- DASHBOARD -->
       <section id="page-dashboard" style="display:none;">
         <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:1.5rem;">
           <div class="card" style="display:flex; flex-direction:column; gap:0.75rem;">
@@ -137,7 +137,7 @@
               <span class="material-symbols-outlined" style="color:#2d6197; font-variation-settings:'FILL' 1;">groups</span>
               <span class="badge badge-blue">Total</span>
             </div>
-            <div><p id="stat-alunos" style="font-size:2.5rem; font-weight:800; color:#2c3338; margin:0;">â€”</p>
+            <div><p id="stat-alunos" style="font-size:2.5rem; font-weight:800; color:#2c3338; margin:0;">&mdash;</p>
             <p style="font-size:0.75rem; font-weight:600; color:#596065; margin:0.25rem 0 0;">Alunos cadastrados</p></div>
           </div>
           <div class="card" style="display:flex; flex-direction:column; gap:0.75rem;">
@@ -145,7 +145,7 @@
               <span class="material-symbols-outlined" style="color:#49636f; font-variation-settings:'FILL' 1;">contacts</span>
               <span class="badge badge-gray">Total</span>
             </div>
-            <div><p id="stat-responsaveis" style="font-size:2.5rem; font-weight:800; color:#2c3338; margin:0;">â€”</p>
+            <div><p id="stat-responsaveis" style="font-size:2.5rem; font-weight:800; color:#2c3338; margin:0;">&mdash;</p>
             <p style="font-size:0.75rem; font-weight:600; color:#596065; margin:0.25rem 0 0;">Responsáveis</p></div>
           </div>
           <div class="card" style="display:flex; flex-direction:column; gap:0.75rem;">
@@ -153,7 +153,7 @@
               <span class="material-symbols-outlined" style="color:#2e7d52; font-variation-settings:'FILL' 1;">phone_iphone</span>
               <span class="badge badge-green">App</span>
             </div>
-            <div><p id="stat-com-app" style="font-size:2.5rem; font-weight:800; color:#2c3338; margin:0;">â€”</p>
+            <div><p id="stat-com-app" style="font-size:2.5rem; font-weight:800; color:#2c3338; margin:0;">&mdash;</p>
             <p style="font-size:0.75rem; font-weight:600; color:#596065; margin:0.25rem 0 0;">Com app instalado</p></div>
           </div>
           <div class="card" style="display:flex; flex-direction:column; gap:0.75rem;">
@@ -161,7 +161,7 @@
               <span class="material-symbols-outlined" style="color:#a83836; font-variation-settings:'FILL' 1;">notifications_active</span>
               <span class="badge badge-red">Hoje</span>
             </div>
-            <div><p id="stat-avisos-hoje" style="font-size:2.5rem; font-weight:800; color:#2c3338; margin:0;">â€”</p>
+            <div><p id="stat-avisos-hoje" style="font-size:2.5rem; font-weight:800; color:#2c3338; margin:0;">&mdash;</p>
             <p style="font-size:0.75rem; font-weight:600; color:#596065; margin:0.25rem 0 0;">Avisos enviados hoje</p></div>
           </div>
         </div>
@@ -178,7 +178,7 @@
         </div>
       </section>
 
-      <!-- â”€â”€ ENVIAR AVISO â”€â”€ -->
+      <!-- ENVIAR AVISO -->
       <section id="page-avisos" style="display:none; max-width:640px;">
 
         <!-- Indicador de etapas -->
@@ -199,7 +199,7 @@
           </div>
         </div>
 
-        <!-- â”€â”€ ETAPA 1: Destinatários â”€â”€ -->
+        <!-- ETAPA 1: Destinatários -->
         <div id="aviso-step1" class="card" style="margin-bottom:1.25rem;">
           <p style="font-size:0.875rem; font-weight:700; color:#2c3338; margin:0 0 1rem;">Para quem é este aviso?</p>
           <div style="display:flex; flex-direction:column; gap:0.625rem;">
@@ -241,7 +241,7 @@
           </button>
         </div>
 
-        <!-- â”€â”€ ETAPA 2: Templates â”€â”€ -->
+        <!-- ETAPA 2: Templates -->
         <div id="aviso-step2" style="display:none;">
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.75rem;">
             <button type="button" onclick="voltarEtapa1()" style="font-size:0.75rem; font-weight:700; color:#596065; background:none; border:none; cursor:pointer; display:flex; align-items:center; gap:0.25rem;">
@@ -292,7 +292,7 @@
           </div>
         </div>
 
-        <!-- â”€â”€ ETAPA 3: Revisar e enviar â”€â”€ -->
+        <!-- ETAPA 3: Revisar e enviar -->
         <form id="form-aviso" onsubmit="enviarAviso(event)" style="display:none;">
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.75rem;">
             <button type="button" onclick="voltarEtapa2()" style="font-size:0.75rem; font-weight:700; color:#596065; background:none; border:none; cursor:pointer; display:flex; align-items:center; gap:0.25rem;">
@@ -311,7 +311,7 @@
 
           <div style="margin-bottom:1.25rem;">
             <label class="field-label">Título do aviso</label>
-            <input id="aviso-titulo" class="field-input" type="text" required placeholder="Ex: Reunião de pais â€” Sexta-feira" />
+            <input id="aviso-titulo" class="field-input" type="text" required placeholder="Ex: Reunião de pais &mdash; Sexta-feira" />
           </div>
 
           <div style="margin-bottom:1.25rem;">
@@ -339,7 +339,7 @@
         </form>
       </section>
 
-      <!-- â”€â”€ IMPORTAR CSV â”€â”€ -->
+      <!-- IMPORTAR CSV -->
       <section id="page-importar" style="display:none; max-width:640px;">
         <div class="card" style="margin-bottom:1.25rem;">
           <p style="font-size:0.875rem; font-weight:700; color:#2c3338; margin:0 0 0.5rem;">Importar planilha do Google Contatos</p>
@@ -361,12 +361,12 @@
         <div id="csv-resultado"></div>
       </section>
 
-      <!-- â”€â”€ TURMAS â”€â”€ -->
+      <!-- TURMAS -->
       <section id="page-turmas" style="display:none;">
         <div id="turmas-grid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:1rem;"></div>
       </section>
 
-      <!-- â”€â”€ ALUNOS â”€â”€ -->
+      <!-- ALUNOS -->
       <section id="page-alunos" style="display:none;">
         <div style="display:flex; gap:0.75rem; margin-bottom:1rem; flex-wrap:wrap;">
           <input id="busca-aluno" class="field-input" type="text" placeholder="Buscar por nome..." oninput="loadAlunos()" style="flex:1; min-width:180px;" />
@@ -417,8 +417,8 @@
                 <tr>
                   <th>Aluno</th>
                   <th>Turma</th>
-                  <th style="width:120px;">Faltas Mês</th>
-                  <th style="width:120px;">Faltas Total</th>
+                  <th style="width:140px;">Lançar faltas</th>
+                  <th style="width:140px;">Total de faltas</th>
                   <th style="min-width:320px;">Comportamento</th>
                   <th style="min-width:240px;">Observações</th>
                   <th style="text-align:center;">Ações</th>
@@ -432,7 +432,7 @@
         </div>
       </section>
 
-      <!-- â”€â”€ RESPONSÁVEIS â”€â”€ -->
+      <!-- RESPONSÁVEIS -->
       <section id="page-responsaveis" style="display:none;">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;gap:0.75rem;flex-wrap:wrap;">
     <p style="font-size:0.875rem;color:#596065;margin:0;">Desvincule notificações por responsável, selecionados ou turma inteira.</p>
@@ -461,7 +461,7 @@
   </div>
 </section>
 
-      <!-- â”€â”€ HISTÃ“RICO â”€â”€ -->
+      <!-- HISTÓRICO -->
       <section id="page-historico" style="display:none;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;gap:0.75rem;flex-wrap:wrap;">
           <p style="font-size:0.875rem;color:#596065;margin:0;">Clique em um aviso para ver os destinatários.</p>
@@ -484,7 +484,7 @@
         </div>
       </section>
 
-      <!-- â”€â”€ SOLICITAÃ‡Ã•ES DOS PAIS â”€â”€ -->
+      <!-- SOLICITAÇÕES DOS PAIS -->
       <section id="page-solicitacoes" style="display:none;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;gap:0.75rem;flex-wrap:wrap;">
           <p style="font-size:0.875rem;color:#596065;margin:0;">Solicitações enviadas pelos pais através do app.</p>
@@ -511,7 +511,7 @@
         </div>
       </section>
 
-      <!-- â”€â”€ GERENCIAR ADMINS (apenas master) â”€â”€ -->
+      <!-- GERENCIAR ADMINS (apenas master) -->
       <section id="page-admins" style="display:none; max-width:640px;">
         <div class="card" style="margin-bottom:1.25rem;">
           <p style="font-size:0.875rem;font-weight:700;color:#2c3338;margin:0 0 1rem;">Usuários do painel administrativo</p>
@@ -534,16 +534,16 @@
   </div>
 </div>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• MODAL â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<!-- MODAL -->
 <div id="modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); backdrop-filter:blur(4px); align-items:center; justify-content:center; z-index:50; padding:1rem;">
   <div id="modal-content" style="background:white; border-radius:2rem; padding:1.75rem; width:100%; max-width:480px; max-height:90vh; overflow-y:auto; box-shadow:0 24px 60px rgba(0,0,0,0.18);"></div>
 </div>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• TOAST â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<!-- TOAST -->
 <div id="toast" style="display:none; position:fixed; bottom:1.5rem; right:1.5rem; padding:0.875rem 1.25rem; border-radius:1rem; box-shadow:0 8px 24px rgba(0,0,0,0.18); z-index:100; font-size:0.875rem; font-weight:700; color:white; font-family:'Manrope',system-ui,sans-serif;"></div>
 
 <script>
-// â”€â”€ Config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Config
 document.title = 'Recanto Avisos - Admin'
 
 const API_BASE = window.location.protocol === 'file:'
@@ -578,7 +578,7 @@ if ('serviceWorker' in navigator && window.location.pathname === '/admin') {
 let TOKEN     = localStorage.getItem('admin_jwt')
 let adminInfo = JSON.parse(localStorage.getItem('admin_info') || '{}')
 
-// â”€â”€ API â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// API
 async function api(path, options = {}) {
   const isFormData = options.body instanceof FormData
   const headers = {}
@@ -597,7 +597,7 @@ async function api(path, options = {}) {
   return data
 }
 
-// â”€â”€ Auth â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Auth
 async function handleLogin(e) {
   e.preventDefault()
   const btn = document.getElementById('btn-login')
@@ -628,7 +628,7 @@ function logout() {
   document.getElementById('login-screen').style.display = 'flex'
 }
 
-// â”€â”€ Nav â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Nav
 const PAGES = ['dashboard','avisos','solicitacoes','importar','turmas','alunos','vida-escolar','responsaveis','historico','admins']
 const TITLES = { dashboard:'Dashboard', avisos:'Enviar Aviso', solicitacoes:'Solicitações dos Pais', importar:'Importar CSV', turmas:'Turmas & QR Codes', alunos:'Alunos', 'vida-escolar':'Comportamento', responsaveis:'Responsáveis', historico:'Histórico de Avisos', admins:'Gerenciar Administradores' }
 const LOADERS = { dashboard:loadDashboard, avisos:loadFormAvisos, solicitacoes:carregarSolicitacoes, turmas:loadTurmas, alunos:()=>loadAlunos(), 'vida-escolar':loadVidaEscolar, responsaveis:loadResponsaveis, historico:loadHistorico, admins:loadAdmins }
@@ -664,7 +664,7 @@ function showApp() {
   showPage('dashboard')
 }
 
-// â”€â”€ Toast â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Toast
 function toast(msg, type) {
   const el = document.getElementById('toast')
   el.textContent = msg
@@ -674,7 +674,7 @@ function toast(msg, type) {
   el._t = setTimeout(() => { el.style.display = 'none' }, 4000)
 }
 
-// â”€â”€ Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Modal
 function showModal(html) {
   document.getElementById('modal-content').innerHTML = html
   document.getElementById('modal').style.display = 'flex'
@@ -682,7 +682,7 @@ function showModal(html) {
 function closeModal() { document.getElementById('modal').style.display = 'none' }
 document.getElementById('modal').addEventListener('click', e => { if (e.target === document.getElementById('modal')) closeModal() })
 
-// â”€â”€ Dashboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Dashboard
 async function loadDashboard() {
   try {
     const s = await api('/admin/stats'); if (!s) return
@@ -700,7 +700,7 @@ async function loadDashboard() {
   } catch(err) { toast(err.message,'error') }
 }
 
-// â”€â”€ Enviar Aviso â€” Estado â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Enviar Aviso - Estado
 let _turmasList    = []
 let _templatesList = []
 let _templateAtivo = null
@@ -853,7 +853,7 @@ function atualizarListaAlunosSelecionados() {
   lista.innerHTML = _alunosSelecionados.map(a => `
     <span style="display:inline-flex;align-items:center;gap:0.25rem;padding:0.25rem 0.625rem;background:#2d6197;color:white;border-radius:999px;font-size:0.75rem;font-weight:700;">
       ${a.nome}
-      <button type="button" onclick="removerAluno(${a.id})" style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.8);padding:0;line-height:1;font-size:0.875rem;">âœ•</button>
+      <button type="button" onclick="removerAluno(${a.id})" style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.8);padding:0;line-height:1;font-size:0.875rem;">&times;</button>
     </span>`).join('')
 }
 
@@ -877,7 +877,7 @@ function irParaEtapa2() {
   const resumoTexto = tipo === 'todos' ? 'Toda a escola'
     : tipo === 'turmas' ? _destinatario.turmasNomes.join(', ')
     : _alunosSelecionados.map(a => a.nome).join(', ')
-  document.getElementById('step2-resumo-dest').textContent = 'â†’ ' + resumoTexto
+  document.getElementById('step2-resumo-dest').textContent = '\u2192 ' + resumoTexto
 
   document.getElementById('aviso-step1').style.display = 'none'
   document.getElementById('aviso-step2').style.display = ''
@@ -908,7 +908,7 @@ function ativarStep(n) {
   })
 }
 
-// â”€â”€ Etapa 2 â†’ 3: Templates â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Etapa 2 -> 3: Templates
 const PLACEHOLDER_CONFIG = {
   'DATA':          { label: 'Data',               type: 'date'   },
   'DATA INÍCIO':   { label: 'Data de início',     type: 'date'   },
@@ -918,8 +918,8 @@ const PLACEHOLDER_CONFIG = {
   'HORÁRIO':       { label: 'Horário',            type: 'time'   },
   'HORÁRIO INÍCIO':{ label: 'Horário de início',  type: 'time'   },
   'HORÁRIO FIM':   { label: 'Horário de término', type: 'time'   },
-  'MÃŠS':           { label: 'Mês', type: 'select', options: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'] },
-  'NÃšMERO':        { label: 'Número de faltas',   type: 'number' },
+  'MÊS':           { label: 'Mês', type: 'select', options: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'] },
+  'NÚMERO':        { label: 'Número de faltas',   type: 'number' },
   'TELEFONE':      { label: 'Telefone da escola', type: 'tel', placeholder: '(00) 0000-0000' },
 }
 
@@ -983,7 +983,7 @@ function _mostrarEtapa3(t) {
   const resumoTexto = _destinatario.tipo === 'todos' ? 'Toda a escola'
     : _destinatario.tipo === 'turmas' ? _destinatario.turmasNomes.join(', ')
     : _alunosSelecionados.map(a => a.nome).join(', ')
-  document.getElementById('step3-resumo-dest').textContent = 'â†’ ' + resumoTexto
+  document.getElementById('step3-resumo-dest').textContent = '\u2192 ' + resumoTexto
   document.getElementById('aviso-step2').style.display = 'none'
   document.getElementById('form-aviso').style.display  = ''
 }
@@ -1024,7 +1024,7 @@ function aplicarTemplate(i) {
   atualizarMensagemComCampos()
 }
 
-// â”€â”€ Templates personalizados (localStorage) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Templates personalizados (localStorage)
 function carregarTemplatesPersonalizados() {
   try { return JSON.parse(localStorage.getItem('templates_custom') || '[]') } catch { return [] }
 }
@@ -1117,7 +1117,7 @@ function usarAvisoPersonalizado() {
   document.getElementById('aviso-urgente').checked = false
 }
 
-// â”€â”€ Etapa 3: Enviar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Etapa 3: Enviar
 async function enviarAviso(e) {
   e.preventDefault()
   const { tipo, ids } = _destinatario
@@ -1173,7 +1173,7 @@ function resetarFormulario() {
   if (document.getElementById('form-aviso')) document.getElementById('form-aviso').reset()
 }
 
-// â”€â”€ Importar CSV â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Importar CSV
 function atualizarNomeArquivo(input) {
   const el = document.getElementById('csv-nome-arquivo')
   if (input.files[0]) { el.textContent = input.files[0].name; el.style.display = 'block' }
@@ -1216,15 +1216,15 @@ async function importarCsv() {
             <p style="font-size:10px;font-weight:700;text-transform:uppercase;color:#596065;margin:0.25rem 0 0;">Sem turma</p>
           </div>
         </div>
-        ${data.nao_vinculados?.length?`<details style="margin-top:0.5rem;"><summary style="font-size:0.875rem;font-weight:700;color:#596065;cursor:pointer;">Ver não encontrados (${data.nao_vinculados.length})</summary><div style="margin-top:0.75rem;display:flex;flex-direction:column;gap:0.5rem;">${data.nao_vinculados.map(n=>`<div style="font-size:0.75rem;color:#596065;padding:0.625rem 1rem;background:#f7f9fc;border-radius:0.75rem;"><strong style="color:#2c3338;">${n.nome_aluno_csv}</strong> â€” Turma <strong>${n.turma_csv}</strong> â€” ${n.nome_responsavel}${n.telefone?' â€” '+n.telefone:''}</div>`).join('')}</div></details>`:''}
-        ${data.sem_turma_lista?.length?`<details style="margin-top:0.5rem;" open><summary style="font-size:0.875rem;font-weight:700;color:#b45309;cursor:pointer;display:flex;align-items:center;gap:0.375rem;"><span class="material-symbols-outlined" style="font-size:1rem;">warning</span> Sem turma identificada â€” requerem correção (${data.sem_turma_lista.length})</summary><div style="margin-top:0.75rem;display:flex;flex-direction:column;gap:0.5rem;">${data.sem_turma_lista.map(n=>`<div style="font-size:0.75rem;color:#596065;padding:0.625rem 1rem;background:#fff8e6;border-left:3px solid #f59e0b;border-radius:0 0.75rem 0.75rem 0;"><strong style="color:#2c3338;">${n.nome_responsavel||'(sem nome responsável)'}</strong>${n.nome_csv&&n.nome_csv!=='(sem nome)'?' â€” aluno: '+n.nome_csv:''}<br><span style="color:#b45309;">Turma no CSV: <strong>${n.turma_csv||'â€”'}</strong></span>${n.telefone?'<br>Telefone: '+n.telefone:''}</div>`).join('')}</div><p style="font-size:0.75rem;color:#b45309;margin:0.75rem 0 0;padding:0.625rem 1rem;background:#fff8e6;border-radius:0.75rem;">Adicione estes alunos à turma correta manualmente na aba <strong>Alunos</strong> e reimporte o CSV.</p></details>`:''}
+        ${data.nao_vinculados?.length?`<details style="margin-top:0.5rem;"><summary style="font-size:0.875rem;font-weight:700;color:#596065;cursor:pointer;">Ver não encontrados (${data.nao_vinculados.length})</summary><div style="margin-top:0.75rem;display:flex;flex-direction:column;gap:0.5rem;">${data.nao_vinculados.map(n=>`<div style="font-size:0.75rem;color:#596065;padding:0.625rem 1rem;background:#f7f9fc;border-radius:0.75rem;"><strong style="color:#2c3338;">${n.nome_aluno_csv}</strong> &mdash; Turma <strong>${n.turma_csv}</strong> &mdash; ${n.nome_responsavel}${n.telefone?' &mdash; '+n.telefone:''}</div>`).join('')}</div></details>`:''}
+        ${data.sem_turma_lista?.length?`<details style="margin-top:0.5rem;" open><summary style="font-size:0.875rem;font-weight:700;color:#b45309;cursor:pointer;display:flex;align-items:center;gap:0.375rem;"><span class="material-symbols-outlined" style="font-size:1rem;">warning</span> Sem turma identificada &mdash; requerem correção (${data.sem_turma_lista.length})</summary><div style="margin-top:0.75rem;display:flex;flex-direction:column;gap:0.5rem;">${data.sem_turma_lista.map(n=>`<div style="font-size:0.75rem;color:#596065;padding:0.625rem 1rem;background:#fff8e6;border-left:3px solid #f59e0b;border-radius:0 0.75rem 0.75rem 0;"><strong style="color:#2c3338;">${n.nome_responsavel||'(sem nome responsável)'}</strong>${n.nome_csv&&n.nome_csv!=='(sem nome)'?' &mdash; aluno: '+n.nome_csv:''}<br><span style="color:#b45309;">Turma no CSV: <strong>${n.turma_csv||'&mdash;'}</strong></span>${n.telefone?'<br>Telefone: '+n.telefone:''}</div>`).join('')}</div><p style="font-size:0.75rem;color:#b45309;margin:0.75rem 0 0;padding:0.625rem 1rem;background:#fff8e6;border-radius:0.75rem;">Adicione estes alunos à turma correta manualmente na aba <strong>Alunos</strong> e reimporte o CSV.</p></details>`:''}
       </div>`
     toast(data.vinculados + ' responsáveis vinculados com sucesso')
   } catch(err) { toast(err.message,'error') }
   finally { btn.disabled=false; btn.innerHTML='<span class="material-symbols-outlined">cloud_upload</span> Importar CSV' }
 }
 
-// â”€â”€ Turmas â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Turmas
 async function loadTurmas() {
   try {
     const turmas = await api('/admin/turmas'); if (!turmas) return
@@ -1265,7 +1265,7 @@ async function verQrCode(id, codigo, nome) {
     showModal(`
       <div style="text-align:center;">
         <span class="badge badge-blue" style="margin-bottom:0.75rem;display:inline-block;">QR Code</span>
-        <h3 style="font-size:1.25rem;font-weight:800;color:#2c3338;margin:0 0 0.25rem;">${codigo} â€” ${nome}</h3>
+        <h3 style="font-size:1.25rem;font-weight:800;color:#2c3338;margin:0 0 0.25rem;">${codigo} &mdash; ${nome}</h3>
         <p style="font-size:0.875rem;color:#596065;margin:0 0 1.5rem;">Imprima e entregue para os responsáveis escanearem</p>
         <div id="qr-canvas" style="display:flex;justify-content:center;margin-bottom:1.25rem;"></div>
         <div style="background:#f0f4f8;border-radius:0.75rem;padding:0.75rem 1rem;font-size:0.75rem;color:#596065;word-break:break-all;text-align:left;margin-bottom:1.25rem;">${url}</div>
@@ -1278,7 +1278,7 @@ async function verQrCode(id, codigo, nome) {
   } catch(err) { toast(err.message,'error') }
 }
 
-// â”€â”€ Alunos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Alunos
 async function loadAlunos() {
   const busca    = document.getElementById('busca-aluno')?.value || ''
   const turma_id = document.getElementById('filtro-turma-aluno')?.value || ''
@@ -1290,17 +1290,23 @@ async function loadAlunos() {
     // Preencher select de turmas na primeira vez
     const sel = document.getElementById('filtro-turma-aluno')
     if (sel.options.length <= 1 && _turmasList.length) {
-      _turmasList.forEach(t => { const o=document.createElement('option'); o.value=t.id; o.textContent=t.codigo+' â€” '+t.nome; sel.appendChild(o) })
+      _turmasList.forEach(t => { const o=document.createElement('option'); o.value=t.id; o.textContent=t.codigo+' \u2014 '+t.nome; sel.appendChild(o) })
     } else if (sel.options.length <= 1) {
-      api('/admin/turmas').then(turmas => { if(!turmas) return; _turmasList=turmas; turmas.forEach(t => { const o=document.createElement('option'); o.value=t.id; o.textContent=t.codigo+' â€” '+t.nome; sel.appendChild(o) }) })
+      api('/admin/turmas').then(turmas => { if(!turmas) return; _turmasList=turmas; turmas.forEach(t => { const o=document.createElement('option'); o.value=t.id; o.textContent=t.codigo+' \u2014 '+t.nome; sel.appendChild(o) }) })
     }
     document.getElementById('alunos-tbody').innerHTML = alunos.length ? alunos.map(a => `
       <tr>
         <td style="font-weight:600;">${a.nome}</td>
-        <td><span class="badge badge-blue">${a.turma_codigo||'â€”'}</span></td>
+        <td><span class="badge badge-blue">${a.turma_codigo||'&mdash;'}</span></td>
         <td style="color:#596065;">${a.responsavel_nome||'<span style="color:#abb3b9;font-style:italic;">Sem responsável</span>'}</td>
-        <td style="text-align:center;">${a.tem_app?'<span class="badge badge-green">âœ“ Com app</span>':'<span class="badge badge-gray">Sem app</span>'}</td>
+        <td style="text-align:center;">
+          ${a.tem_app
+            ? `<span class="badge badge-green">&#10003; ${Number(a.dispositivos_count||0)} dispositivo(s)</span>`
+            : '<span class="badge badge-gray">Sem app</span>'}
+        </td>
         <td style="text-align:center; white-space:nowrap;">
+          <button onclick="abrirDispositivosAluno(${a.id},'${a.nome.replace(/'/g,"\\'")}')"
+            style="font-size:0.75rem;font-weight:700;color:#49636f;background:none;border:none;cursor:pointer;margin-right:0.5rem;">Dispositivos</button>
           <button onclick="vincularResponsavel(${a.id},'${a.nome.replace(/'/g,"\\'")}','${(a.responsavel_nome||'').replace(/'/g,"\\'")}')\"
             style="font-size:0.75rem;font-weight:700;color:#2d6197;background:none;border:none;cursor:pointer;margin-right:0.5rem;">Vincular</button>
           <button onclick="confirmarExcluirAluno(${a.id},'${a.nome.replace(/'/g,"\\'")}',${!!a.responsavel_nome})"
@@ -1312,7 +1318,7 @@ async function loadAlunos() {
 
 function abrirModalNovoAluno() {
   const opcoesTormas = (_turmasList.length ? _turmasList : []).map(t =>
-    `<option value="${t.id}">${t.codigo} â€” ${t.nome}</option>`).join('')
+    `<option value="${t.id}">${t.codigo} &mdash; ${t.nome}</option>`).join('')
   showModal(`
     <h3 style="font-size:1.125rem;font-weight:800;color:#2c3338;margin:0 0 1.25rem;">Adicionar Aluno</h3>
     <div style="display:flex;flex-direction:column;gap:0.875rem;">
@@ -1413,7 +1419,48 @@ async function salvarVinculo(alunoId) {
   } catch(err) { toast(err.message,'error') }
 }
 
-// â”€â”€ Comportamento â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+async function abrirDispositivosAluno(alunoId, alunoNome) {
+  try {
+    const dispositivos = await api('/admin/alunos/' + alunoId + '/dispositivos')
+    const lista = (dispositivos || []).map(d => {
+      const tokenCurto = `${String(d.fcm_token || '').slice(0, 12)}...${String(d.fcm_token || '').slice(-8)}`
+      const plataforma = d.plataforma || 'não informada'
+      const ultimo = d.ultimo_acesso ? new Date(d.ultimo_acesso).toLocaleString('pt-BR') : '—'
+      return `
+        <div style="padding:0.75rem 0.875rem;border:1px solid #e3e9ee;border-radius:0.875rem;background:#fff;display:flex;align-items:flex-start;justify-content:space-between;gap:0.75rem;">
+          <div style="min-width:0;">
+            <p style="margin:0;font-size:0.75rem;font-weight:800;color:#2c3338;">${escapeHtml(d.responsavel_nome || 'Responsável')}</p>
+            <p style="margin:0.15rem 0 0;font-size:0.75rem;color:#596065;">Plataforma: ${escapeHtml(plataforma)}</p>
+            <p style="margin:0.15rem 0 0;font-size:0.75rem;color:#596065;">Último acesso: ${escapeHtml(ultimo)}</p>
+            <p style="margin:0.35rem 0 0;font-size:0.6875rem;color:#abb3b9;word-break:break-all;">Token: ${escapeHtml(tokenCurto)}</p>
+          </div>
+          <button onclick="removerDispositivoAluno(${d.id}, ${alunoId}, '${String(alunoNome || '').replace(/'/g,"\\'")}')" style="font-size:0.75rem;font-weight:700;color:#a83836;background:none;border:none;cursor:pointer;white-space:nowrap;">Remover</button>
+        </div>
+      `
+    }).join('')
+
+    showModal(`
+      <h3 style="font-size:1.125rem;font-weight:800;color:#2c3338;margin:0 0 0.35rem;">Dispositivos com app</h3>
+      <p style="font-size:0.8125rem;color:#596065;margin:0 0 1rem;">Aluno: <strong>${escapeHtml(alunoNome)}</strong></p>
+      <div style="display:flex;flex-direction:column;gap:0.625rem;max-height:20rem;overflow-y:auto;">
+        ${lista || '<p style="margin:0;padding:1rem;border:1px dashed #d5dde5;border-radius:0.875rem;font-size:0.8125rem;color:#596065;">Nenhum dispositivo registrado para este aluno.</p>'}
+      </div>
+      <button onclick="closeModal()" class="btn-outline" style="width:100%;padding:0.75rem;margin-top:1rem;font-size:0.8125rem;">Fechar</button>
+    `)
+  } catch(err) { toast(err.message,'error') }
+}
+
+async function removerDispositivoAluno(dispositivoId, alunoId, alunoNome) {
+  if (!confirm('Remover este dispositivo? Ele deixará de receber notificações.')) return
+  try {
+    await api('/admin/dispositivos/' + dispositivoId, { method:'DELETE' })
+    toast('Dispositivo removido')
+    await loadAlunos()
+    await abrirDispositivosAluno(alunoId, alunoNome)
+  } catch(err) { toast(err.message,'error') }
+}
+
+// Comportamento
 async function loadVidaEscolar() {
   try {
     if (_turmasList.length === 0) {
@@ -1448,7 +1495,6 @@ async function loadVidaEscolar() {
         turma_id: aluno.turma_id,
         turma_nome: aluno.turma_nome,
         turma_codigo: aluno.turma_codigo,
-        faltas_mes: Number(registro?.faltas_mes || 0),
         faltas_total: Number(registro?.faltas_total || 0),
         comportamento: registro?.comportamento || 'nao_avaliado',
         observacoes: registro?.observacoes || '',
@@ -1460,8 +1506,8 @@ async function loadVidaEscolar() {
       <tr>
         <td style="font-weight:600;">${escapeHtml(item.aluno_nome)}</td>
         <td><span class="badge badge-blue">${escapeHtml(item.turma_codigo || '—')}</span></td>
-        <td><input id="vida-fm-${item.aluno_id}" type="number" min="0" step="1" value="${Number(item.faltas_mes || 0)}" class="field-input" style="margin:0;padding:0.5rem 0.625rem;min-width:88px;" /></td>
-        <td><input id="vida-ft-${item.aluno_id}" type="number" min="0" step="1" value="${Number(item.faltas_total || 0)}" class="field-input" style="margin:0;padding:0.5rem 0.625rem;min-width:88px;" /></td>
+        <td><input id="vida-fa-${item.aluno_id}" type="number" min="0" step="1" value="0" class="field-input" style="margin:0;padding:0.5rem 0.625rem;min-width:88px;" /></td>
+        <td><span class="badge badge-gray" id="vida-ft-${item.aluno_id}" style="font-size:0.8125rem;">${Number(item.faltas_total || 0)}</span></td>
         <td>
           <select id="vida-comp-${item.aluno_id}" class="field-input" style="margin:0;padding:0.5rem 0.625rem;">
             ${opcoesComportamento}
@@ -1483,26 +1529,27 @@ async function loadVidaEscolar() {
 }
 
 async function salvarVidaEscolarAluno(alunoId) {
-  const faltasMesEl = document.getElementById(`vida-fm-${alunoId}`)
-  const faltasTotalEl = document.getElementById(`vida-ft-${alunoId}`)
+  const faltasAdicionarEl = document.getElementById(`vida-fa-${alunoId}`)
   const comportamentoEl = document.getElementById(`vida-comp-${alunoId}`)
   const observacoesEl = document.getElementById(`vida-obs-${alunoId}`)
 
-  const faltas_mes = Number(faltasMesEl?.value || 0)
-  const faltas_total = Number(faltasTotalEl?.value || 0)
+  const faltas_adicionar = Number(faltasAdicionarEl?.value || 0)
   const comportamento = comportamentoEl?.value || 'nao_avaliado'
   const observacoes = (observacoesEl?.value || '').trim()
 
-  if (!Number.isInteger(faltas_mes) || faltas_mes < 0 || !Number.isInteger(faltas_total) || faltas_total < 0) {
-    toast('Faltas devem ser números inteiros >= 0','error')
+  if (!Number.isInteger(faltas_adicionar) || faltas_adicionar < 0) {
+    toast('Lançamento de faltas deve ser um número inteiro >= 0','error')
     return
   }
 
   try {
-    await api('/admin/vida-escolar/aluno/' + alunoId, {
+    const r = await api('/admin/vida-escolar/aluno/' + alunoId, {
       method: 'PUT',
-      body: JSON.stringify({ faltas_mes, faltas_total, comportamento, observacoes }),
+      body: JSON.stringify({ faltas_adicionar, comportamento, observacoes }),
     })
+    const totalEl = document.getElementById(`vida-ft-${alunoId}`)
+    if (totalEl) totalEl.textContent = Number(r?.faltas_total || 0)
+    if (faltasAdicionarEl) faltasAdicionarEl.value = '0'
     toast('Registro atualizado com sucesso')
   } catch(err) { toast(err.message,'error') }
 }
@@ -1549,11 +1596,11 @@ async function loadResponsaveis() {
       <tr>
         <td><input type="checkbox" class="resp-checkbox" data-id="${r.id}" onchange="updateBotaoDesvincularResponsaveis()" style="width:1rem;height:1rem;cursor:pointer;" /></td>
         <td style="font-weight:600;">${r.nome}</td>
-        <td style="color:#596065;">${r.aluno_nome||'â€”'}</td>
-        <td><span class="badge badge-blue">${r.turma_codigo||'â€”'}</span></td>
-        <td style="color:#596065;">${r.telefone||'â€”'}</td>
-        <td style="text-align:center;">${r.tem_app?'<span class="badge badge-green">âœ“ Com app</span>':'<span class="badge badge-gray">Sem app</span>'}</td>
-        <td style="font-size:0.75rem;color:#abb3b9;">${r.ultimo_acesso?new Date(r.ultimo_acesso).toLocaleDateString('pt-BR'):'â€”'}</td>
+        <td style="color:#596065;">${r.aluno_nome||'&mdash;'}</td>
+        <td><span class="badge badge-blue">${r.turma_codigo||'&mdash;'}</span></td>
+        <td style="color:#596065;">${r.telefone||'&mdash;'}</td>
+        <td style="text-align:center;">${r.tem_app?'<span class="badge badge-green">&#10003; Com app</span>':'<span class="badge badge-gray">Sem app</span>'}</td>
+        <td style="font-size:0.75rem;color:#abb3b9;">${r.ultimo_acesso?new Date(r.ultimo_acesso).toLocaleDateString('pt-BR'):'&mdash;'}</td>
         <td style="text-align:center;">
           <button onclick="desvincularResponsavel(${r.id}, '${(r.nome||'').replace(/'/g,"\\'")}')" style="font-size:0.75rem;font-weight:700;color:#a83836;background:none;border:none;cursor:pointer;">Desvincular</button>
         </td>
@@ -1608,7 +1655,7 @@ async function desvincularTurmaResponsaveis() {
   const turmaId = document.getElementById('filtro-turma-resp')?.value
   if (!turmaId) { toast('Selecione uma turma para desvincular','error'); return }
   const turma = _turmasList.find(t => String(t.id) === String(turmaId))
-  const nomeTurma = turma ? `${turma.codigo} â€” ${turma.nome}` : 'turma selecionada'
+  const nomeTurma = turma ? `${turma.codigo} &mdash; ${turma.nome}` : 'turma selecionada'
   if (!confirm(`Desvincular notificações da turma ${nomeTurma}?`)) return
 
   try {
@@ -1630,7 +1677,7 @@ async function loadHistorico() {
       <tr>
         <td style="cursor:pointer;" onclick="verEntregas(${a.id},'${a.titulo.replace(/'/g,"\\'")}')">
           <div style="display:flex;align-items:center;gap:0.5rem;">${a.urgente?'<span class="badge badge-red">Urgente</span>':''}<span style="font-weight:600;">${a.titulo}</span></div>
-          ${a.enviado_por?`<div style="font-size:0.7rem;color:#596065;margin-top:0.2rem;"><span class="material-symbols-outlined" style="font-size:0.75rem;vertical-align:middle;">person</span> ${a.enviado_por} <span style="color:#abb3b9;">â€” ${a.admin_nome||''}</span></div>`:''}
+          ${a.enviado_por?`<div style="font-size:0.7rem;color:#596065;margin-top:0.2rem;"><span class="material-symbols-outlined" style="font-size:0.75rem;vertical-align:middle;">person</span> ${a.enviado_por} <span style="color:#abb3b9;">&mdash; ${a.admin_nome||''}</span></div>`:''}
         </td>
         <td style="text-align:center;color:#596065;">${a.total_entregas||0}</td>
         <td style="text-align:center;"><span class="badge badge-blue">${a.push_enviados||0}</span></td>
@@ -1691,7 +1738,7 @@ async function verEntregas(avisoId, titulo) {
           <div style="display:flex;align-items:center;justify-content:space-between;padding:0.75rem 1rem;background:#f7f9fc;border-radius:1rem;">
             <div>
               <p style="font-size:0.875rem;font-weight:600;color:#2c3338;margin:0;">${e.responsavel_nome}</p>
-              <p style="font-size:0.75rem;color:#596065;margin:0.1rem 0 0;">${e.aluno_nome} â€” ${e.turma_codigo||''}</p>
+              <p style="font-size:0.75rem;color:#596065;margin:0.1rem 0 0;">${e.aluno_nome} &mdash; ${e.turma_codigo||''}</p>
             </div>
             <div style="display:flex;gap:0.375rem;">
               ${e.push_enviado?'<span class="badge badge-blue">Enviado</span>':'<span class="badge badge-gray">Não enviado</span>'}
@@ -1732,9 +1779,9 @@ async function carregarSolicitacoes() {
             <span style="font-weight:600;${s.urgente?'color:#a83836;':''}">${TIPOS_SOLICITACAO_LABELS[s.tipo]||s.tipo}</span>
           </div>
         </td>
-        <td style="color:#596065;">${s.aluno_nome||'â€”'}</td>
-        <td style="color:#596065;">${s.responsavel_nome||'â€”'}</td>
-        <td style="max-width:300px;"><div class="line-clamp-2" style="font-size:0.8rem;color:#596065;">${s.mensagem||'â€”'}</div></td>
+        <td style="color:#596065;">${s.aluno_nome||'&mdash;'}</td>
+        <td style="color:#596065;">${s.responsavel_nome||'&mdash;'}</td>
+        <td style="max-width:300px;"><div class="line-clamp-2" style="font-size:0.8rem;color:#596065;">${s.mensagem||'&mdash;'}</div></td>
         <td style="font-size:0.75rem;color:#abb3b9;">${new Date(s.criada_em).toLocaleDateString('pt-BR')} ${new Date(s.criada_em).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</td>
         <td style="text-align:center;">
           ${s.respondida ? '<span class="badge badge-green">Respondida</span>' : (s.lida ? '<span class="badge badge-blue">Lida</span>' : '<span class="badge badge-gray">Nova</span>')}
@@ -1769,17 +1816,17 @@ async function verSolicitacao(id) {
 
       <div style="background:#f7f9fc;padding:1rem;border-radius:1rem;margin-bottom:1rem;">
         <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#596065;margin:0 0 0.375rem;">Aluno</p>
-        <p style="font-size:0.875rem;font-weight:600;color:#2c3338;margin:0;">${sol.aluno_nome||'â€”'}</p>
+        <p style="font-size:0.875rem;font-weight:600;color:#2c3338;margin:0;">${sol.aluno_nome||'&mdash;'}</p>
       </div>
 
       <div style="background:#f7f9fc;padding:1rem;border-radius:1rem;margin-bottom:1rem;">
         <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#596065;margin:0 0 0.375rem;">Responsável</p>
-        <p style="font-size:0.875rem;font-weight:600;color:#2c3338;margin:0;">${sol.responsavel_nome||'â€”'}</p>
+        <p style="font-size:0.875rem;font-weight:600;color:#2c3338;margin:0;">${sol.responsavel_nome||'&mdash;'}</p>
       </div>
 
       <div style="background:#f7f9fc;padding:1rem;border-radius:1rem;margin-bottom:1rem;">
         <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#596065;margin:0 0 0.375rem;">Mensagem</p>
-        <p style="font-size:0.875rem;color:#2c3338;margin:0;white-space:pre-wrap;">${sol.mensagem||'â€”'}</p>
+        <p style="font-size:0.875rem;color:#2c3338;margin:0;white-space:pre-wrap;">${sol.mensagem||'&mdash;'}</p>
       </div>
 
       ${sol.respondida?`
@@ -1848,7 +1895,7 @@ async function apagarSolicitacoesSelecionadas() {
   } catch(err) { toast(err.message,'error') }
 }
 
-// â”€â”€ Gerenciar Admins â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Gerenciar Admins
 async function loadAdmins() {
   try {
     const admins = await api('/admin/admins'); if (!admins) return
@@ -1900,7 +1947,7 @@ async function alterarMinhaSenha() {
   } catch(err) { toast(err.message,'error') }
 }
 
-// â”€â”€ Init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Init
 if (TOKEN) { showApp() }
 </script>
 </body>

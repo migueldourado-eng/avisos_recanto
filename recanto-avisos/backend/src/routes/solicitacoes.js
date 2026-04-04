@@ -190,7 +190,7 @@ router.post('/admin/:id/responder', autenticarAdmin, async (req, res) => {
 
   // Buscar informações da solicitação antes de atualizar
   const solicitacao = db.prepare(`
-    SELECT s.*, r.fcm_token, r.nome as responsavel_nome, a.nome as aluno_nome
+    SELECT s.*, r.id as responsavel_id, r.nome as responsavel_nome, a.nome as aluno_nome
     FROM solicitacoes_pais s
     LEFT JOIN responsaveis r ON s.responsavel_id = r.id
     LEFT JOIN alunos a ON s.aluno_id = a.id
@@ -209,21 +209,27 @@ router.post('/admin/:id/responder', autenticarAdmin, async (req, res) => {
 
   update.run(resposta.trim(), id);
 
-  // Enviar notificação push para o responsável
-  if (solicitacao.fcm_token) {
+  // Enviar notificacao push para todos os dispositivos do responsavel
+  const tokens = db.prepare(`
+    SELECT fcm_token
+    FROM responsavel_dispositivos
+    WHERE responsavel_id = ?
+  `).all(solicitacao.responsavel_id).map(t => t.fcm_token).filter(Boolean);
+
+  if (tokens.length > 0) {
     try {
       const titulo = 'Resposta da Escola';
       const mensagem = `Sua solicitação foi respondida: ${resposta.trim().substring(0, 100)}${resposta.trim().length > 100 ? '...' : ''}`;
 
       await enviarPush(
-        [solicitacao.fcm_token],
+        tokens,
         titulo,
         mensagem,
         false, // não é urgente
         id // ID da solicitação
       );
 
-      console.log(`✉️  Notificação de resposta enviada para ${solicitacao.responsavel_nome}`);
+      console.log(`Notificacao de resposta enviada para ${solicitacao.responsavel_nome}`);
     } catch (err) {
       console.error('Erro ao enviar notificação de resposta:', err);
       // Não falha a requisição se a notificação falhar

@@ -214,11 +214,12 @@ router.get('/turmas', (req, res) => {
     SELECT
       t.id, t.nome, t.codigo, t.ano, t.ativa,
       COUNT(DISTINCT a.id)                                              AS total_alunos,
-      COUNT(DISTINCT CASE WHEN r.fcm_token IS NOT NULL THEN r.id END)  AS com_app,
-      COUNT(DISTINCT CASE WHEN r.fcm_token IS NULL     THEN r.id END)  AS sem_app
+      COUNT(DISTINCT CASE WHEN rd.id IS NOT NULL THEN r.id END)        AS com_app,
+      COUNT(DISTINCT CASE WHEN rd.id IS NULL     THEN r.id END)        AS sem_app
     FROM turmas t
     LEFT JOIN alunos       a ON a.turma_id = t.id AND a.ativo = 1
     LEFT JOIN responsaveis r ON r.aluno_id  = a.id
+    LEFT JOIN responsavel_dispositivos rd ON rd.responsavel_id = r.id
     GROUP BY t.id
     ORDER BY t.nome
   `).all();
@@ -253,11 +254,27 @@ router.get('/alunos', (req, res) => {
       a.id, a.nome, a.matricula, a.ativo, a.turma_id,
       t.nome   AS turma_nome,
       t.codigo AS turma_codigo,
-      r.nome   AS responsavel_nome,
-      r.fcm_token IS NOT NULL AS tem_app
+      (
+        SELECT r2.nome
+        FROM responsaveis r2
+        WHERE r2.aluno_id = a.id
+        ORDER BY r2.id
+        LIMIT 1
+      ) AS responsavel_nome,
+      EXISTS(
+        SELECT 1
+        FROM responsavel_dispositivos rd
+        JOIN responsaveis r3 ON r3.id = rd.responsavel_id
+        WHERE r3.aluno_id = a.id
+      ) AS tem_app,
+      (
+        SELECT COUNT(*)
+        FROM responsavel_dispositivos rd
+        JOIN responsaveis r4 ON r4.id = rd.responsavel_id
+        WHERE r4.aluno_id = a.id
+      ) AS dispositivos_count
     FROM alunos a
-    LEFT JOIN turmas       t ON a.turma_id = t.id
-    LEFT JOIN responsaveis r ON r.aluno_id  = a.id
+    LEFT JOIN turmas t ON a.turma_id = t.id
     WHERE 1=1
   `;
   const params = [];
@@ -268,6 +285,49 @@ router.get('/alunos', (req, res) => {
   query += ' ORDER BY t.nome, a.nome';
 
   res.json(db.prepare(query).all(...params));
+});
+
+router.get('/alunos/:id/dispositivos', (req, res) => {
+  const alunoId = Number(req.params.id);
+  if (!Number.isInteger(alunoId) || alunoId <= 0) {
+    return res.status(400).json({ error: 'aluno_id inválido.' });
+  }
+
+  const db = getDb();
+  const aluno = db.prepare('SELECT id FROM alunos WHERE id = ?').get(alunoId);
+  if (!aluno) return res.status(404).json({ error: 'Aluno não encontrado.' });
+
+  const dispositivos = db.prepare(`
+    SELECT
+      rd.id,
+      rd.fcm_token,
+      rd.plataforma,
+      rd.user_agent,
+      rd.ultimo_acesso,
+      rd.criado_em,
+      r.id AS responsavel_id,
+      r.nome AS responsavel_nome
+    FROM responsavel_dispositivos rd
+    JOIN responsaveis r ON r.id = rd.responsavel_id
+    WHERE r.aluno_id = ?
+    ORDER BY rd.ultimo_acesso DESC, rd.id DESC
+  `).all(alunoId);
+
+  res.json(dispositivos);
+});
+
+router.delete('/dispositivos/:id', (req, res) => {
+  const dispositivoId = Number(req.params.id);
+  if (!Number.isInteger(dispositivoId) || dispositivoId <= 0) {
+    return res.status(400).json({ error: 'dispositivo_id inválido.' });
+  }
+
+  const db = getDb();
+  const existe = db.prepare('SELECT id FROM responsavel_dispositivos WHERE id = ?').get(dispositivoId);
+  if (!existe) return res.status(404).json({ error: 'Dispositivo não encontrado.' });
+
+  db.prepare('DELETE FROM responsavel_dispositivos WHERE id = ?').run(dispositivoId);
+  res.json({ ok: true });
 });
 
 // ─── POST /api/admin/alunos ───────────────────────────────────────────────────
@@ -338,7 +398,8 @@ router.get('/responsaveis', (req, res) => {
   const responsaveis = db.prepare(`
     SELECT
       r.id, r.nome, r.telefone, r.ultimo_acesso, r.criado_em,
-      r.fcm_token IS NOT NULL AS tem_app,
+      EXISTS(SELECT 1 FROM responsavel_dispositivos rd WHERE rd.responsavel_id = r.id) AS tem_app,
+      (SELECT COUNT(*) FROM responsavel_dispositivos rd WHERE rd.responsavel_id = r.id) AS dispositivos_count,
       a.nome   AS aluno_nome,
       t.id     AS turma_id,
       t.nome   AS turma_nome,
@@ -395,19 +456,27 @@ router.put('/vida-escolar/aluno/:aluno_id', (req, res) => {
   const aluno = db.prepare('SELECT id FROM alunos WHERE id = ?').get(alunoId);
   if (!aluno) return res.status(404).json({ error: 'Aluno nÃ£o encontrado.' });
 
-  const faltas_mes = parseNaoNegativo(req.body?.faltas_mes);
-  const faltas_total = parseNaoNegativo(req.body?.faltas_total);
+  const faltasAdicionar = req.body?.faltas_adicionar === undefined
+    ? 0
+    : parseNaoNegativo(req.body?.faltas_adicionar);
   const observacoes = typeof req.body?.observacoes === 'string' ? req.body.observacoes.trim() : '';
   const comportamento = typeof req.body?.comportamento === 'string'
     ? req.body.comportamento
     : 'nao_avaliado';
 
-  if (faltas_mes === null || faltas_total === null) {
-    return res.status(400).json({ error: 'faltas_mes e faltas_total devem ser inteiros >= 0.' });
+  if (faltasAdicionar === null) {
+    return res.status(400).json({ error: 'faltas_adicionar deve ser um inteiro >= 0.' });
   }
   if (!COMPORTAMENTOS_VIDA_ESCOLAR.has(comportamento)) {
     return res.status(400).json({ error: 'comportamento invÃ¡lido.' });
   }
+
+  const atual = db.prepare(`
+    SELECT faltas_total
+    FROM aluno_vida_escolar
+    WHERE aluno_id = ?
+  `).get(alunoId);
+  const faltasTotal = Number(atual?.faltas_total || 0) + faltasAdicionar;
 
   db.prepare(`
     INSERT INTO aluno_vida_escolar (
@@ -420,9 +489,9 @@ router.put('/vida-escolar/aluno/:aluno_id', (req, res) => {
       observacoes = excluded.observacoes,
       atualizado_por_admin_id = excluded.atualizado_por_admin_id,
       atualizado_em = CURRENT_TIMESTAMP
-  `).run(alunoId, faltas_mes, faltas_total, comportamento, observacoes || null, req.admin.id);
+  `).run(alunoId, faltasAdicionar, faltasTotal, comportamento, observacoes || null, req.admin.id);
 
-  res.json({ ok: true });
+  res.json({ ok: true, faltas_total: faltasTotal });
 });
 
 // â”€â”€â”€ POST /api/admin/vida-escolar/turma/:turma_id/comportamento â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -504,9 +573,14 @@ router.post('/responsaveis/desvincular-notificacoes', (req, res) => {
 
   const placeholders = ids.map(() => '?').join(',');
   const result = db.prepare(`
+    DELETE FROM responsavel_dispositivos
+    WHERE responsavel_id IN (${placeholders})
+  `).run(...ids);
+
+  db.prepare(`
     UPDATE responsaveis
     SET fcm_token = NULL
-    WHERE id IN (${placeholders}) AND fcm_token IS NOT NULL
+    WHERE id IN (${placeholders})
   `).run(...ids);
 
   res.json({
@@ -545,7 +619,7 @@ router.post('/avisos', avisoLimiter, async (req, res, next) => {
 
   if (tipo === 'todos') {
     responsaveis = db.prepare(`
-      SELECT r.id, r.fcm_token
+      SELECT DISTINCT r.id
       FROM responsaveis r
       JOIN alunos a ON r.aluno_id = a.id
       WHERE a.ativo = 1
@@ -553,7 +627,7 @@ router.post('/avisos', avisoLimiter, async (req, res, next) => {
   } else if (tipo === 'turmas') {
     const ph = ids.map(() => '?').join(',');
     responsaveis = db.prepare(`
-      SELECT DISTINCT r.id, r.fcm_token
+      SELECT DISTINCT r.id
       FROM responsaveis r
       JOIN alunos a ON r.aluno_id = a.id
       WHERE a.turma_id IN (${ph}) AND a.ativo = 1
@@ -561,7 +635,7 @@ router.post('/avisos', avisoLimiter, async (req, res, next) => {
   } else if (tipo === 'alunos') {
     const ph = ids.map(() => '?').join(',');
     responsaveis = db.prepare(`
-      SELECT r.id, r.fcm_token
+      SELECT DISTINCT r.id
       FROM responsaveis r
       WHERE r.aluno_id IN (${ph})
     `).all(...ids);
@@ -575,24 +649,39 @@ router.post('/avisos', avisoLimiter, async (req, res, next) => {
     for (const r of responsaveis) insertEntrega.run(avisoId, r.id);
   })();
 
-  // Enviar push em lote
-  const comApp = responsaveis.filter(r => r.fcm_token);
+  // Enviar push em lote para todos os dispositivos dos responsáveis alvo
+  const responsavelIds = responsaveis.map(r => r.id);
+  let pushTargets = [];
+  if (responsavelIds.length > 0) {
+    const ph = responsavelIds.map(() => '?').join(',');
+    pushTargets = db.prepare(`
+      SELECT rd.fcm_token, rd.responsavel_id
+      FROM responsavel_dispositivos rd
+      WHERE rd.responsavel_id IN (${ph})
+    `).all(...responsavelIds);
+  }
+
+  const tokensParaEnviar = [...new Set(pushTargets.map(t => t.fcm_token).filter(Boolean))];
+  const responsaveisComApp = new Set(pushTargets.map(t => t.responsavel_id));
   let push_enviados = 0;
 
-  if (comApp.length > 0) {
-    const tokens = comApp.map(r => r.fcm_token);
-    const resultado = await enviarPush(tokens, titulo, mensagem, !!urgente, avisoId);
+  if (tokensParaEnviar.length > 0) {
+    const resultado = await enviarPush(tokensParaEnviar, titulo, mensagem, !!urgente, avisoId);
     push_enviados = resultado.enviados;
 
-    // Marcar como enviado apenas os que tiveram sucesso
+    const sucessoPorResponsavel = new Set(
+      pushTargets
+        .filter(t => resultado.tokens_enviados.has(t.fcm_token))
+        .map(t => t.responsavel_id)
+    );
+
+    // Marcar como enviado quando ao menos um dispositivo do responsável recebeu
     const updateEntrega = db.prepare(
       'UPDATE entregas SET push_enviado = 1, push_enviado_em = CURRENT_TIMESTAMP WHERE aviso_id = ? AND responsavel_id = ?'
     );
     db.transaction(() => {
-      for (const r of comApp) {
-        if (resultado.tokens_enviados.has(r.fcm_token)) {
-          updateEntrega.run(avisoId, r.id);
-        }
+      for (const responsavelId of sucessoPorResponsavel) {
+        updateEntrega.run(avisoId, responsavelId);
       }
     })();
   }
@@ -601,7 +690,7 @@ router.post('/avisos', avisoLimiter, async (req, res, next) => {
     aviso_id: Number(avisoId),
     total_destinatarios: responsaveis.length,
     push_enviados,
-    sem_app: responsaveis.length - comApp.length,
+    sem_app: responsaveis.length - responsaveisComApp.size,
   });
   } catch (err) {
     next(err);
@@ -747,10 +836,11 @@ router.get('/stats', (req, res) => {
     SELECT
       COUNT(DISTINCT a.id)                                              AS total_alunos,
       COUNT(DISTINCT r.id)                                              AS total_responsaveis,
-      COUNT(DISTINCT CASE WHEN r.fcm_token IS NOT NULL THEN r.id END)  AS total_com_app,
-      COUNT(DISTINCT CASE WHEN r.fcm_token IS NULL     THEN r.id END)  AS total_sem_app
+      COUNT(DISTINCT CASE WHEN rd.id IS NOT NULL THEN r.id END)        AS total_com_app,
+      COUNT(DISTINCT CASE WHEN rd.id IS NULL     THEN r.id END)        AS total_sem_app
     FROM alunos a
     LEFT JOIN responsaveis r ON r.aluno_id = a.id
+    LEFT JOIN responsavel_dispositivos rd ON rd.responsavel_id = r.id
     WHERE a.ativo = 1
   `).get();
 
@@ -763,11 +853,12 @@ router.get('/stats', (req, res) => {
       t.codigo AS turma_codigo,
       t.nome   AS turma_nome,
       COUNT(DISTINCT a.id)                                              AS total_alunos,
-      COUNT(DISTINCT CASE WHEN r.fcm_token IS NOT NULL THEN r.id END)  AS com_app,
-      COUNT(DISTINCT CASE WHEN r.fcm_token IS NULL     THEN r.id END)  AS sem_app
+      COUNT(DISTINCT CASE WHEN rd.id IS NOT NULL THEN r.id END)        AS com_app,
+      COUNT(DISTINCT CASE WHEN rd.id IS NULL     THEN r.id END)        AS sem_app
     FROM turmas t
     LEFT JOIN alunos       a ON a.turma_id = t.id AND a.ativo = 1
     LEFT JOIN responsaveis r ON r.aluno_id  = a.id
+    LEFT JOIN responsavel_dispositivos rd ON rd.responsavel_id = r.id
     WHERE t.ativa = 1
     GROUP BY t.id
     ORDER BY t.nome

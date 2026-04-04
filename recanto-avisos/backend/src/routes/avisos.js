@@ -70,7 +70,6 @@ router.get('/resumo-aluno', autenticarResponsavel, (req, res) => {
 
   const linha = db.prepare(`
     SELECT
-      COALESCE(v.faltas_mes, 0) AS faltas_mes,
       COALESCE(v.faltas_total, 0) AS faltas_total,
       COALESCE(v.comportamento, 'nao_avaliado') AS comportamento,
       COALESCE(v.observacoes, '') AS observacoes,

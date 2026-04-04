@@ -106,6 +106,8 @@ async function enviarPush(fcm_tokens, titulo, mensagem, urgente, aviso_id) {
     try {
       const db = getDb();
       const ph = tokens_invalidos.map(() => '?').join(',');
+      db.prepare(`DELETE FROM responsavel_dispositivos WHERE fcm_token IN (${ph})`)
+        .run(...tokens_invalidos);
       db.prepare(`UPDATE responsaveis SET fcm_token = NULL WHERE fcm_token IN (${ph})`)
         .run(...tokens_invalidos);
       console.log(`🗑️  ${tokens_invalidos.length} token(s) FCM inválido(s) removido(s).`);
@@ -118,3 +120,4 @@ async function enviarPush(fcm_tokens, titulo, mensagem, urgente, aviso_id) {
 }
 
 module.exports = { init, enviarPush };
+

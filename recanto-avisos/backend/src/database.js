@@ -76,6 +76,19 @@ function migrate() {
       criado_em DATETIME DEFAULT CURRENT_TIMESTAMP
     );
 
+    CREATE TABLE IF NOT EXISTS responsavel_dispositivos (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      responsavel_id INTEGER NOT NULL REFERENCES responsaveis(id) ON DELETE CASCADE,
+      fcm_token TEXT UNIQUE NOT NULL,
+      plataforma TEXT,
+      user_agent TEXT,
+      ultimo_acesso DATETIME DEFAULT CURRENT_TIMESTAMP,
+      criado_em DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_resp_disp_responsavel ON responsavel_dispositivos(responsavel_id);
+    CREATE INDEX IF NOT EXISTS idx_resp_disp_token ON responsavel_dispositivos(fcm_token);
+
     CREATE TABLE IF NOT EXISTS avisos (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       titulo TEXT NOT NULL,
@@ -130,6 +143,16 @@ function migrate() {
   try { db.exec(`ALTER TABLE avisos ADD COLUMN enviado_por TEXT`); } catch {}
   try { db.exec(`ALTER TABLE responsaveis ADD COLUMN aceite_lgpd BOOLEAN DEFAULT 0`); } catch {}
   try { db.exec(`ALTER TABLE responsaveis ADD COLUMN aceite_lgpd_em DATETIME`); } catch {}
+
+  // Migra tokens legados (responsaveis.fcm_token) para a tabela de dispositivos
+  try {
+    db.exec(`
+      INSERT OR IGNORE INTO responsavel_dispositivos (responsavel_id, fcm_token, plataforma, user_agent)
+      SELECT id, fcm_token, 'legado', 'migrado_automaticamente'
+      FROM responsaveis
+      WHERE fcm_token IS NOT NULL AND TRIM(fcm_token) <> ''
+    `);
+  } catch {}
 
   // Garante que o admin legado (criado antes do campo perfil) seja master
   db.exec(`UPDATE admins SET perfil = 'master' WHERE perfil IS NULL OR perfil = '' OR perfil = 'secretaria' AND id = 1`);
