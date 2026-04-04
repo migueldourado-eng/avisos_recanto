@@ -46,7 +46,7 @@ function AvisoCard({ aviso, onDelete }) {
           </button>
         </div>
         <p className="text-on-surface-variant text-sm leading-relaxed">{aviso.mensagem}</p>
-        <p className="text-[11px] font-bold text-error/70 mt-3">â€” Equipe Gestora</p>
+        <p className="text-[11px] font-bold text-error/70 mt-3">&mdash; Equipe Gestora</p>
         <p className="text-outline-variant text-[11px] font-medium mt-0.5">{formatarData(aviso.criado_em)}</p>
       </div>
     )
@@ -79,7 +79,7 @@ function AvisoCard({ aviso, onDelete }) {
         </button>
       </div>
       <p className="text-on-surface-variant text-sm leading-relaxed">{aviso.mensagem}</p>
-      <p className="text-[11px] font-bold text-primary/60 mt-3">â€” Equipe Gestora</p>
+      <p className="text-[11px] font-bold text-primary/60 mt-3">&mdash; Equipe Gestora</p>
       <p className="text-outline-variant text-[11px] font-medium mt-0.5">{formatarData(aviso.criado_em)}</p>
     </div>
   )
@@ -245,7 +245,7 @@ export default function AvisosPage({ onLogout }) {
               </div>
 
             ) : avisos.length === 0 ? (
-              /* Estado vazio â€” Status Hero Card */
+              /* Estado vazio - Status Hero Card */
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-primary to-primary-container opacity-5 blur-3xl -z-10 rounded-full" />
                 <div className="bg-surface-container-lowest rounded-[2.5rem] p-10 flex flex-col items-center text-center shadow-[0_12px_40px_rgba(44,51,56,0.06)]">
@@ -348,15 +348,15 @@ export default function AvisosPage({ onLogout }) {
               {vidaEscolarTab === 'comportamento' && (
                 <div className="bg-[#eef4fb] rounded-[1.5rem] px-4 py-4">
                   <p className="text-[10px] font-bold uppercase tracking-[0.05rem] text-outline-variant mb-2">Comportamento</p>
-                  <p className="text-base font-bold text-on-surface">{resumoAluno?.comportamento_label || 'Nao avaliado'}</p>
-                  <p className="text-xs text-on-surface-variant mt-2">Acompanhe aqui a avaliação mais recente registrada pela escola.</p>
+                  <p className="text-base font-bold text-on-surface">{resumoAluno?.comportamento_label || 'NÃ£o avaliado'}</p>
+                  <p className="text-xs text-on-surface-variant mt-2">Acompanhe aqui a avaliaÃ§Ã£o mais recente registrada pela escola.</p>
                 </div>
               )}
               {vidaEscolarTab === 'observacoes' && (
                 <div className="bg-surface-container-low rounded-[1.5rem] px-4 py-4">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.05rem] text-outline-variant mb-2">Observações</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.05rem] text-outline-variant mb-2">ObservaÃ§Ãµes</p>
                   <p className="text-sm text-on-surface-variant whitespace-pre-wrap">
-                    {resumoAluno?.observacoes?.trim() ? resumoAluno.observacoes : 'Sem observações no momento.'}
+                    {resumoAluno?.observacoes?.trim() ? resumoAluno.observacoes : 'Sem observaÃ§Ãµes no momento.'}
                   </p>
                 </div>
               )}

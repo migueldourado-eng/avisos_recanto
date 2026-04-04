@@ -5,6 +5,12 @@ let messagingInitPromise = null
 
 const firebaseAtivo = !!firebaseConfig.projectId
 
+export function getNotificationPermissionState() {
+  if (!firebaseAtivo || !vapidKey) return 'config_missing'
+  if (typeof window === 'undefined' || !('Notification' in window)) return 'unsupported'
+  return Notification.permission
+}
+
 async function initMessaging() {
   if (!firebaseAtivo || !vapidKey) return null
   if (messaging) return messaging
@@ -45,17 +51,34 @@ if (firebaseAtivo) {
 }
 
 export async function requestNotificationPermission() {
-  if (!firebaseAtivo || !vapidKey) return
-  if (!('Notification' in window)) return
+  const permissionState = getNotificationPermissionState()
+  if (permissionState === 'config_missing') {
+    return { status: 'config_missing', tokenRegistered: false }
+  }
+  if (permissionState === 'unsupported') {
+    return { status: 'unsupported', tokenRegistered: false }
+  }
 
   const currentMessaging = await initMessaging()
-  if (!currentMessaging) return
+  if (!currentMessaging) {
+    return { status: 'unsupported', tokenRegistered: false }
+  }
 
-  const permission = await Notification.requestPermission()
-  if (permission !== 'granted') return
+  const permission =
+    Notification.permission === 'granted'
+      ? 'granted'
+      : await Notification.requestPermission()
+
+  if (permission !== 'granted') {
+    return { status: permission, tokenRegistered: false }
+  }
 
   try {
     const { getToken } = await import('firebase/messaging')
+
+    if (!('serviceWorker' in navigator)) {
+      return { status: 'granted', tokenRegistered: false }
+    }
 
     let swRegistration = await navigator.serviceWorker.getRegistration('/')
     if (!swRegistration) {
@@ -75,8 +98,12 @@ export async function requestNotificationPermission() {
     if (token) {
       const { default: api } = await import('./api/axios')
       await api.post('/auth/register-fcm-token', { fcm_token: token })
+      return { status: 'granted', tokenRegistered: true }
     }
+
+    return { status: 'granted', tokenRegistered: false }
   } catch (err) {
     console.warn('FCM token nao obtido:', err?.message || err)
+    return { status: 'granted', tokenRegistered: false, error: err?.message || 'token_unavailable' }
   }
 }
