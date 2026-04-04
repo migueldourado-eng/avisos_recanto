@@ -4,6 +4,7 @@ const { getDb } = require('../database');
 const { enviarPush } = require('../services/fcm');
 
 const router = express.Router();
+const SQLITE_UTC_TO_ISO = (campo) => `CASE WHEN ${campo} IS NOT NULL THEN REPLACE(${campo}, ' ', 'T') || 'Z' END`;
 
 // ══════════════════════════════════════════════════════════════════════════════
 // TIPOS DE SOLICITAÇÕES
@@ -84,6 +85,9 @@ router.get('/minhas', autenticarResponsavel, (req, res) => {
   const solicitacoes = db.prepare(`
     SELECT
       s.*,
+      ${SQLITE_UTC_TO_ISO('s.criada_em')} AS criada_em,
+      ${SQLITE_UTC_TO_ISO('s.lida_em')} AS lida_em,
+      ${SQLITE_UTC_TO_ISO('s.respondida_em')} AS respondida_em,
       a.nome as aluno_nome
     FROM solicitacoes_pais s
     LEFT JOIN alunos a ON s.aluno_id = a.id
@@ -126,6 +130,9 @@ router.get('/admin', autenticarAdmin, (req, res) => {
   const solicitacoes = db.prepare(`
     SELECT
       s.*,
+      ${SQLITE_UTC_TO_ISO('s.criada_em')} AS criada_em,
+      ${SQLITE_UTC_TO_ISO('s.lida_em')} AS lida_em,
+      ${SQLITE_UTC_TO_ISO('s.respondida_em')} AS respondida_em,
       a.nome as aluno_nome,
       r.nome as responsavel_nome
     FROM solicitacoes_pais s
@@ -146,6 +153,9 @@ router.get('/admin/:id', autenticarAdmin, (req, res) => {
   const solicitacao = db.prepare(`
     SELECT
       s.*,
+      ${SQLITE_UTC_TO_ISO('s.criada_em')} AS criada_em,
+      ${SQLITE_UTC_TO_ISO('s.lida_em')} AS lida_em,
+      ${SQLITE_UTC_TO_ISO('s.respondida_em')} AS respondida_em,
       a.nome as aluno_nome,
       r.nome as responsavel_nome
     FROM solicitacoes_pais s

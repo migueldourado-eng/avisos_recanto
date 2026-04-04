@@ -15,6 +15,8 @@ function normalizar(str) {
     .replace(/\s+/g, ' ');
 }
 
+const MIN_SUGGESTION_CHARS = 5;
+
 // POST /api/auth/login-turma
 router.post('/login-turma', (req, res, next) => {
   try {
@@ -80,6 +82,7 @@ router.post('/login-turma', (req, res, next) => {
 
     res.json({
       token,
+      responsavel_nome: responsavel.nome,
       aluno_nome: aluno.nome,
       turma_nome: turma.nome,
       turma_codigo: turma.codigo,
@@ -94,7 +97,7 @@ router.post('/login-turma', (req, res, next) => {
 router.get('/sugestoes', (req, res, next) => {
   try {
     const { turma, nome } = req.query;
-    if (!turma || !nome || nome.length < 3) return res.json([]);
+    if (!turma || !nome || nome.trim().length < MIN_SUGGESTION_CHARS) return res.json([]);
 
     const db = getDb();
     const turmaObj = db.prepare(

@@ -103,7 +103,7 @@ export async function requestNotificationPermission() {
 
     return { status: 'granted', tokenRegistered: false }
   } catch (err) {
-    console.warn('FCM token nao obtido:', err?.message || err)
+    console.warn('FCM token não obtido:', err?.message || err)
     return { status: 'granted', tokenRegistered: false, error: err?.message || 'token_unavailable' }
   }
 }

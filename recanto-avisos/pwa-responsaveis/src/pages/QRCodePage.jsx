@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Html5QrcodeScanner } from 'html5-qrcode'
+import { Html5Qrcode, Html5QrcodeScanner } from 'html5-qrcode'
 
 export default function QRCodePage() {
   const navigate = useNavigate()
@@ -8,8 +8,10 @@ export default function QRCodePage() {
   const [showManual, setShowManual] = useState(false)
   const [scanning, setScanning] = useState(false)
   const [error, setError] = useState('')
+  const [isMobile, setIsMobile] = useState(false)
   const scannerRef = useRef(null)
   const qrScannerRef = useRef(null)
+  const redirectingRef = useRef(false)
 
   useEffect(() => {
     // Verifica se chegou via QR Code (parâmetro ?turma=XXX na URL)
@@ -22,59 +24,94 @@ export default function QRCodePage() {
       return
     }
 
-    // Inicializa o scanner quando o componente monta
+    const mobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
+    setIsMobile(mobile)
+
+    // No celular, tenta abrir a câmera direto. No PC, mantém a interface da biblioteca.
     if (!qrScannerRef.current && scannerRef.current) {
       try {
-        const scanner = new Html5QrcodeScanner(
-          "qr-reader",
-          {
-            fps: 10,
-            qrbox: { width: 250, height: 250 },
-            aspectRatio: 1.0,
-            rememberLastUsedCamera: true,
-            showTorchButtonIfSupported: true
-          },
-          false
-        )
+        const handleDecodedText = async (decodedText) => {
+          if (redirectingRef.current) return
+          redirectingRef.current = true
+          setScanning(false)
 
-        scanner.render(
-          (decodedText) => {
-            // Sucesso ao escanear
-            scanner.clear()
+          let token = decodedText
+          try {
+            const url = new URL(decodedText)
+            const paramToken = url.searchParams.get('turma')
+            if (paramToken) token = paramToken
+          } catch {}
 
-            // Extrair o token do QR Code
-            // Pode ser uma URL completa ou apenas o token
-            let token = decodedText
-            try {
-              const url = new URL(decodedText)
-              const paramToken = url.searchParams.get('turma')
-              if (paramToken) token = paramToken
-            } catch {
-              // Não é URL, usa o texto direto
+          try {
+            if (mobile && qrScannerRef.current?.stop) {
+              await qrScannerRef.current.stop()
             }
+            await qrScannerRef.current?.clear?.()
+          } catch {}
 
-            navigate(`/login?turma=${token}`)
-          },
-          (errorMessage) => {
-            // Erro de scanning (normal, acontece toda frame)
-            // Não precisa fazer nada aqui
-          }
-        )
+          window.location.assign(`/login?turma=${encodeURIComponent(token)}`)
+        }
 
-        qrScannerRef.current = scanner
-        setScanning(true)
-        setError('')
+        if (mobile) {
+          const scanner = new Html5Qrcode('qr-reader')
+          qrScannerRef.current = scanner
+
+          scanner.start(
+            { facingMode: 'environment' },
+            {
+              fps: 10,
+              qrbox: { width: 250, height: 250 },
+              aspectRatio: 1.0,
+            },
+            handleDecodedText,
+            () => {}
+          ).then(() => {
+            setScanning(true)
+            setError('')
+          }).catch((err) => {
+            console.error('Erro ao iniciar scanner:', err)
+            setError('Não foi possível abrir a câmera. Abra a câmera do celular, leia o QR Code da turma e depois toque no link exibido. Se preferir, digite o código manualmente abaixo.')
+            setScanning(false)
+            setShowManual(true)
+          })
+        } else {
+          const scanner = new Html5QrcodeScanner(
+            'qr-reader',
+            {
+              fps: 10,
+              qrbox: { width: 250, height: 250 },
+              aspectRatio: 1.0,
+              rememberLastUsedCamera: true,
+              showTorchButtonIfSupported: true,
+            },
+            false
+          )
+
+          scanner.render(
+            handleDecodedText,
+            () => {}
+          )
+
+          qrScannerRef.current = scanner
+          setScanning(true)
+          setError('')
+        }
       } catch (err) {
         console.error('Erro ao iniciar scanner:', err)
-        setError('Não foi possível acessar a câmera. Verifique as permissões.')
+        setError(
+          mobile
+            ? 'Não foi possível abrir a câmera. Abra a câmera do celular, leia o QR Code da turma e depois toque no link exibido. Se preferir, digite o código manualmente abaixo.'
+            : 'Não foi possível iniciar o leitor. Você pode usar a biblioteca abaixo ou digitar o código manualmente.'
+        )
         setScanning(false)
+        setShowManual(true)
       }
     }
 
     return () => {
-      // Cleanup: para o scanner quando o componente desmonta
       if (qrScannerRef.current) {
-        qrScannerRef.current.clear().catch(console.error)
+        qrScannerRef.current.stop?.().catch?.(() => {})
+        qrScannerRef.current.clear?.().catch?.(() => {})
         qrScannerRef.current = null
       }
     }
@@ -116,7 +153,11 @@ export default function QRCodePage() {
           Escanear QR Code
         </h1>
         <p style={{ fontSize: '0.875rem', color: '#596065', fontWeight: 500 }}>
-          {scanning ? 'Posicione o QR Code na área de leitura' : 'Aponte a câmera para o QR Code fornecido pela escola'}
+          {isMobile
+            ? (scanning
+                ? 'Posicione o QR Code na área de leitura'
+                : 'A câmera será aberta automaticamente. Se não funcionar, use as instruções ou a opção manual abaixo.')
+            : 'Use a câmera do computador ou envie uma imagem do QR Code pela biblioteca abaixo.'}
         </p>
       </div>
 
@@ -132,8 +173,25 @@ export default function QRCodePage() {
         <div
           id="qr-reader"
           ref={scannerRef}
-          style={{ width: '100%' }}
+          style={{ width: '100%', minHeight: '280px' }}
         />
+
+        {isMobile && error && (
+          <div style={{
+            marginTop: '1rem',
+            padding: '1rem',
+            background: '#f7fbff',
+            borderRadius: '1rem',
+            border: '1px solid rgba(45, 97, 151, 0.2)'
+          }}>
+            <p style={{ fontSize: '0.8rem', fontWeight: 800, color: '#2d6197', margin: '0 0 0.5rem' }}>
+              Como continuar sem a câmera do app
+            </p>
+            <p style={{ fontSize: '0.8rem', color: '#596065', lineHeight: 1.5, margin: 0 }}>
+              Abra a câmera do celular, leia o QR Code da turma e toque no link que aparecer na tela. Se preferir, digite o código da turma manualmente abaixo.
+            </p>
+          </div>
+        )}
 
         {error && (
           <div style={{

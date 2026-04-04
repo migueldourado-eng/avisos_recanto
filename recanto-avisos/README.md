@@ -35,6 +35,10 @@ O acesso do responsavel funciona assim:
 Observacoes:
 - O login continua dependente de `QR + nome do aluno`.
 - O QR atual e por turma, nao por aluno.
+- No celular, a tela de QR tenta abrir a camera direto.
+- Se a camera do app falhar no celular, a tela orienta a usar a camera nativa ou a digitacao manual.
+- No PC, a tela de QR mantem a interface da biblioteca com webcam/upload.
+- As sugestoes de nome do aluno so aparecem apos `5` caracteres digitados.
 - O pedido de instalacao do atalho nao aparece mais na home nem no login; ele aparece depois do aceite.
 
 ### Notificacoes
@@ -52,6 +56,46 @@ O app dos pais exibe:
 - total de faltas;
 - comportamento;
 - observacoes.
+
+### Conta
+
+A aba `Conta` no app dos pais foi simplificada para exibir apenas:
+- nome do responsavel;
+- vinculo do responsavel;
+- aluno vinculado;
+- turma;
+- acao `Falar com a escola`;
+- saida do app com confirmacao.
+
+O nome da escola e outros dados repetidos foram removidos da aba.
+
+### Horarios e datas
+
+Os horarios de avisos e solicitacoes foram ajustados para trafegar em ISO UTC explicito na API, evitando deslocamentos de fuso na exibicao do admin e da PWA.
+
+### Templates de aviso
+
+O painel admin agora abre o fluxo de envio com escolha entre:
+- `Usar modelo pronto`
+- `Escrever aviso do zero`
+
+Categorias atuais com destaque operacional:
+- `Transporte escolar`
+- `Alunos`
+- `Aulas`
+- `Saude`
+- `Frequencia`
+- `Reunioes`
+- `Administrativo`
+
+Templates recentes adicionados:
+- onibus escolar vai atrasar;
+- onibus escolar saira mais cedo hoje;
+- onibus escolar nao vai funcionar hoje;
+- crianca voltou para a escola;
+- aluno nao foi buscado no horario;
+- aluno apresentou mal-estar;
+- mudanca de rotina da turma.
 
 No admin, a aba de comportamento usa a mesma base da aba de alunos e complementa com os dados de vida escolar quando a rota correspondente estiver disponivel.
 
@@ -181,9 +225,15 @@ Funcionalidades principais:
 - solicitacoes dos pais;
 - gerenciamento de dispositivos vinculados ao aluno.
 
+Detalhes do fluxo de aviso:
+- a etapa 2 do envio virou `Como criar`;
+- a secretaria escolhe entre modelo pronto e aviso em branco antes de preencher;
+- os templates sao agrupados por categoria com icones.
+
 ## Observacoes de manutencao
 
 - O workspace pode estar com alteracoes locais fora do escopo do ultimo deploy.
 - O arquivo `admin-panel/index.html` concentra boa parte da UI admin.
 - A PWA tem historico de problemas de encoding em textos; ao editar, valide sempre o build e a renderizacao final.
 - Quando publicar `dist/`, ajuste ownership e permissoes para evitar `403` em `assets/` e `icons/`.
+- Em especial, a pasta `pwa-responsaveis/dist/assets` precisa ficar com permissao de leitura/execucao para o Nginx; se ficar `700`, o app cai por `403` nos bundles.

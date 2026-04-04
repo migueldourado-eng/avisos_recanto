@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../api/axios'
 
+const MIN_SUGGESTION_CHARS = 5
+
 export default function StudentLoginPage({ onLogin }) {
   const navigate = useNavigate()
   const params = new URLSearchParams(window.location.search)
@@ -25,7 +27,7 @@ export default function StudentLoginPage({ onLogin }) {
     setErro('')
     clearTimeout(debounce.current)
 
-    if (value.length >= 3 && qrToken) {
+    if (value.trim().length >= MIN_SUGGESTION_CHARS && qrToken) {
       debounce.current = setTimeout(async () => {
         try {
           const { data } = await api.get('/auth/sugestoes', {
@@ -66,6 +68,7 @@ export default function StudentLoginPage({ onLogin }) {
       onLogin(
         data.token,
         {
+          responsavel_nome: data.responsavel_nome,
           aluno_nome: data.aluno_nome,
           turma_nome: data.turma_nome,
           turma_codigo: data.turma_codigo
@@ -80,7 +83,7 @@ export default function StudentLoginPage({ onLogin }) {
         setSugestoes(sugs)
         setErro('Mais de um aluno encontrado. Selecione o nome correto abaixo.')
       } else {
-        setErro(msg || 'Aluno nao encontrado. Verifique o nome informado.')
+        setErro(msg || 'Aluno não encontrado. Verifique o nome informado.')
       }
     } finally {
       setLoading(false)
@@ -157,7 +160,7 @@ export default function StudentLoginPage({ onLogin }) {
           </h1>
 
           <p style={{ fontSize: '0.875rem', fontWeight: 500, color: '#596065' }}>
-            Confirmacao do aluno
+            Confirmação do aluno
           </p>
         </div>
       </div>
@@ -225,6 +228,9 @@ export default function StudentLoginPage({ onLogin }) {
             }}>
               Nome completo do aluno
             </label>
+            <p style={{ fontSize: '11px', color: '#596065', fontWeight: 500, margin: '0 0 0.75rem' }}>
+              As sugestões só aparecem após {MIN_SUGGESTION_CHARS} caracteres digitados.
+            </p>
 
             <input
               type="text"
@@ -350,7 +356,7 @@ export default function StudentLoginPage({ onLogin }) {
         padding: '1rem'
       }}>
         <p style={{ fontSize: '0.75rem', color: '#abb3b9', fontWeight: 600 }}>
-          Em caso de duvida, procure a secretaria da escola.
+          Em caso de dúvida, procure a secretaria da escola.
         </p>
       </div>
     </div>

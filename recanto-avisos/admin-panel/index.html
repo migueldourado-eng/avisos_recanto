@@ -190,7 +190,7 @@
           <div style="flex:1; height:2px; background:#e3e9ee; margin:0 0.25rem;"></div>
           <div id="step-ind-2" style="display:flex; align-items:center; gap:0.5rem; flex:1;">
             <div id="step-circle-2" style="width:1.75rem; height:1.75rem; border-radius:9999px; background:#e3e9ee; color:#abb3b9; font-size:0.75rem; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0;">2</div>
-            <span id="step-label-2" style="font-size:0.75rem; font-weight:700; color:#abb3b9;">Template</span>
+            <span id="step-label-2" style="font-size:0.75rem; font-weight:700; color:#abb3b9;">Como criar</span>
           </div>
           <div style="flex:1; height:2px; background:#e3e9ee; margin:0 0.25rem;"></div>
           <div id="step-ind-3" style="display:flex; align-items:center; gap:0.5rem; flex:1;">
@@ -249,6 +249,25 @@
             </button>
             <p id="step2-resumo-dest" style="font-size:0.75rem; font-weight:600; color:#2d6197; margin:0;"></p>
           </div>
+          <div class="card" style="margin-bottom:1rem;">
+            <p style="font-size:0.875rem; font-weight:700; color:#2c3338; margin:0 0 0.35rem;">Como deseja criar este aviso?</p>
+            <p style="font-size:0.75rem; color:#596065; margin:0 0 1rem;">Escolha entre usar um modelo pronto ou escrever um aviso totalmente novo.</p>
+            <div style="display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.75rem;">
+              <button type="button" id="modo-aviso-template" onclick="selecionarModoAviso('template')"
+                style="text-align:left; padding:1rem; border-radius:1rem; border:2px solid #e3e9ee; background:white; cursor:pointer; transition:all 0.15s; font-family:'Manrope',system-ui,sans-serif;">
+                <span class="material-symbols-outlined" style="font-size:1.25rem; color:#2d6197; margin-bottom:0.5rem; display:block;">library_books</span>
+                <p style="font-size:0.875rem; font-weight:800; color:#2c3338; margin:0 0 0.2rem;">Usar modelo pronto</p>
+                <p style="font-size:0.75rem; color:#596065; margin:0; line-height:1.45;">Escolha uma categoria e aproveite um texto já preparado.</p>
+              </button>
+              <button type="button" id="modo-aviso-livre" onclick="selecionarModoAviso('livre')"
+                style="text-align:left; padding:1rem; border-radius:1rem; border:2px solid #e3e9ee; background:white; cursor:pointer; transition:all 0.15s; font-family:'Manrope',system-ui,sans-serif;">
+                <span class="material-symbols-outlined" style="font-size:1.25rem; color:#2d6197; margin-bottom:0.5rem; display:block;">edit_square</span>
+                <p style="font-size:0.875rem; font-weight:800; color:#2c3338; margin:0 0 0.2rem;">Escrever aviso do zero</p>
+                <p style="font-size:0.75rem; color:#596065; margin:0; line-height:1.45;">Crie um título e uma mensagem personalizados.</p>
+              </button>
+            </div>
+          </div>
+          <div id="templates-prontos-section" style="display:none;">
           <!-- Meus templates salvos -->
           <div id="templates-custom-section" style="display:none; margin-bottom:1rem;">
             <div class="card" style="border-color:#2e7d52; background:#f0faf4;">
@@ -261,13 +280,18 @@
           </div>
 
           <div id="templates-list" style="margin-bottom:1rem;"></div>
+          </div>
 
-          <!-- Criar novo aviso -->
+          <div id="criar-aviso-section" style="display:none;">
           <div class="card" style="margin-bottom:1.25rem; border-color:#cfdbe6;">
-            <button type="button" onclick="toggleCriarAviso()" style="width:100%; padding:0.75rem; font-size:0.875rem; font-weight:700; color:#2d6197; background:none; border:none; cursor:pointer; display:flex; align-items:center; gap:0.5rem;">
-              <span class="material-symbols-outlined" style="font-size:1.125rem; font-variation-settings:'FILL' 1;">add_circle</span> Criar novo aviso
-            </button>
-            <div id="criar-aviso-painel" style="display:none; border-top:1.5px solid #e3e9ee; margin-top:0.75rem; padding-top:1rem;">
+            <div style="display:flex; align-items:flex-start; gap:0.625rem; margin-bottom:1rem;">
+              <span class="material-symbols-outlined" style="font-size:1.125rem; font-variation-settings:'FILL' 1; color:#2d6197;">add_circle</span>
+              <div>
+                <p style="font-size:0.875rem; font-weight:800; color:#2c3338; margin:0 0 0.15rem;">Aviso em branco</p>
+                <p style="font-size:0.75rem; color:#596065; margin:0;">Preencha o título e a mensagem para montar um aviso novo.</p>
+              </div>
+            </div>
+            <div id="criar-aviso-painel" style="display:block; border-top:1.5px solid #e3e9ee; padding-top:1rem;">
               <div style="margin-bottom:0.875rem;">
                 <label class="field-label">Título</label>
                 <input id="novo-titulo" class="field-input" type="text" placeholder="Ex: Evento especial da escola..." style="margin:0;" />
@@ -289,6 +313,7 @@
                 </button>
               </div>
             </div>
+          </div>
           </div>
         </div>
 
@@ -704,6 +729,7 @@ async function loadDashboard() {
 let _turmasList    = []
 let _templatesList = []
 let _templateAtivo = null
+let _modoAviso = null
 let _destinatario  = { tipo: null, ids: [], turmasNomes: [], alunosNomes: [] }
 let _alunosSelecionados = [] // [{ id, nome, turma_nome }]
 let _responsaveisCache = []
@@ -744,11 +770,21 @@ async function loadFormAvisos() {
     // Monta lista de templates
     _templatesList = []
     const categoriaIcons = {
+      'Transporte escolar':'directions_bus','Alunos':'person',
       'Aulas':'school','Infraestrutura':'handyman','Frequência':'event_busy',
       'Saúde':'health_and_safety','Comportamento':'psychology','Reuniões':'groups',
       'Administrativo':'admin_panel_settings','Uniforme':'checkroom','Merenda':'lunch_dining'
     }
-    const html = Object.entries(porCategoria).map(([cat, templates]) => {
+    const categoriaOrder = ['Transporte escolar','Alunos','Aulas','Saúde','Frequência','Reuniões','Administrativo','Uniforme','Merenda','Infraestrutura','Comportamento']
+    const categoriasOrdenadas = Object.entries(porCategoria).sort(([a], [b]) => {
+      const ia = categoriaOrder.indexOf(a)
+      const ib = categoriaOrder.indexOf(b)
+      if (ia === -1 && ib === -1) return a.localeCompare(b, 'pt-BR')
+      if (ia === -1) return 1
+      if (ib === -1) return -1
+      return ia - ib
+    })
+    const html = categoriasOrdenadas.map(([cat, templates]) => {
       const icon = categoriaIcons[cat] || 'folder'
       const rows = templates.map(t => {
         const idx = _templatesList.length
@@ -908,6 +944,31 @@ function ativarStep(n) {
   })
 }
 
+function selecionarModoAviso(modo) {
+  _modoAviso = modo
+  const isTemplate = modo === 'template'
+  const cardTemplate = document.getElementById('modo-aviso-template')
+  const cardLivre = document.getElementById('modo-aviso-livre')
+
+  if (cardTemplate) {
+    cardTemplate.style.borderColor = isTemplate ? '#2d6197' : '#e3e9ee'
+    cardTemplate.style.background = isTemplate ? '#f0f8ff' : 'white'
+  }
+  if (cardLivre) {
+    cardLivre.style.borderColor = !isTemplate ? '#2d6197' : '#e3e9ee'
+    cardLivre.style.background = !isTemplate ? '#f0f8ff' : 'white'
+  }
+
+  document.getElementById('templates-prontos-section').style.display = isTemplate ? '' : 'none'
+  document.getElementById('criar-aviso-section').style.display = isTemplate ? 'none' : ''
+
+  if (isTemplate) {
+    renderizarTemplatesCustom()
+  } else {
+    document.getElementById('novo-titulo').focus()
+  }
+}
+
 // Etapa 2 -> 3: Templates
 const PLACEHOLDER_CONFIG = {
   'DATA':          { label: 'Data',               type: 'date'   },
@@ -989,6 +1050,7 @@ function _mostrarEtapa3(t) {
 }
 
 function aplicarTemplate(i) {
+  selecionarModoAviso('template')
   const t = _templatesList[i]
   _mostrarEtapa3(t)
   document.getElementById('aviso-titulo').value    = t.titulo
@@ -1057,6 +1119,7 @@ function renderizarTemplatesCustom() {
     </div>`).join('')
 }
 function aplicarTemplateCustom(i) {
+  selecionarModoAviso('template')
   const lista = carregarTemplatesPersonalizados()
   const t = { ...lista[i], urgente: lista[i].urgente || false }
   _mostrarEtapa3(t)
@@ -1094,6 +1157,7 @@ function salvarNovoTemplate() {
 }
 
 function usarNovoAviso() {
+  selecionarModoAviso('livre')
   const titulo   = document.getElementById('novo-titulo').value.trim()
   const mensagem = document.getElementById('novo-mensagem').value.trim()
   if (!titulo || !mensagem) { toast('Preencha título e mensagem','error'); return }
@@ -1107,6 +1171,7 @@ function usarNovoAviso() {
 }
 
 function usarAvisoPersonalizado() {
+  selecionarModoAviso('livre')
   // mantida por compatibilidade â€” não usada mais na UI
   _templateAtivo = null
   _mostrarEtapa3(null)
@@ -1146,6 +1211,7 @@ function resetarFormulario() {
   _destinatario      = { tipo: null, ids: [], turmasNomes: [], alunosNomes: [] }
   _alunosSelecionados = []
   _templateAtivo     = null
+  _modoAviso         = null
   ativarStep(1)
   // Mostra etapa 1, esconde as outras
   document.getElementById('aviso-step1').style.display = ''
@@ -1166,10 +1232,16 @@ function resetarFormulario() {
   document.getElementById('alunos-selecionados-lista').innerHTML = ''
   document.getElementById('campos-template-lista').innerHTML = ''
   document.getElementById('campos-template').style.display = 'none'
-  document.getElementById('criar-aviso-painel').style.display = 'none'
+  document.getElementById('templates-prontos-section').style.display = 'none'
+  document.getElementById('criar-aviso-section').style.display = 'none'
+  document.getElementById('criar-aviso-painel').style.display = 'block'
   document.getElementById('novo-titulo').value    = ''
   document.getElementById('novo-mensagem').value  = ''
   document.getElementById('novo-urgente').checked = false
+  const cardTemplate = document.getElementById('modo-aviso-template')
+  const cardLivre = document.getElementById('modo-aviso-livre')
+  if (cardTemplate) { cardTemplate.style.borderColor = '#e3e9ee'; cardTemplate.style.background = 'white' }
+  if (cardLivre) { cardLivre.style.borderColor = '#e3e9ee'; cardLivre.style.background = 'white' }
   if (document.getElementById('form-aviso')) document.getElementById('form-aviso').reset()
 }
 

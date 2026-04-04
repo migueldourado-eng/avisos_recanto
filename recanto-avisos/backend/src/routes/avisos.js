@@ -3,6 +3,7 @@ const { getDb } = require('../database');
 const { autenticarResponsavel } = require('../middleware/auth');
 
 const router = express.Router();
+const SQLITE_UTC_TO_ISO = (campo) => `CASE WHEN ${campo} IS NOT NULL THEN REPLACE(${campo}, ' ', 'T') || 'Z' END`;
 const COMPORTAMENTO_LABELS = {
   nao_avaliado: '⚪ Não avaliado',
   muito_positivo: '🌟 Comportamento muito positivo, serve de exemplo',
@@ -20,8 +21,10 @@ router.get('/', autenticarResponsavel, (req, res) => {
 
   const avisos = db.prepare(`
     SELECT
-      a.id, a.titulo, a.mensagem, a.urgente, a.criado_em,
-      e.aberto, e.aberto_em
+      a.id, a.titulo, a.mensagem, a.urgente,
+      ${SQLITE_UTC_TO_ISO('a.criado_em')} AS criado_em,
+      e.aberto,
+      ${SQLITE_UTC_TO_ISO('e.aberto_em')} AS aberto_em
     FROM avisos a
     JOIN entregas e ON e.aviso_id = a.id
     WHERE e.responsavel_id = ?

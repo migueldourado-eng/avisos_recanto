@@ -48,6 +48,8 @@ const avisoLimiter = rateLimit({
   message: { error: 'Muitos avisos enviados. Aguarde 1 minuto.' },
 });
 
+const SQLITE_UTC_TO_ISO = (campo) => `CASE WHEN ${campo} IS NOT NULL THEN REPLACE(${campo}, ' ', 'T') || 'Z' END`;
+
 // ─── Helpers CSV ─────────────────────────────────────────────────────────────
 
 function normalizarTexto(str) {
@@ -704,7 +706,8 @@ router.get('/avisos', (req, res) => {
 
   const avisos = db.prepare(`
     SELECT
-      a.id, a.titulo, a.urgente, a.criado_em,
+      a.id, a.titulo, a.urgente,
+      ${SQLITE_UTC_TO_ISO('a.criado_em')} AS criado_em,
       a.enviado_por,
       adm.nome            AS admin_nome,
       adm.perfil          AS admin_perfil,
@@ -725,7 +728,13 @@ router.get('/avisos', (req, res) => {
 
 router.get('/avisos/:id/entregas', (req, res) => {
   const db = getDb();
-  const aviso = db.prepare('SELECT * FROM avisos WHERE id = ?').get(req.params.id);
+  const aviso = db.prepare(`
+    SELECT
+      a.*,
+      ${SQLITE_UTC_TO_ISO('a.criado_em')} AS criado_em
+    FROM avisos a
+    WHERE a.id = ?
+  `).get(req.params.id);
 
   if (!aviso) return res.status(404).json({ error: 'Aviso não encontrado.' });
 
@@ -735,8 +744,10 @@ router.get('/avisos/:id/entregas', (req, res) => {
       a.nome   AS aluno_nome,
       t.nome   AS turma_nome,
       t.codigo AS turma_codigo,
-      e.push_enviado, e.push_enviado_em,
-      e.aberto, e.aberto_em
+      e.push_enviado,
+      ${SQLITE_UTC_TO_ISO('e.push_enviado_em')} AS push_enviado_em,
+      e.aberto,
+      ${SQLITE_UTC_TO_ISO('e.aberto_em')} AS aberto_em
     FROM entregas e
     JOIN responsaveis r ON e.responsavel_id = r.id
     JOIN alunos       a ON r.aluno_id        = a.id

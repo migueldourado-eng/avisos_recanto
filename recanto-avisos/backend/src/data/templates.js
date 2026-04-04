@@ -17,7 +17,7 @@ const TEMPLATES = [
   },
   {
     id: 3,
-    categoria: 'Aulas',
+    categoria: 'Alunos',
     titulo: 'Buscar a criança mais cedo',
     mensagem: 'Precisamos que [NOME DO ALUNO] seja buscado(a) hoje até às [HORÁRIO]. Motivo: [MOTIVO]. Se não puder vir, ligue agora: [TELEFONE].',
     urgente: true,
@@ -268,6 +268,57 @@ const TEMPLATES = [
     categoria: 'Merenda',
     titulo: 'Sem merenda hoje',
     mensagem: 'Informamos que hoje não haverá merenda na escola. Por favor, envie um lanche para [NOME DO ALUNO].',
+    urgente: false,
+  },
+
+  // ─── TRANSPORTE ESCOLAR ─────────────────────────────────────────────────────
+  {
+    id: 37,
+    categoria: 'Transporte escolar',
+    titulo: 'Ônibus escolar vai atrasar',
+    mensagem: 'O ônibus escolar da rota [ROTA] terá atraso de aproximadamente [TEMPO] hoje. Pedimos atenção e agradecemos a compreensão.',
+    urgente: true,
+  },
+  {
+    id: 38,
+    categoria: 'Transporte escolar',
+    titulo: 'Ônibus escolar sairá mais cedo hoje',
+    mensagem: 'O ônibus escolar da rota [ROTA] sairá mais cedo hoje, às [HORÁRIO]. Pedimos que o responsável se organize com antecedência.',
+    urgente: true,
+  },
+  {
+    id: 39,
+    categoria: 'Transporte escolar',
+    titulo: 'Ônibus escolar não vai funcionar hoje',
+    mensagem: 'Informamos que o transporte escolar da rota [ROTA] não funcionará hoje. Pedimos que a família organize outra forma de deslocamento do aluno, se possível.',
+    urgente: true,
+  },
+  {
+    id: 40,
+    categoria: 'Transporte escolar',
+    titulo: 'Criança voltou para a escola',
+    mensagem: 'O transporte escolar levou [NOME DO ALUNO] ao destino, mas não havia responsável para recebê-lo(a). Por segurança, a criança retornou para a escola. Por favor, entre em contato imediatamente e venha buscá-lo(a).',
+    urgente: true,
+  },
+  {
+    id: 41,
+    categoria: 'Alunos',
+    titulo: 'Aluno não foi buscado no horário',
+    mensagem: '[NOME DO ALUNO] ainda está na escola aguardando um responsável. Por favor, entre em contato imediatamente ou venha buscá-lo(a) o quanto antes.',
+    urgente: true,
+  },
+  {
+    id: 42,
+    categoria: 'Saúde',
+    titulo: 'Aluno apresentou mal-estar',
+    mensagem: '[NOME DO ALUNO] apresentou mal-estar hoje na escola. Neste momento está em segurança e sendo acompanhado(a). Pedimos que o responsável venha buscá-lo(a) ou entre em contato com urgência: [TELEFONE].',
+    urgente: true,
+  },
+  {
+    id: 43,
+    categoria: 'Aulas',
+    titulo: 'Mudança de rotina da turma',
+    mensagem: 'A rotina da turma [TURMA] terá alteração em [DATA] por motivo de [MOTIVO]. Pedimos atenção às orientações da escola.',
     urgente: false,
   },
 ];

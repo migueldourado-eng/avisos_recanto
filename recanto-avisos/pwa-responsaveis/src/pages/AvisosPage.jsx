@@ -20,68 +20,57 @@ function formatarData(dateStr) {
 function AvisoCard({ aviso, onDelete }) {
   if (aviso.urgente) {
     return (
-      <div className="bg-[#fff3f2] rounded-[2rem] p-5 shadow-[0_8px_30px_rgba(168,56,54,0.08)] relative">
-        <div className="flex items-start gap-4 mb-3">
-          <div
-            className="w-12 h-12 rounded-[1.25rem] flex items-center justify-center shrink-0 shadow-md"
-            style={{ background: 'linear-gradient(135deg, #a83836, #fa746f)', boxShadow: '0 4px 12px rgba(168,56,54,0.25)' }}
-          >
-            <span
-              className="material-symbols-outlined text-white"
-              style={{ fontVariationSettings: "'FILL' 1, 'wght' 500" }}
+      <article className="bg-surface-container-lowest px-5 py-5 rounded-[1.75rem] shadow-[0_12px_32px_rgba(0,63,152,0.05)] relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-[#f6efea] -mr-8 -mt-8" />
+        <div className="relative flex items-start justify-between gap-3 mb-4">
+          <span className="inline-flex items-center rounded-full bg-[#a24a16] px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.16em] text-white">
+            Urgente
+          </span>
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-[13px] font-medium text-on-surface-variant">{formatarData(aviso.criado_em)}</span>
+            <button
+              onClick={() => onDelete(aviso.id)}
+              className="w-8 h-8 rounded-full bg-error/10 hover:bg-error/20 active:scale-95 transition-all flex items-center justify-center"
+              aria-label="Apagar aviso"
             >
-              warning
-            </span>
+              <span className="material-symbols-outlined text-error text-[18px]">close</span>
+            </button>
           </div>
-          <div className="flex-1 min-w-0 pt-0.5">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-error mb-0.5">Urgente</p>
-            <h3 className="text-[0.9375rem] font-bold text-on-surface leading-snug">{aviso.titulo}</h3>
-          </div>
-          <button
-            onClick={() => onDelete(aviso.id)}
-            className="shrink-0 w-8 h-8 rounded-full bg-error/10 hover:bg-error/20 active:scale-95 transition-all flex items-center justify-center"
-            aria-label="Apagar aviso"
-          >
-            <span className="material-symbols-outlined text-error text-[18px]">close</span>
-          </button>
         </div>
-        <p className="text-on-surface-variant text-sm leading-relaxed">{aviso.mensagem}</p>
-        <p className="text-[11px] font-bold text-error/70 mt-3">&mdash; Equipe Gestora</p>
-        <p className="text-outline-variant text-[11px] font-medium mt-0.5">{formatarData(aviso.criado_em)}</p>
-      </div>
+        <h3 className="relative text-[1.6rem] font-extrabold tracking-tight text-on-surface leading-tight mb-3">
+          {aviso.titulo}
+        </h3>
+        <p className="relative text-[1rem] leading-8 text-on-surface-variant">
+          {aviso.mensagem}
+        </p>
+      </article>
     )
   }
 
   return (
-    <div className="bg-surface-container-lowest rounded-[2rem] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative">
-      <div className="flex items-start gap-4 mb-3">
-        <div
-          className="w-12 h-12 rounded-[1.25rem] flex items-center justify-center shrink-0"
-          style={{ background: 'linear-gradient(135deg, #2d6197, #92c1fe)', boxShadow: '0 4px 12px rgba(45,97,151,0.20)' }}
-        >
-          <span
-            className="material-symbols-outlined text-white"
-            style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}
+    <article className="bg-surface-container-lowest px-5 py-5 rounded-[1.75rem] shadow-[0_12px_32px_rgba(0,63,152,0.05)]">
+      <div className="flex items-start justify-between gap-3 mb-4">
+        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+          <span className="material-symbols-outlined text-primary text-[20px]">campaign</span>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="text-[13px] font-medium text-on-surface-variant">{formatarData(aviso.criado_em)}</span>
+          <button
+            onClick={() => onDelete(aviso.id)}
+            className="w-8 h-8 rounded-full bg-outline-variant/10 hover:bg-outline-variant/20 active:scale-95 transition-all flex items-center justify-center"
+            aria-label="Apagar aviso"
           >
-            campaign
-          </span>
+            <span className="material-symbols-outlined text-outline-variant text-[18px]">close</span>
+          </button>
         </div>
-        <div className="flex-1 min-w-0 pt-0.5">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-primary mb-0.5">Aviso</p>
-          <h3 className="text-[0.9375rem] font-bold text-on-surface leading-snug">{aviso.titulo}</h3>
-        </div>
-        <button
-          onClick={() => onDelete(aviso.id)}
-          className="shrink-0 w-8 h-8 rounded-full bg-outline-variant/10 hover:bg-outline-variant/20 active:scale-95 transition-all flex items-center justify-center"
-          aria-label="Apagar aviso"
-        >
-          <span className="material-symbols-outlined text-outline-variant text-[18px]">close</span>
-        </button>
       </div>
-      <p className="text-on-surface-variant text-sm leading-relaxed">{aviso.mensagem}</p>
-      <p className="text-[11px] font-bold text-primary/60 mt-3">&mdash; Equipe Gestora</p>
-      <p className="text-outline-variant text-[11px] font-medium mt-0.5">{formatarData(aviso.criado_em)}</p>
-    </div>
+      <h3 className="text-[1.6rem] font-extrabold tracking-tight text-on-surface leading-tight mb-3">
+        {aviso.titulo}
+      </h3>
+      <p className="text-[1rem] leading-8 text-on-surface-variant">
+        {aviso.mensagem}
+      </p>
+    </article>
   )
 }
 
@@ -91,9 +80,10 @@ export default function AvisosPage({ onLogout }) {
   const [avisos,     setAvisos]     = useState([])
   const [loading,    setLoading]    = useState(true)
   const [refreshing, setRefreshing] = useState(false)
-  const [tab,        setTab]        = useState('avisos') // 'avisos' | 'vida-escolar'
+  const [tab,        setTab]        = useState('avisos') // 'avisos' | 'vida-escolar' | 'conta'
   const [vidaEscolarTab, setVidaEscolarTab] = useState('faltas') // 'faltas' | 'comportamento' | 'observacoes'
   const [mostrarModal, setMostrarModal] = useState(false)
+  const [confirmandoSaida, setConfirmandoSaida] = useState(false)
   const [resumoAluno, setResumoAluno] = useState(null)
 
   const containerRef = useRef(null)
@@ -164,35 +154,61 @@ export default function AvisosPage({ onLogout }) {
     .split(' ').slice(0, 2).map(n => n[0]).join('').toUpperCase()
 
   return (
-    <div className="min-h-screen bg-surface flex flex-col">
+    <div className="min-h-screen bg-[#f8f9fb] flex flex-col">
 
       {/* TopAppBar */}
       <header
-        className="fixed top-0 w-full z-50 flex items-center justify-between px-5 bg-surface/80 backdrop-blur-md"
-        style={{ paddingTop: 'calc(env(safe-area-inset-top) + 1rem)', paddingBottom: '1rem' }}
+        className="fixed top-0 left-0 right-0 z-50 bg-[#f8f9fb]/95 backdrop-blur-md"
+        style={{ paddingTop: 'calc(env(safe-area-inset-top) + 1rem)' }}
       >
-        <div className="flex items-center gap-3">
-          <div
-            className="w-8 h-8 rounded-full flex items-center justify-center"
-            style={{ background: 'linear-gradient(135deg, #2d6197, #92c1fe)' }}
-          >
-            <span
-              className="material-symbols-outlined text-white"
-              style={{ fontSize: '1.1rem', fontVariationSettings: "'FILL' 1, 'wght' 600, 'opsz' 20" }}
-            >
-              school
-            </span>
+        <div className="w-full max-w-xl mx-auto px-6 pb-3">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex items-center gap-3 min-w-0">
+              <div
+                className="w-11 h-11 rounded-full shrink-0 flex items-center justify-center text-white font-extrabold text-sm"
+                style={{ background: 'linear-gradient(135deg, #1f59c1, #7ea8f5)' }}
+              >
+                {iniciais}
+              </div>
+              <div className="min-w-0">
+                <p className="text-[13px] leading-5 text-on-surface-variant truncate">
+                  Escola Municipal Recanto das Margaridas
+                </p>
+                <p className="text-[1.05rem] font-extrabold text-on-surface truncate">
+                  {userInfo.aluno_nome || 'Meu Filho'}
+                </p>
+              </div>
+            </div>
           </div>
-          <span className="text-[11px] font-bold uppercase tracking-widest text-on-surface">
-            Recanto das Margaridas
-          </span>
+
+          {tab === 'avisos' ? (
+            <div>
+              <h1 className="text-[2.1rem] font-extrabold tracking-tight text-on-surface leading-none">Avisos</h1>
+              <div className="flex items-center gap-2 mt-2">
+                <p className="text-[0.95rem] text-on-surface-variant">
+                  {userInfo.turma_nome || 'Turma'}{userInfo.turma_codigo ? ` - Cód. ${userInfo.turma_codigo}` : ''}
+                </p>
+                {hasUrgent ? <span className="w-2 h-2 rounded-full bg-error animate-pulse" /> : null}
+              </div>
+            </div>
+          ) : (
+            tab === 'vida-escolar' ? (
+            <div>
+              <h1 className="text-[2.1rem] font-extrabold tracking-tight text-on-surface leading-none">Vida Escolar</h1>
+              <p className="text-[0.95rem] text-on-surface-variant mt-2">
+                Acompanhamento do aluno
+              </p>
+            </div>
+            ) : (
+            <div>
+              <h1 className="text-[2.1rem] font-extrabold tracking-tight text-on-surface leading-none">Conta</h1>
+              <p className="text-[0.95rem] text-on-surface-variant mt-2">
+                Dados do responsável e acesso ao app
+              </p>
+            </div>
+            )
+          )}
         </div>
-        {hasUrgent && (
-          <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-error animate-pulse" />
-            <span className="text-[10px] font-bold text-error uppercase tracking-wide">Urgente</span>
-          </div>
-        )}
       </header>
 
       {/* Conteúdo principal */}
@@ -200,8 +216,8 @@ export default function AvisosPage({ onLogout }) {
         ref={containerRef}
         className="flex-1 overflow-y-auto"
         style={{
-          paddingTop:    'calc(env(safe-area-inset-top) + 72px)',
-          paddingBottom: 'calc(env(safe-area-inset-bottom) + 80px)',
+          paddingTop: 'calc(env(safe-area-inset-top) + 140px)',
+          paddingBottom: 'calc(env(safe-area-inset-bottom) + 96px)',
         }}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
@@ -218,26 +234,12 @@ export default function AvisosPage({ onLogout }) {
 
         {/* Aba Avisos */}
         {tab === 'avisos' && (
-          <div className="px-5">
-
-            {/* Cabeçalho do perfil */}
-            <section className="mb-8">
-              <h2 className="text-[0.6875rem] font-bold uppercase tracking-[0.05rem] text-on-surface-variant/80 mb-0.5">
-                {userInfo.turma_codigo ? `Turma ${userInfo.turma_codigo}` : 'Escola Municipal'}
-              </h2>
-              <h1 className="text-2xl font-extrabold tracking-tight text-on-surface leading-tight">
-                {userInfo.aluno_nome || 'Meu Filho'}
-              </h1>
-              {userInfo.turma_nome && (
-                <p className="text-sm font-semibold text-primary mt-0.5">{userInfo.turma_nome}</p>
-              )}
-            </section>
-
+          <div className="px-6 max-w-xl mx-auto w-full">
             {/* Loading */}
             {loading ? (
-              <div className="bg-surface-container-lowest rounded-[2.5rem] p-10 flex flex-col items-center text-center shadow-[0_12px_40px_rgba(44,51,56,0.05)]">
-                <div className="w-16 h-16 rounded-full bg-surface-container-low flex items-center justify-center mb-4">
-                  <span className="material-symbols-outlined text-4xl text-outline-variant animate-pulse">
+              <div className="bg-surface-container-lowest rounded-[1.75rem] p-10 flex flex-col items-center text-center shadow-[0_12px_32px_rgba(0,63,152,0.05)]">
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                  <span className="material-symbols-outlined text-4xl text-primary animate-pulse">
                     notifications
                   </span>
                 </div>
@@ -246,10 +248,8 @@ export default function AvisosPage({ onLogout }) {
 
             ) : avisos.length === 0 ? (
               /* Estado vazio - Status Hero Card */
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary to-primary-container opacity-5 blur-3xl -z-10 rounded-full" />
-                <div className="bg-surface-container-lowest rounded-[2.5rem] p-10 flex flex-col items-center text-center shadow-[0_12px_40px_rgba(44,51,56,0.06)]">
-                  <div className="mb-5 w-20 h-20 rounded-full bg-[#f0faf4] flex items-center justify-center">
+              <div className="bg-surface-container-lowest rounded-[1.75rem] p-10 flex flex-col items-center text-center shadow-[0_12px_32px_rgba(0,63,152,0.05)]">
+                  <div className="mb-5 w-20 h-20 rounded-full bg-[#eef6f0] flex items-center justify-center">
                     <span
                       className="material-symbols-outlined text-[#2e7d52]"
                       style={{ fontSize: '3rem', fontVariationSettings: "'FILL' 1, 'wght' 300" }}
@@ -259,12 +259,11 @@ export default function AvisosPage({ onLogout }) {
                   </div>
                   <h3 className="text-xl font-bold text-on-surface mb-1.5 tracking-tight">Tudo certo!</h3>
                   <p className="text-on-surface-variant text-sm font-medium">Nenhum aviso no momento</p>
-                </div>
               </div>
 
             ) : (
               /* Lista única ordenada por data (mais recente primeiro) */
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {avisosOrdenados.map(a => <AvisoCard key={a.id} aviso={a} onDelete={apagarAviso} />)}
               </div>
             )}
@@ -273,140 +272,191 @@ export default function AvisosPage({ onLogout }) {
 
         {/* Aba Vida Escolar */}
         {tab === 'vida-escolar' && (
-          <div className="px-5">
-            <section className="mb-8">
-              <h2 className="text-[0.6875rem] font-bold uppercase tracking-[0.05rem] text-on-surface-variant/80 mb-0.5">
-                Acompanhamento do Aluno
-              </h2>
-              <h1 className="text-2xl font-extrabold tracking-tight text-on-surface">Vida Escolar</h1>
+          <div className="px-6 max-w-xl mx-auto w-full space-y-6">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <button
+                onClick={() => setVidaEscolarTab('faltas')}
+                className={`min-h-[12rem] sm:aspect-square rounded-[1.5rem] p-5 text-left shadow-[0_12px_32px_rgba(0,63,152,0.03)] border transition-all active:scale-[0.98] ${
+                  vidaEscolarTab === 'faltas'
+                    ? 'bg-surface-container-lowest border-primary/20'
+                    : 'bg-surface-container-lowest border-outline-variant/10'
+                }`}
+              >
+                <div className="flex items-center gap-2 mb-5">
+                  <span className="material-symbols-outlined text-primary text-[20px]">calendar_today</span>
+                  <span className="text-sm font-semibold text-on-surface-variant">Faltas</span>
+                </div>
+                <div>
+                  <span className="block text-5xl sm:text-6xl font-extrabold leading-none text-primary">
+                    {resumoAluno?.faltas_total ?? 0}
+                  </span>
+                  <p className="text-sm text-on-surface-variant mt-2">neste acompanhamento</p>
+                </div>
+              </button>
+
+              <button
+                onClick={() => setVidaEscolarTab('comportamento')}
+                className="min-h-[12rem] sm:aspect-square rounded-[1.5rem] p-5 text-left text-white shadow-[0_12px_32px_rgba(0,63,152,0.15)] transition-all active:scale-[0.98] flex flex-col justify-between"
+                style={{ background: 'linear-gradient(135deg, #0f4dac, #1a56be)' }}
+              >
+                <div className="flex items-center gap-2 opacity-85">
+                  <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                    auto_awesome
+                  </span>
+                  <span className="text-sm font-semibold">Comportamento</span>
+                </div>
+                <div className="mt-6 sm:mt-4">
+                  <p className="text-[1.55rem] sm:text-[1.75rem] font-extrabold leading-tight break-words">
+                    {resumoAluno?.comportamento_label || 'Nao avaliado'}
+                  </p>
+                  <p className="text-xs opacity-75 mt-2">Resumo do corpo docente</p>
+                </div>
+              </button>
+            </div>
+
+            <section className="space-y-3">
+              <div className="flex items-center justify-between px-1">
+                <button onClick={() => setVidaEscolarTab('observacoes')} className="text-left">
+                  <h3 className="text-lg font-bold text-on-surface">Observacoes</h3>
+                </button>
+                <span className="text-xs text-on-surface-variant">Registro atual</span>
+              </div>
+
+              <div className="bg-surface-container-low rounded-[2rem] p-6 relative overflow-hidden">
+                <div className="absolute -top-4 -right-3 opacity-10">
+                  <span className="material-symbols-outlined text-[5.5rem] text-on-surface-variant">format_quote</span>
+                </div>
+
+                <div className="relative z-10 flex gap-4 items-start">
+                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
+                    <span className="material-symbols-outlined text-[#a24a16] text-[20px]">school</span>
+                  </div>
+
+                  <div className="space-y-3">
+                    <p className="text-on-surface text-[1.05rem] leading-9 font-medium whitespace-pre-wrap">
+                      {resumoAluno?.observacoes?.trim() ? resumoAluno.observacoes : 'Sem observações no momento.'}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <div className="h-1 w-8 bg-[#a24a16] rounded-full" />
+                      <span className="text-xs font-bold text-on-surface-variant uppercase tracking-[0.14em]">
+                        Escola
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </section>
 
-            {/* Card de perfil */}
-            <div className="bg-surface-container-lowest rounded-[2.5rem] p-8 shadow-[0_12px_40px_rgba(44,51,56,0.06)] flex flex-col items-center text-center mb-4">
-              <div
-                className="w-20 h-20 rounded-full flex items-center justify-center mb-5 shadow-lg"
-                style={{ background: 'linear-gradient(135deg, #2d6197, #92c1fe)', boxShadow: '0 8px 24px rgba(45,97,151,0.25)' }}
-              >
-                <span className="text-2xl font-extrabold text-white">{iniciais}</span>
-              </div>
-              <h2 className="text-xl font-bold text-on-surface tracking-tight">
-                {userInfo.aluno_nome || 'Aluno'}
-              </h2>
-              {userInfo.turma_nome && (
-                <p className="text-sm font-semibold text-primary mt-1">{userInfo.turma_nome}</p>
-              )}
-              {userInfo.turma_codigo && (
-                <span className="mt-3 px-3 py-1.5 bg-surface-container-low rounded-full text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">
-                  Turma {userInfo.turma_codigo}
-                </span>
-              )}
-            </div>
+          </div>
+        )}
 
-            <div className="bg-surface-container-lowest rounded-[2rem] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.03)] mb-4">
-              <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
-                <button
-                  onClick={() => setVidaEscolarTab('faltas')}
-                  className={`px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-[0.05rem] whitespace-nowrap transition-all ${
-                    vidaEscolarTab === 'faltas'
-                      ? 'text-white shadow-lg shadow-primary/20'
-                      : 'bg-surface-container-low text-on-surface-variant'
-                  }`}
-                  style={vidaEscolarTab === 'faltas' ? { background: 'linear-gradient(135deg, #2d6197, #92c1fe)' } : {}}
+        {tab === 'conta' && (
+          <div className="px-6 max-w-xl mx-auto w-full space-y-5">
+            <section className="bg-surface-container-lowest rounded-[2rem] p-6 shadow-[0_12px_32px_rgba(0,63,152,0.05)]">
+              <div className="flex items-center gap-4">
+                <div
+                  className="w-16 h-16 rounded-[1.5rem] flex items-center justify-center text-white font-extrabold text-xl shadow-lg"
+                  style={{ background: 'linear-gradient(135deg, #1f59c1, #7ea8f5)' }}
                 >
-                  Faltas
-                </button>
-                <button
-                  onClick={() => setVidaEscolarTab('comportamento')}
-                  className={`px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-[0.05rem] whitespace-nowrap transition-all ${
-                    vidaEscolarTab === 'comportamento'
-                      ? 'text-white shadow-lg shadow-primary/20'
-                      : 'bg-surface-container-low text-on-surface-variant'
-                  }`}
-                  style={vidaEscolarTab === 'comportamento' ? { background: 'linear-gradient(135deg, #2d6197, #92c1fe)' } : {}}
-                >
-                  Comportamento
-                </button>
-                <button
-                  onClick={() => setVidaEscolarTab('observacoes')}
-                  className={`px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-[0.05rem] whitespace-nowrap transition-all ${
-                    vidaEscolarTab === 'observacoes'
-                      ? 'text-white shadow-lg shadow-primary/20'
-                      : 'bg-surface-container-low text-on-surface-variant'
-                  }`}
-                  style={vidaEscolarTab === 'observacoes' ? { background: 'linear-gradient(135deg, #2d6197, #92c1fe)' } : {}}
-                >
-                  Observações
-                </button>
-              </div>
-              {vidaEscolarTab === 'faltas' && (
-                <div className="bg-surface-container-low rounded-[1.5rem] px-4 py-4">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.05rem] text-outline-variant mb-1">Total de faltas</p>
-                  <p className="text-3xl font-extrabold tracking-tight text-on-surface">{resumoAluno?.faltas_total ?? 0}</p>
-                  <p className="text-xs text-on-surface-variant mt-2">Esse número mostra o acumulado informado pela escola.</p>
+                  {iniciais}
                 </div>
-              )}
-              {vidaEscolarTab === 'comportamento' && (
-                <div className="bg-[#eef4fb] rounded-[1.5rem] px-4 py-4">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.05rem] text-outline-variant mb-2">Comportamento</p>
-                  <p className="text-base font-bold text-on-surface">{resumoAluno?.comportamento_label || 'Não avaliado'}</p>
-                  <p className="text-xs text-on-surface-variant mt-2">Acompanhe aqui a avaliação mais recente registrada pela escola.</p>
-                </div>
-              )}
-              {vidaEscolarTab === 'observacoes' && (
-                <div className="bg-surface-container-low rounded-[1.5rem] px-4 py-4">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.05rem] text-outline-variant mb-2">Observações</p>
-                  <p className="text-sm text-on-surface-variant whitespace-pre-wrap">
-                    {resumoAluno?.observacoes?.trim() ? resumoAluno.observacoes : 'Sem observações no momento.'}
+                <div className="min-w-0">
+                  <p className="text-xl font-extrabold text-on-surface truncate">
+                    {userInfo.responsavel_nome || userInfo.nome_responsavel || 'Responsável'}
+                  </p>
+                  <p className="text-sm font-semibold text-primary mt-1">
+                    {userInfo.responsavel_tipo || 'Responsável'}
                   </p>
                 </div>
-              )}
-            </div>
+              </div>
+            </section>
 
-            {/* Botão sair */}
-            <button
-              onClick={onLogout}
-              className="w-full bg-surface-container-lowest rounded-[2rem] px-5 py-5 flex items-center gap-4 shadow-[0_8px_30px_rgba(0,0,0,0.03)] active:scale-[0.98] transition-transform"
-            >
-              <div className="w-12 h-12 rounded-[1.25rem] bg-[#fff2f2] flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-error">logout</span>
+            <section className="bg-surface-container-low rounded-[1.75rem] p-5">
+              <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-on-surface-variant/70 mb-4">
+                Aluno vinculado
+              </p>
+
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <span className="material-symbols-outlined text-primary">person</span>
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-on-surface-variant">Aluno</p>
+                    <p className="text-on-surface font-bold text-lg">
+                      {userInfo.aluno_nome || 'Aluno'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 pt-4 border-t border-outline-variant/20">
+                  <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center shrink-0">
+                    <span className="material-symbols-outlined text-on-surface-variant text-[20px]">school</span>
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-on-surface-variant">Turma</p>
+                    <p className="text-on-surface text-sm font-semibold">
+                      {userInfo.turma_nome || 'Turma'}{userInfo.turma_codigo ? ` - ${userInfo.turma_codigo}` : ''}
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div className="text-left flex-1">
-                <p className="text-sm font-bold text-on-surface">Sair do aplicativo</p>
-                <p className="text-[11px] text-on-surface-variant font-medium mt-0.5">Encerrar esta sessão</p>
-              </div>
-              <span className="material-symbols-outlined text-outline-variant">chevron_right</span>
-            </button>
+            </section>
+
+            <section className="bg-surface-container-lowest rounded-[1.75rem] overflow-hidden shadow-sm">
+              <button
+                onClick={() => setMostrarModal(true)}
+                className="w-full flex items-center justify-between p-5 hover:bg-surface-container-low transition-colors group"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-11 h-11 rounded-full bg-surface-container-high flex items-center justify-center">
+                    <span className="material-symbols-outlined">help_center</span>
+                  </div>
+                  <span className="font-semibold text-lg text-on-surface">Falar com a escola</span>
+                </div>
+                <span className="material-symbols-outlined text-outline group-hover:translate-x-1 transition-transform">chevron_right</span>
+              </button>
+            </section>
+
+            <section className="bg-surface-container-low rounded-[1.75rem] p-5">
+              <p className="text-base font-bold text-on-surface mb-2">Sair do aplicativo</p>
+              <p className="text-sm text-on-surface-variant leading-relaxed">
+                Ao sair, você precisará entrar novamente com os dados da turma. Se este celular é de uso frequente, recomendamos continuar conectado.
+              </p>
+              <button
+                onClick={() => setConfirmandoSaida(true)}
+                className="mt-5 w-full min-h-[3rem] rounded-full text-sm font-semibold text-on-surface-variant bg-white border border-outline-variant/30 hover:bg-surface-container-high transition-colors"
+              >
+                Sair
+              </button>
+            </section>
           </div>
         )}
       </main>
 
       {/* Botão flutuante para solicitações */}
-      {tab === 'avisos' && (
+      {(tab === 'avisos' || tab === 'vida-escolar') && (
         <button
           onClick={() => setMostrarModal(true)}
-          className="fixed z-40 active:scale-95 transition-transform"
+          className="fixed z-40 active:scale-95 transition-transform flex items-center justify-center gap-2.5"
           style={{
-            right: '20px',
-            bottom: 'calc(env(safe-area-inset-bottom) + 90px)',
-            height: '56px',
-            paddingLeft: '20px',
-            paddingRight: '20px',
-            borderRadius: '28px',
-            background: 'linear-gradient(135deg, #2d6197 0%, #92c1fe 100%)',
-            boxShadow: '0 8px 24px rgba(45, 97, 151, 0.35)',
+            right: '24px',
+            bottom: 'calc(env(safe-area-inset-bottom) + 84px)',
+            minHeight: '52px',
+            paddingLeft: '18px',
+            paddingRight: '18px',
+            borderRadius: '999px',
+            background: 'linear-gradient(135deg, #1f59c1 0%, #1a56be 100%)',
+            boxShadow: '0 12px 32px rgba(0, 63, 152, 0.25)',
             border: 'none',
             cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
           }}
         >
           <span
             className="material-symbols-outlined text-white"
-            style={{ fontSize: '24px', fontVariationSettings: "'FILL' 0, 'wght' 400" }}
+            style={{ fontSize: '20px', fontVariationSettings: "'FILL' 1, 'wght' 400" }}
           >
-            send
+            chat_bubble
           </span>
           <span style={{ color: 'white', fontSize: '14px', fontWeight: 700, whiteSpace: 'nowrap' }}>
             Falar com a Escola
@@ -417,50 +467,106 @@ export default function AvisosPage({ onLogout }) {
       {/* Modal de solicitações */}
       {mostrarModal && <SolicitacoesModal onClose={() => setMostrarModal(false)} />}
 
+      {confirmandoSaida && (
+        <>
+          <button
+            type="button"
+            aria-label="Fechar confirmacao de saida"
+            onClick={() => setConfirmandoSaida(false)}
+            className="fixed inset-0 z-[60] bg-[#191c1e]/40 backdrop-blur-[4px]"
+          />
+
+          <div className="fixed inset-0 z-[70] flex items-center justify-center px-6">
+            <div className="w-full max-w-sm bg-white rounded-[2rem] shadow-[0_16px_40px_rgba(0,63,152,0.14)] p-6">
+              <h3 className="text-xl font-extrabold text-on-surface tracking-tight">
+                Tem certeza que deseja sair?
+              </h3>
+              <p className="text-sm text-on-surface-variant leading-relaxed mt-3">
+                Ao sair, você precisará entrar novamente com os dados da turma. Se este celular é de uso frequente, recomendamos continuar conectado.
+              </p>
+
+              <div className="mt-6 space-y-3">
+                <button
+                  onClick={() => setConfirmandoSaida(false)}
+                  className="w-full min-h-[3.25rem] rounded-full text-white text-sm font-bold"
+                  style={{ background: 'linear-gradient(135deg, #1f59c1, #1a56be)' }}
+                >
+                  Continuar no app
+                </button>
+                <button
+                  onClick={onLogout}
+                  className="w-full min-h-[3rem] rounded-full text-sm font-semibold text-on-surface-variant bg-surface-container-low hover:bg-surface-container-high transition-colors"
+                >
+                  Sair mesmo assim
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
       {/* BottomNavBar */}
       <nav
-        className="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 bg-surface-container-lowest/90 backdrop-blur-xl rounded-t-[2rem] z-50 shadow-[0_-8px_30px_rgba(0,0,0,0.05)]"
+        className="fixed bottom-0 left-0 w-full flex justify-center bg-white/90 backdrop-blur-xl z-50 border-t border-outline-variant/20 shadow-[0_-4px_20px_rgba(0,63,152,0.05)]"
         style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.75rem)', paddingTop: '0.75rem' }}
       >
-        <button
-          onClick={() => setTab('avisos')}
-          className={`flex flex-col items-center justify-center p-3 rounded-2xl transition-all duration-300 active:scale-90 ${
-            tab === 'avisos'
-              ? 'text-white shadow-lg shadow-primary/20'
-              : 'text-outline-variant'
-          }`}
-          style={tab === 'avisos' ? { background: 'linear-gradient(135deg, #2d6197, #92c1fe)' } : {}}
-        >
-          <span
-            className="material-symbols-outlined"
-            style={{ fontVariationSettings: tab === 'avisos' ? "'FILL' 1" : "'FILL' 0" }}
+        <div className="w-full max-w-xl flex justify-around items-center px-4">
+          <button
+            onClick={() => setTab('avisos')}
+            className={`flex flex-col items-center justify-center rounded-2xl px-6 py-2 transition-all duration-300 active:scale-90 ${
+              tab === 'avisos'
+                ? 'text-primary bg-primary/10'
+                : 'text-on-surface-variant'
+            }`}
           >
-            notifications
-          </span>
-          <span className="text-[10px] font-bold uppercase tracking-[0.05rem] mt-1">Avisos</span>
-        </button>
+            <span
+              className="material-symbols-outlined"
+              style={{ fontVariationSettings: tab === 'avisos' ? "'FILL' 1" : "'FILL' 0" }}
+            >
+              notifications
+            </span>
+            <span className="text-[11px] font-bold mt-1">Avisos</span>
+          </button>
 
-        <button
-          onClick={() => setTab('vida-escolar')}
-          className={`flex flex-col items-center justify-center p-3 rounded-2xl transition-all duration-300 active:scale-90 ${
-            tab === 'vida-escolar'
-              ? 'text-white shadow-lg shadow-primary/20'
-              : 'text-outline-variant'
-          }`}
-          style={tab === 'vida-escolar' ? { background: 'linear-gradient(135deg, #2d6197, #92c1fe)' } : {}}
-        >
-          <span
-            className="material-symbols-outlined"
-            style={{ fontVariationSettings: tab === 'vida-escolar' ? "'FILL' 1" : "'FILL' 0" }}
+          <button
+            onClick={() => setTab('vida-escolar')}
+            className={`flex flex-col items-center justify-center rounded-2xl px-6 py-2 transition-all duration-300 active:scale-90 ${
+              tab === 'vida-escolar'
+                ? 'text-primary bg-primary/10'
+                : 'text-on-surface-variant'
+            }`}
           >
-            school
-          </span>
-          <span className="text-[10px] font-bold uppercase tracking-[0.05rem] mt-1">Vida Escolar</span>
-        </button>
+            <span
+              className="material-symbols-outlined"
+              style={{ fontVariationSettings: tab === 'vida-escolar' ? "'FILL' 1" : "'FILL' 0" }}
+            >
+              school
+            </span>
+            <span className="text-[11px] font-bold mt-1">Vida escolar</span>
+          </button>
+
+          <button
+            onClick={() => setTab('conta')}
+            className={`flex flex-col items-center justify-center rounded-2xl px-6 py-2 transition-all duration-300 active:scale-90 ${
+              tab === 'conta'
+                ? 'text-primary bg-primary/10'
+                : 'text-on-surface-variant'
+            }`}
+          >
+            <span
+              className="material-symbols-outlined"
+              style={{ fontVariationSettings: tab === 'conta' ? "'FILL' 1" : "'FILL' 0" }}
+            >
+              person
+            </span>
+            <span className="text-[11px] font-bold mt-1">Conta</span>
+          </button>
+        </div>
       </nav>
     </div>
   )
 }
+
 
 
 
