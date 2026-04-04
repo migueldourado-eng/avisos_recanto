@@ -225,6 +225,12 @@ Funcionalidades principais:
 - solicitacoes dos pais;
 - gerenciamento de dispositivos vinculados ao aluno.
 
+Responsividade:
+- o painel admin agora funciona melhor em celular sem mudar a estrutura funcional;
+- no mobile, a navegacao lateral abre por botao de menu no topo;
+- grids, cards, modais e espacamentos se adaptam para telas menores;
+- a logica, rotas e fluxos operacionais do admin foram preservados.
+
 Detalhes do fluxo de aviso:
 - a etapa 2 do envio virou `Como criar`;
 - a secretaria escolhe entre modelo pronto e aviso em branco antes de preencher;
@@ -234,6 +240,7 @@ Detalhes do fluxo de aviso:
 
 - O workspace pode estar com alteracoes locais fora do escopo do ultimo deploy.
 - O arquivo `admin-panel/index.html` concentra boa parte da UI admin.
+- O `admin-panel/package.json` usa build compativel com Windows para gerar `dist/index.html` igual ao arquivo fonte.
 - A PWA tem historico de problemas de encoding em textos; ao editar, valide sempre o build e a renderizacao final.
 - Quando publicar `dist/`, ajuste ownership e permissoes para evitar `403` em `assets/` e `icons/`.
 - Em especial, a pasta `pwa-responsaveis/dist/assets` precisa ficar com permissao de leitura/execucao para o Nginx; se ficar `700`, o app cai por `403` nos bundles.

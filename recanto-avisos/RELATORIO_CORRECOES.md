@@ -15,6 +15,7 @@ Este documento resume os problemas corrigidos recentemente, a causa raiz de cada
 | Solicitacoes no admin | 1.1.0 | Corrigido e publicado |
 | QR Code com 429 | 1.1.0 | Corrigido e publicado |
 | Onboarding da PWA | 1.2.0 | Corrigido e publicado |
+| Admin responsivo no celular | 1.2.1 | Corrigido e publicado |
 
 ---
 
@@ -167,6 +168,29 @@ Este documento resume os problemas corrigidos recentemente, a causa raiz de cada
 
 ---
 
+## 8. Painel admin adaptado para celular sem mudar a logica
+
+### Problema corrigido
+- O painel admin estava funcional no desktop, mas desconfortavel no celular.
+- Sidebar fixa, espacamentos largos e blocos em varias colunas dificultavam o uso em telas pequenas.
+
+### Causa raiz
+- A interface usava layout prioritariamente desktop, com pouca adaptacao para larguras menores.
+- O build do `admin-panel` tambem dependia de comando `cp`, o que falhava em ambiente Windows local.
+
+### Correcao aplicada
+- Inclusao de responsividade no `admin-panel/index.html` sem alterar rotas, funcoes ou logica de negocio.
+- Adicionado menu lateral mobile com abertura pelo topo e fechamento automatico ao navegar.
+- Ajustados grids, cards, modais, espacamentos e status bar para telas menores.
+- Corrigido o script de build do `admin-panel/package.json` para funcionar em Windows e continuar gerando o mesmo `dist/index.html`.
+
+### Como evitar a repeticao
+- Toda alteracao visual no admin deve ser validada em desktop e mobile antes da publicacao.
+- Evitar scripts de build dependentes de comandos especificos de Unix quando o time tambem publica por Windows.
+- Em telas operacionais, priorizar responsividade via CSS e pequenas adaptacoes de layout antes de mexer em fluxo ou logica.
+
+---
+
 ## Observacoes finais
 
 - Os ajustes documentados aqui foram focados em estabilidade, experiencia do usuario e integridade do fluxo principal.
@@ -176,6 +200,7 @@ Este documento resume os problemas corrigidos recentemente, a causa raiz de cada
   - envio de aviso com template
   - envio e recebimento de solicitacao do app dos pais
   - resposta da escola chegando ao responsavel
+  - uso basico do painel admin no celular
 
 ## Pendencias conhecidas
 

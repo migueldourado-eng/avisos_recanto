@@ -41,6 +41,76 @@
     .animate-spin { animation:spin 1s linear infinite; }
     @keyframes spin { to { transform:rotate(360deg); } }
     .line-clamp-2 { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    #mobile-menu-toggle, #mobile-sidebar-backdrop { display:none; }
+    @media (max-width: 1024px) {
+      #app { height:auto !important; min-height:100vh; overflow:visible !important; }
+      #sidebar {
+        position:fixed;
+        top:0;
+        left:0;
+        bottom:0;
+        width:min(82vw, 320px) !important;
+        max-width:320px;
+        z-index:80;
+        transform:translateX(-100%);
+        transition:transform 0.2s ease;
+        box-shadow:0 18px 48px rgba(0,0,0,0.18);
+      }
+      body.mobile-menu-open #sidebar { transform:translateX(0); }
+      #mobile-sidebar-backdrop {
+        position:fixed;
+        inset:0;
+        background:rgba(44,51,56,0.4);
+        backdrop-filter:blur(2px);
+        z-index:70;
+        opacity:0;
+        pointer-events:none;
+        transition:opacity 0.2s ease;
+      }
+      body.mobile-menu-open #mobile-sidebar-backdrop {
+        display:block;
+        opacity:1;
+        pointer-events:auto;
+      }
+      #main-shell { min-width:0; width:100%; }
+      #topbar { padding:1rem !important; gap:0.75rem; }
+      #topbar-status { font-size:0.75rem !important; }
+      #content-area { padding:1rem !important; }
+      #mobile-menu-toggle {
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        width:2.75rem;
+        height:2.75rem;
+        border:none;
+        border-radius:0.9rem;
+        background:#f0f4f8;
+        color:#2d6197;
+        cursor:pointer;
+        flex-shrink:0;
+      }
+      #topbar-title-row { display:flex; align-items:center; gap:0.75rem; min-width:0; }
+      #page-title { font-size:1rem !important; line-height:1.25; }
+      [style*="display:grid; grid-template-columns:repeat(4,1fr)"],
+      [style*="display:grid;grid-template-columns:repeat(4,1fr)"] { grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
+      [style*="display:grid; grid-template-columns:repeat(3,1fr)"],
+      [style*="display:grid;grid-template-columns:repeat(3,1fr)"] { grid-template-columns:1fr !important; }
+      [style*="display:grid; grid-template-columns:repeat(2,minmax(0,1fr))"],
+      [style*="display:grid;grid-template-columns:repeat(2,minmax(0,1fr))"] { grid-template-columns:1fr !important; }
+      [style*="display:flex; gap:0.5rem; margin-bottom:0.625rem;"],
+      [style*="display:flex; gap:0.625rem;"] { flex-direction:column; }
+      .card { padding:1rem; border-radius:1.25rem; }
+      #modal { padding:0.75rem !important; align-items:flex-end !important; }
+      #modal-content { max-width:none !important; max-height:85vh !important; border-radius:1.5rem 1.5rem 0 0 !important; }
+      #toast { left:1rem; right:1rem !important; bottom:1rem !important; }
+    }
+    @media (max-width: 640px) {
+      #topbar { flex-direction:column; align-items:stretch !important; }
+      #topbar-status { justify-content:flex-start; }
+      [style*="display:grid; grid-template-columns:repeat(4,1fr)"],
+      [style*="display:grid;grid-template-columns:repeat(4,1fr)"] { grid-template-columns:1fr !important; }
+      #turmas-checkboxes { grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
+    }
   </style>
 </head>
 <body style="background:#f7f9fc; color:#2c3338; min-height:100vh; -webkit-font-smoothing:antialiased;">
@@ -79,6 +149,7 @@
 
 <!-- APP -->
 <div id="app" style="display:none; height:100vh; overflow:hidden; flex-direction:row;">
+  <div id="mobile-sidebar-backdrop" onclick="closeMobileMenu()"></div>
 
   <!-- SIDEBAR -->
   <aside id="sidebar" style="width:256px; background:white; border-right:1px solid #e3e9ee; display:flex; flex-direction:column; flex-shrink:0; overflow-y:auto;">
@@ -118,16 +189,21 @@
   </aside>
 
   <!-- MAIN AREA -->
-  <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+  <div id="main-shell" style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
     <header id="topbar" style="background:white; border-bottom:1px solid #e3e9ee; padding:1rem 2rem; display:flex; align-items:center; justify-content:space-between; flex-shrink:0;">
-      <h2 id="page-title" style="font-size:1.125rem; font-weight:800; color:#2c3338; margin:0;"></h2>
-      <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.8125rem; color:#596065; font-weight:600;">
+      <div id="topbar-title-row">
+        <button id="mobile-menu-toggle" type="button" aria-label="Abrir menu" onclick="toggleMobileMenu()">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+        <h2 id="page-title" style="font-size:1.125rem; font-weight:800; color:#2c3338; margin:0;"></h2>
+      </div>
+      <div id="topbar-status" style="display:flex; align-items:center; gap:0.5rem; font-size:0.8125rem; color:#596065; font-weight:600;">
         <span class="material-symbols-outlined" style="font-size:1rem; color:#2e7d52; font-variation-settings:'FILL' 1;">radio_button_checked</span>
         Sistema online
       </div>
     </header>
 
-    <main style="flex:1; overflow-y:auto; padding:2rem;">
+    <main id="content-area" style="flex:1; overflow-y:auto; padding:2rem;">
 
       <!-- DASHBOARD -->
       <section id="page-dashboard" style="display:none;">
@@ -649,9 +725,32 @@ async function handleLogin(e) {
 function logout() {
   TOKEN = null; adminInfo = {}
   localStorage.removeItem('admin_jwt'); localStorage.removeItem('admin_info')
+  closeMobileMenu()
   document.getElementById('app').style.display = 'none'
   document.getElementById('login-screen').style.display = 'flex'
 }
+
+function isMobileViewport() {
+  return window.innerWidth <= 1024
+}
+
+function openMobileMenu() {
+  if (!isMobileViewport()) return
+  document.body.classList.add('mobile-menu-open')
+}
+
+function closeMobileMenu() {
+  document.body.classList.remove('mobile-menu-open')
+}
+
+function toggleMobileMenu() {
+  if (!isMobileViewport()) return
+  document.body.classList.toggle('mobile-menu-open')
+}
+
+window.addEventListener('resize', () => {
+  if (!isMobileViewport()) closeMobileMenu()
+})
 
 // Nav
 const PAGES = ['dashboard','avisos','solicitacoes','importar','turmas','alunos','vida-escolar','responsaveis','historico','admins']
@@ -673,10 +772,12 @@ function showPage(name) {
   if (sec) sec.style.display = ''
   if (nav) nav.classList.add('active')
   document.getElementById('page-title').textContent = TITLES[name] || ''
+  closeMobileMenu()
   if (LOADERS[name]) LOADERS[name]()
 }
 
 function showApp() {
+  closeMobileMenu()
   document.getElementById('login-screen').style.display = 'none'
   document.getElementById('app').style.display = 'flex'
   document.getElementById('admin-email').textContent = adminInfo.nome || adminInfo.usuario || 'Admin'
