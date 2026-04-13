@@ -134,11 +134,14 @@ router.get('/admin', autenticarAdmin, (req, res) => {
       ${SQLITE_UTC_TO_ISO('s.lida_em')} AS lida_em,
       ${SQLITE_UTC_TO_ISO('s.respondida_em')} AS respondida_em,
       a.nome as aluno_nome,
-      r.nome as responsavel_nome
+      r.nome as responsavel_nome,
+      t.nome as turma_nome,
+      t.codigo as turma_codigo
     FROM solicitacoes_pais s
     LEFT JOIN alunos a ON s.aluno_id = a.id
     LEFT JOIN responsaveis r ON s.responsavel_id = r.id
-    ORDER BY s.urgente DESC, s.criada_em DESC
+    LEFT JOIN turmas t ON a.turma_id = t.id
+    ORDER BY t.nome, s.urgente DESC, s.criada_em DESC
     LIMIT 500
   `).all();
 

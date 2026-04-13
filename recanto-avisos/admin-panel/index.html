@@ -605,7 +605,7 @@
         <div class="card" style="padding:0; overflow:hidden;">
           <div style="overflow-x:auto;">
             <table>
-              <thead><tr><th style="width:40px;"><input type="checkbox" id="select-all-sol" onchange="toggleSelectAll()" style="width:1rem;height:1rem;cursor:pointer;" /></th><th>Tipo</th><th>Aluno</th><th>Responsável</th><th>Mensagem</th><th>Data</th><th style="text-align:center;">Status</th><th></th></tr></thead>
+              <thead><tr><th style="width:40px;"><input type="checkbox" id="select-all-sol" onchange="toggleSelectAll()" style="width:1rem;height:1rem;cursor:pointer;" /></th><th>Tipo</th><th>Aluno</th><th>Responsável</th><th>Mensagem</th><th>Data</th><th style="text-align:center;">Status</th><th style="text-align:center;">Ações</th></tr></thead>
               <tbody id="sol-tbody"><tr><td colspan="8" style="text-align:center; padding:2.5rem; color:#596065;">Carregando...</td></tr></tbody>
             </table>
           </div>
@@ -2001,7 +2001,26 @@ async function carregarSolicitacoes() {
 
     const filtradas = filtroUrgentes ? solicitacoes.filter(s => s.urgente) : solicitacoes
 
-    document.getElementById('sol-tbody').innerHTML = filtradas.length ? filtradas.map(s => `
+    if (!filtradas.length) {
+      document.getElementById('sol-tbody').innerHTML = `<tr><td colspan="8" style="text-align:center;padding:2.5rem;color:#596065;">${filtroUrgentes?'Nenhuma solicitação urgente':'Nenhuma solicitação ainda'}</td></tr>`
+      return
+    }
+
+    // Agrupar por turma
+    const grupos = {}
+    filtradas.forEach(s => {
+      const chave = s.turma_nome ? `${s.turma_codigo} — ${s.turma_nome}` : 'Sem turma'
+      if (!grupos[chave]) grupos[chave] = []
+      grupos[chave].push(s)
+    })
+
+    let html = ''
+    for (const [turma, sols] of Object.entries(grupos)) {
+      html += `<tr><td colspan="8" style="background:#f0f4f8;padding:0.5rem 1rem;font-weight:800;font-size:0.8rem;color:#2c3338;letter-spacing:0.04em;border-bottom:1px solid #e3e9ee;">
+        <span class="material-symbols-outlined" style="font-size:0.875rem;vertical-align:middle;margin-right:0.3rem;">class</span>${escapeHtml(turma)}
+        <span style="font-weight:400;color:#596065;margin-left:0.5rem;">(${sols.length})</span>
+      </td></tr>`
+      html += sols.map(s => `
       <tr style="${s.urgente?'background:#fff3f2;':''}" onclick="verSolicitacao(${s.id})">
         <td onclick="event.stopPropagation();" style="width:40px;">
           <input type="checkbox" class="sol-checkbox" data-id="${s.id}" onchange="updateBotaoApagar()" style="width:1rem;height:1rem;cursor:pointer;" />
@@ -2019,7 +2038,8 @@ async function carregarSolicitacoes() {
         <td style="text-align:center;">
           ${s.respondida ? '<span class="badge badge-green">Respondida</span>' : (s.lida ? '<span class="badge badge-blue">Lida</span>' : '<span class="badge badge-gray">Nova</span>')}
         </td>
-        <td style="text-align:center;">
+        <td style="text-align:center;white-space:nowrap;">
+          ${!s.respondida ? `<button onclick="event.stopPropagation();abrirRespostaModal(${s.id},'${escapeHtml(TIPOS_SOLICITACAO_LABELS[s.tipo]||s.tipo)}','${(s.aluno_nome||'').replace(/'/g,"\\'")}')" style="font-size:0.75rem;font-weight:700;color:#2e7d52;background:none;border:none;cursor:pointer;margin-right:0.25rem;" title="Responder">Responder</button>` : ''}
           <button onclick="event.stopPropagation();verSolicitacao(${s.id})" style="background:none;border:none;cursor:pointer;color:#2d6197;padding:0.25rem;" title="Ver detalhes">
             <span class="material-symbols-outlined" style="font-size:1.125rem;">visibility</span>
           </button>
@@ -2027,8 +2047,23 @@ async function carregarSolicitacoes() {
             <span class="material-symbols-outlined" style="font-size:1.125rem;">delete</span>
           </button>
         </td>
-      </tr>`).join('') : `<tr><td colspan="8" style="text-align:center;padding:2.5rem;color:#596065;">${filtroUrgentes?'Nenhuma solicitação urgente':'Nenhuma solicitação ainda'}</td></tr>`
+      </tr>`).join('')
+    }
+    document.getElementById('sol-tbody').innerHTML = html
   } catch(err) { toast(err.message,'error') }
+}
+
+function abrirRespostaModal(id, tipo, alunoNome) {
+  showModal(`
+    <h3 style="font-size:1.125rem;font-weight:800;color:#2c3338;margin:0 0 0.25rem;">Responder Solicitação</h3>
+    <p style="font-size:0.8125rem;color:#596065;margin:0 0 0.125rem;">Tipo: <strong>${tipo}</strong></p>
+    <p style="font-size:0.8125rem;color:#596065;margin:0 0 1.25rem;">Aluno: <strong>${alunoNome}</strong></p>
+    <label class="field-label">Resposta</label>
+    <textarea id="resposta-rapida-sol" class="field-input" rows="4" placeholder="Digite sua resposta..." style="margin-bottom:0.875rem;"></textarea>
+    <div style="display:flex;gap:0.625rem;">
+      <button onclick="closeModal()" class="btn-outline" style="flex:1;padding:0.875rem;font-size:0.875rem;">Cancelar</button>
+      <button onclick="responderSolicitacao(${id},'resposta-rapida-sol')" style="flex:2;padding:0.875rem;font-size:0.875rem;font-weight:700;background:#2e7d52;color:white;border:none;border-radius:1rem;cursor:pointer;">Enviar resposta</button>
+    </div>`)
 }
 
 async function verSolicitacao(id) {
@@ -2081,8 +2116,8 @@ async function verSolicitacao(id) {
   } catch(err) { toast(err.message,'error') }
 }
 
-async function responderSolicitacao(id) {
-  const resposta = document.getElementById('resposta-sol').value.trim()
+async function responderSolicitacao(id, campoId = 'resposta-sol') {
+  const resposta = document.getElementById(campoId).value.trim()
   if (!resposta) { toast('Digite uma resposta','error'); return }
   try {
     await api('/solicitacoes/admin/'+id+'/responder', { method:'POST', body:JSON.stringify({ resposta }) })

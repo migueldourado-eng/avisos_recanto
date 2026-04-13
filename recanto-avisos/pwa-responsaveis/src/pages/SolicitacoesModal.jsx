@@ -38,6 +38,7 @@ const CATEGORIAS = [
     titulo: 'Solicitar Atestado de Frequência',
     subtitulo: '',
     precisaCampo: false,
+    aviso: 'O prazo para retirada do documento é de 2 dias úteis após a solicitação ser respondida.',
   },
   {
     id: 'atestado_matricula',
@@ -45,6 +46,7 @@ const CATEGORIAS = [
     titulo: 'Solicitar Atestado de Matrícula',
     subtitulo: '',
     precisaCampo: false,
+    aviso: 'O prazo para retirada do documento é de 1 dia útil após a solicitação ser respondida.',
   },
   {
     id: 'historico_escolar',
@@ -52,6 +54,7 @@ const CATEGORIAS = [
     titulo: 'Solicitar Histórico Escolar',
     subtitulo: '',
     precisaCampo: false,
+    oculto: true,
   },
   {
     id: 'atualizar_contato',
@@ -272,7 +275,7 @@ export default function SolicitacoesModal({ onClose }) {
                 gap: '12px',
               }}
             >
-              {CATEGORIAS.map((cat) => (
+              {CATEGORIAS.filter(cat => !cat.oculto).map((cat) => (
                 <button
                   key={cat.id}
                   onClick={() => handleEscolherCategoria(cat)}
@@ -375,7 +378,7 @@ export default function SolicitacoesModal({ onClose }) {
                   cursor: 'pointer',
                 }}
               >
-                Entendi, continuar
+                Ciente
               </button>
             </div>
           )}
