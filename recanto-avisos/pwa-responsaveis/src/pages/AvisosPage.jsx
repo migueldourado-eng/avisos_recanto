@@ -273,7 +273,7 @@ export default function AvisosPage({ onLogout }) {
         {/* Aba Vida Escolar */}
         {tab === 'vida-escolar' && (
           <div className="px-6 max-w-xl mx-auto w-full space-y-6">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className={`grid gap-4 ${resumoAluno?.faltas_total > 0 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'}`}>
               {resumoAluno?.faltas_total > 0 && (
                 <button
                   onClick={() => setVidaEscolarTab('faltas')}
