@@ -16,7 +16,16 @@
       "Read(//c/Users/Coordenação/OneDrive/APP/Aviso Recanto/recanto-avisos/admin-panel/**)",
       "Bash(node -e \"const d=JSON.parse\\(require\\(''''fs''''\\).readFileSync\\(''''/dev/stdin'''',''''utf8''''\\)\\); process.stdout.write\\(d.token||''''''''\\)\")",
       "Bash(curl -s http://localhost:3001/api/admin/templates)",
-      "Bash(node -e \"const d=JSON.parse\\(require\\(''''fs''''\\).readFileSync\\(0,''''utf8''''\\)\\); console.log\\(''''Total templates:'''',d.length\\); d.filter\\(t=>[34,35,36].includes\\(t.id\\)\\).forEach\\(t=>console.log\\('''' ✓'''',t.id,t.titulo\\)\\)\")"
+      "Bash(node -e \"const d=JSON.parse\\(require\\(''''fs''''\\).readFileSync\\(0,''''utf8''''\\)\\); console.log\\(''''Total templates:'''',d.length\\); d.filter\\(t=>[34,35,36].includes\\(t.id\\)\\).forEach\\(t=>console.log\\('''' ✓'''',t.id,t.titulo\\)\\)\")",
+      "Read(//c/Users/Coordenação/.ssh/**)",
+      "Read(//c/Users/55719/OneDrive/APP\" 2>/dev/**)",
+      "Read(//c/Users//**)",
+      "Bash(ls -la backend/*.log)",
+      "Bash(cat .gitignore)",
+      "Bash(cat pwa-responsaveis/.gitignore)",
+      "Bash(cat backend/.gitignore)",
+      "Bash(npx vite:*)",
+      "Read(//c/Users/**)"
     ]
   }
 }
