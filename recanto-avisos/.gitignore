@@ -1,0 +1,38 @@
+# Dependencias
+node_modules/
+
+# Build
+pwa-responsaveis/dist/
+admin-panel/dist/
+
+# Variaveis de ambiente (contem credenciais)
+.env
+backend/.env
+pwa-responsaveis/.env
+
+# Banco de dados
+data/*.db
+data/*.db-shm
+data/*.db-wal
+data/*.db-journal
+
+# Logs
+*.log
+*.err.log
+
+# Lock files (gerar na VPS com npm install)
+package-lock.json
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs
+.vscode/
+.idea/
+
+# Temporarios
+*.tmp
+*.bak
+*.bak-*
