@@ -533,6 +533,36 @@ router.post('/vida-escolar/turma/:turma_id/comportamento', (req, res) => {
   res.json({ ok: true, atualizados: alunos.length });
 });
 
+// ─── DELETE /api/admin/vida-escolar/aluno/:aluno_id/faltas ───────────────────
+router.delete('/vida-escolar/aluno/:aluno_id/faltas', (req, res) => {
+  const alunoId = Number(req.params.aluno_id);
+  if (!Number.isInteger(alunoId) || alunoId <= 0) {
+    return res.status(400).json({ error: 'aluno_id invalido.' });
+  }
+  const db = getDb();
+  db.prepare(`
+    UPDATE aluno_vida_escolar
+    SET faltas_total = 0, faltas_mes = 0, atualizado_em = CURRENT_TIMESTAMP
+    WHERE aluno_id = ?
+  `).run(alunoId);
+  res.json({ ok: true, faltas_total: 0 });
+});
+
+// ─── DELETE /api/admin/vida-escolar/aluno/:aluno_id/comportamento ────────────
+router.delete('/vida-escolar/aluno/:aluno_id/comportamento', (req, res) => {
+  const alunoId = Number(req.params.aluno_id);
+  if (!Number.isInteger(alunoId) || alunoId <= 0) {
+    return res.status(400).json({ error: 'aluno_id invalido.' });
+  }
+  const db = getDb();
+  db.prepare(`
+    UPDATE aluno_vida_escolar
+    SET comportamento = 'nao_avaliado', atualizado_em = CURRENT_TIMESTAMP
+    WHERE aluno_id = ?
+  `).run(alunoId);
+  res.json({ ok: true });
+});
+
 // ─── POST /api/admin/responsaveis/desvincular-notificacoes ───────────────────
 router.post('/responsaveis/desvincular-notificacoes', (req, res) => {
   const { tipo, responsavel_id, responsavel_ids, turma_id } = req.body || {};

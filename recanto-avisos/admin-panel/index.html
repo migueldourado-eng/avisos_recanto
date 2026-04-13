@@ -1690,7 +1690,15 @@ async function loadVidaEscolar() {
           <textarea id="vida-obs-${item.aluno_id}" class="field-input" rows="2" style="margin:0;resize:vertical;min-width:220px;">${escapeHtml(item.observacoes || '')}</textarea>
         </td>
         <td style="text-align:center;white-space:nowrap;">
-          <button onclick="salvarVidaEscolarAluno(${item.aluno_id})" class="btn-outline" style="padding:0.5rem 0.75rem;font-size:0.75rem;">Salvar</button>
+          <div style="display:flex;gap:0.4rem;justify-content:center;align-items:center;flex-wrap:wrap;">
+            <button onclick="salvarVidaEscolarAluno(${item.aluno_id})" class="btn-outline" style="padding:0.5rem 0.75rem;font-size:0.75rem;">Salvar</button>
+            <button onclick="zerarFaltasAluno(${item.aluno_id})" title="Zerar faltas" style="padding:0.4rem 0.5rem;border-radius:0.6rem;border:1.5px solid #e5b4b0;background:#fff3f2;color:#a83836;cursor:pointer;display:flex;align-items:center;">
+              <span class="material-symbols-outlined" style="font-size:1rem;">event_busy</span>
+            </button>
+            <button onclick="resetarComportamentoAluno(${item.aluno_id})" title="Resetar comportamento" style="padding:0.4rem 0.5rem;border-radius:0.6rem;border:1.5px solid #c5d5e4;background:#eef4fb;color:#2d6197;cursor:pointer;display:flex;align-items:center;">
+              <span class="material-symbols-outlined" style="font-size:1rem;">psychology_alt</span>
+            </button>
+          </div>
         </td>
       </tr>`).join('') : '<tr><td colspan="7" style="text-align:center;padding:2.5rem;color:#596065;">Nenhum aluno encontrado</td></tr>'
 
@@ -1725,6 +1733,26 @@ async function salvarVidaEscolarAluno(alunoId) {
     if (faltasAdicionarEl) faltasAdicionarEl.value = '0'
     toast('Registro atualizado com sucesso')
   } catch(err) { toast(err.message,'error') }
+}
+
+async function zerarFaltasAluno(alunoId) {
+  if (!confirm('Zerar todas as faltas deste aluno?')) return
+  try {
+    await api('/admin/vida-escolar/aluno/' + alunoId + '/faltas', { method: 'DELETE' })
+    const totalEl = document.getElementById(`vida-ft-${alunoId}`)
+    if (totalEl) totalEl.textContent = '0'
+    toast('Faltas zeradas com sucesso')
+  } catch(err) { toast(err.message, 'error') }
+}
+
+async function resetarComportamentoAluno(alunoId) {
+  if (!confirm('Resetar o comportamento deste aluno para "Nao avaliado"?')) return
+  try {
+    await api('/admin/vida-escolar/aluno/' + alunoId + '/comportamento', { method: 'DELETE' })
+    const compEl = document.getElementById(`vida-comp-${alunoId}`)
+    if (compEl) compEl.value = 'nao_avaliado'
+    toast('Comportamento resetado com sucesso')
+  } catch(err) { toast(err.message, 'error') }
 }
 
 async function aplicarComportamentoTurma() {
