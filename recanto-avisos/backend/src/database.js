@@ -143,6 +143,7 @@ function migrate() {
   try { db.exec(`ALTER TABLE avisos ADD COLUMN enviado_por TEXT`); } catch {}
   try { db.exec(`ALTER TABLE responsaveis ADD COLUMN aceite_lgpd BOOLEAN DEFAULT 0`); } catch {}
   try { db.exec(`ALTER TABLE responsaveis ADD COLUMN aceite_lgpd_em DATETIME`); } catch {}
+  try { db.exec(`ALTER TABLE solicitacoes_pais ADD COLUMN oculto_responsavel BOOLEAN DEFAULT 0`); } catch {}
 
   // Migra tokens legados (responsaveis.fcm_token) para a tabela de dispositivos
   try {

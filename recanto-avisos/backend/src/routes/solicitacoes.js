@@ -92,7 +92,7 @@ router.get('/minhas', autenticarResponsavel, (req, res) => {
       a.nome as aluno_nome
     FROM solicitacoes_pais s
     LEFT JOIN alunos a ON s.aluno_id = a.id
-    WHERE s.responsavel_id = ?
+    WHERE s.responsavel_id = ? AND s.oculto_responsavel = 0
     ORDER BY s.criada_em DESC
     LIMIT 50
   `).all(responsavel_id);
@@ -106,12 +106,10 @@ router.delete('/minhas/:id', autenticarResponsavel, (req, res) => {
   const { responsavel_id } = req.responsavel;
   const db = getDb();
 
-  const deleteStmt = db.prepare(`
-    DELETE FROM solicitacoes_pais
+  const result = db.prepare(`
+    UPDATE solicitacoes_pais SET oculto_responsavel = 1
     WHERE id = ? AND responsavel_id = ?
-  `);
-
-  const result = deleteStmt.run(id, responsavel_id);
+  `).run(id, responsavel_id);
 
   if (result.changes === 0) {
     return res.status(404).json({ erro: 'Solicitação não encontrada ou você não tem permissão para apagá-la' });
