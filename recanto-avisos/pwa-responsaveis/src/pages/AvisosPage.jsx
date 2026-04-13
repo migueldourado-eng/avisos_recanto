@@ -274,25 +274,37 @@ export default function AvisosPage({ onLogout }) {
         {tab === 'vida-escolar' && (
           <div className="px-6 max-w-xl mx-auto w-full space-y-6">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <button
-                onClick={() => setVidaEscolarTab('faltas')}
-                className={`min-h-[12rem] sm:aspect-square rounded-[1.5rem] p-5 text-left shadow-[0_12px_32px_rgba(0,63,152,0.03)] border transition-all active:scale-[0.98] ${
-                  vidaEscolarTab === 'faltas'
-                    ? 'bg-surface-container-lowest border-primary/20'
-                    : 'bg-surface-container-lowest border-outline-variant/10'
-                }`}
-              >
-                <div className="flex items-center gap-2 mb-5">
-                  <span className="material-symbols-outlined text-primary text-[20px]">calendar_today</span>
-                  <span className="text-sm font-semibold text-on-surface-variant">Faltas</span>
+              {(resumoAluno?.faltas_total ?? 0) > 0 ? (
+                <button
+                  onClick={() => setVidaEscolarTab('faltas')}
+                  className={`min-h-[12rem] sm:aspect-square rounded-[1.5rem] p-5 text-left shadow-[0_12px_32px_rgba(0,63,152,0.03)] border transition-all active:scale-[0.98] ${
+                    vidaEscolarTab === 'faltas'
+                      ? 'bg-surface-container-lowest border-primary/20'
+                      : 'bg-surface-container-lowest border-outline-variant/10'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 mb-5">
+                    <span className="material-symbols-outlined text-primary text-[20px]">calendar_today</span>
+                    <span className="text-sm font-semibold text-on-surface-variant">Faltas</span>
+                  </div>
+                  <div>
+                    <span className="block text-5xl sm:text-6xl font-extrabold leading-none text-primary">
+                      {resumoAluno.faltas_total}
+                    </span>
+                    <p className="text-sm text-on-surface-variant mt-2">neste acompanhamento</p>
+                  </div>
+                </button>
+              ) : (
+                <div className="min-h-[12rem] sm:aspect-square rounded-[1.5rem] p-5 text-left bg-surface-container-lowest border border-outline-variant/10 shadow-[0_12px_32px_rgba(0,63,152,0.03)] flex flex-col justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-primary text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
+                    <span className="text-sm font-semibold text-on-surface-variant">Frequência</span>
+                  </div>
+                  <p className="text-sm font-semibold text-on-surface leading-snug">
+                    Acompanhe as atividades escolares de sua criança!
+                  </p>
                 </div>
-                <div>
-                  <span className="block text-5xl sm:text-6xl font-extrabold leading-none text-primary">
-                    {resumoAluno?.faltas_total ?? 0}
-                  </span>
-                  <p className="text-sm text-on-surface-variant mt-2">neste acompanhamento</p>
-                </div>
-              </button>
+              )}
 
               <button
                 onClick={() => setVidaEscolarTab('comportamento')}
