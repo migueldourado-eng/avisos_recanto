@@ -24,6 +24,7 @@ const MENSAGENS_PADRAO = {
   [TIPOS_SOLICITACAO.FALTA_SEM_ATESTADO]: 'Meu(s) filho(s) faltará(ão) hoje por motivo de doença (sem atestado médico).',
   [TIPOS_SOLICITACAO.FALTA_COM_ATESTADO]: 'Meu(s) filho(s) faltará(ão) hoje por motivo de doença. O atestado médico será entregue na escola.',
   [TIPOS_SOLICITACAO.VAI_TER_AULA]: 'Vai ter aula hoje?',
+  [TIPOS_SOLICITACAO.QUEM_VAI_BUSCAR]: 'Informar responsável que vai buscar hoje.',
   [TIPOS_SOLICITACAO.ATESTADO_FREQUENCIA]: 'Solicito Atestado de Frequência.',
   [TIPOS_SOLICITACAO.ATESTADO_MATRICULA]: 'Solicito Atestado de Matrícula.',
   [TIPOS_SOLICITACAO.HISTORICO_ESCOLAR]: 'Solicito Histórico Escolar.',
