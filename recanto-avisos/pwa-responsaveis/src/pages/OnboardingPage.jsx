@@ -9,10 +9,9 @@ function isStandaloneMode() {
   return window.matchMedia?.('(display-mode: standalone)')?.matches || window.navigator.standalone === true
 }
 
-export default function OnboardingPage({ onAceite }) {
+export default function OnboardingPage({ onAceite, installPrompt, onInstallConsumed }) {
   const [step, setStep] = useState('privacy')
   const [carregando, setCarregando] = useState(false)
-  const [installPrompt, setInstallPrompt] = useState(null)
   const [standalone, setStandalone] = useState(isStandaloneMode)
   const [notificationState, setNotificationState] = useState(getNotificationPermissionState)
   const [notificationFeedback, setNotificationFeedback] = useState('')
@@ -20,26 +19,20 @@ export default function OnboardingPage({ onAceite }) {
   const jaAceitoServidor = localStorage.getItem('lgpd_servidor_aceito') === '1'
 
   useEffect(() => {
-    const handler = (event) => {
-      event.preventDefault()
-      setInstallPrompt(event)
-      setInstallFeedback('')
-    }
-
     const installHandler = () => {
       setStandalone(true)
-      setInstallPrompt(null)
+      onInstallConsumed?.()
       setInstallFeedback('Atalho instalado. Agora e so entrar no app.')
     }
 
-    window.addEventListener('beforeinstallprompt', handler)
     window.addEventListener('appinstalled', installHandler)
+    console.log('[OnboardingPage] installPrompt prop:', installPrompt ? 'Disponível' : 'null')
+    console.log('[OnboardingPage] standalone:', standalone)
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handler)
       window.removeEventListener('appinstalled', installHandler)
     }
-  }, [])
+  }, [onInstallConsumed, installPrompt, standalone])
 
   const titulo = useMemo(() => {
     if (step === 'privacy') return 'Antes de entrar'
@@ -112,7 +105,7 @@ export default function OnboardingPage({ onAceite }) {
       try {
         installPrompt.prompt()
         const choice = await installPrompt.userChoice
-        setInstallPrompt(null)
+        onInstallConsumed?.()
 
         if (choice?.outcome === 'accepted') {
           setStandalone(true)
@@ -131,6 +124,11 @@ export default function OnboardingPage({ onAceite }) {
     const messages = [
       'Receba avisos da escola direto no celular.',
     ]
+
+    if (IOS && !standalone) {
+      messages.push('No iPhone, as notificações só funcionam depois que o app é instalado na tela inicial. Instale o app na próxima etapa e ative as notificações ao abrir o atalho.')
+      return messages
+    }
 
     if (notificationState === 'granted') {
       messages.push('As notificações já estão liberadas neste aparelho.')

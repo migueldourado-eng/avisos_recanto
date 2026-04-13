@@ -20,13 +20,14 @@ export default defineConfig({
         maximumFileSizeToCacheInBytes: 5000000,
       },
       manifest: {
-        name: 'Recanto Avisos v5',
-        short_name: 'Recanto v5',
-        description: 'Avisos Escolares - Recanto das Margaridas',
+        name: 'Recanto Avisos',
+        short_name: 'Avisos',
+        description: 'Avisos escolares da Escola Recanto das Margaridas',
         theme_color: '#2d6197',
         background_color: '#ffffff',
         display: 'standalone',
-        start_url: '/?v=5',
+        start_url: '/',
+        lang: 'pt-BR',
         icons: [
           { src: '/icons/icon-72x72.png',   sizes: '72x72',   type: 'image/png' },
           { src: '/icons/icon-96x96.png',   sizes: '96x96',   type: 'image/png' },

@@ -1482,6 +1482,8 @@ async function loadAlunos() {
             style="font-size:0.75rem;font-weight:700;color:#49636f;background:none;border:none;cursor:pointer;margin-right:0.5rem;">Dispositivos</button>
           <button onclick="vincularResponsavel(${a.id},'${a.nome.replace(/'/g,"\\'")}','${(a.responsavel_nome||'').replace(/'/g,"\\'")}')\"
             style="font-size:0.75rem;font-weight:700;color:#2d6197;background:none;border:none;cursor:pointer;margin-right:0.5rem;">Vincular</button>
+          <button onclick="mudarTurmaAluno(${a.id},'${a.nome.replace(/'/g,"\\'")}',${a.turma_id})"
+            style="font-size:0.75rem;font-weight:700;color:#2e7d52;background:none;border:none;cursor:pointer;margin-right:0.5rem;">Turma</button>
           <button onclick="confirmarExcluirAluno(${a.id},'${a.nome.replace(/'/g,"\\'")}',${!!a.responsavel_nome})"
             style="font-size:0.75rem;font-weight:700;color:#a83836;background:none;border:none;cursor:pointer;">Excluir</button>
         </td>
@@ -1569,6 +1571,36 @@ async function excluirAluno(alunoId) {
     closeModal()
     loadAlunos()
   } catch(err) { toast(err.message,'error') }
+}
+
+function mudarTurmaAluno(alunoId, alunoNome, turmaAtualId) {
+  const opcoes = (_turmasList.length ? _turmasList : []).map(t =>
+    `<option value="${t.id}" ${t.id === turmaAtualId ? 'selected' : ''}>${t.codigo} &mdash; ${t.nome}</option>`
+  ).join('')
+  showModal(`
+    <h3 style="font-size:1.125rem;font-weight:800;color:#2c3338;margin:0 0 0.25rem;">Mudar de Turma</h3>
+    <p style="font-size:0.875rem;color:#596065;margin:0 0 1.25rem;">Aluno: <strong>${alunoNome}</strong></p>
+    <div style="margin-bottom:1.25rem;">
+      <label class="field-label">Nova turma</label>
+      <select id="select-nova-turma" class="field-input">
+        ${opcoes}
+      </select>
+    </div>
+    <div style="display:flex;gap:0.625rem;">
+      <button onclick="closeModal()" class="btn-outline" style="flex:1;padding:0.875rem;font-size:0.875rem;">Cancelar</button>
+      <button onclick="salvarMudancaTurma(${alunoId})" style="flex:1;padding:0.875rem;font-size:0.875rem;font-weight:700;background:#2e7d52;color:white;border:none;border-radius:1rem;cursor:pointer;">Salvar</button>
+    </div>`)
+}
+
+async function salvarMudancaTurma(alunoId) {
+  const novaTurmaId = Number(document.getElementById('select-nova-turma').value)
+  if (!novaTurmaId) { toast('Selecione uma turma', 'error'); return }
+  try {
+    await api('/admin/alunos/' + alunoId, { method: 'PUT', body: JSON.stringify({ turma_id: novaTurmaId }) })
+    toast('Turma atualizada com sucesso')
+    closeModal()
+    loadAlunos()
+  } catch(err) { toast(err.message, 'error') }
 }
 
 function vincularResponsavel(alunoId, alunoNome) {

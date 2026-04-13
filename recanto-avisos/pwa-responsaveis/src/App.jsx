@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import LandingPage from './pages/LandingPage'
 import QRCodePage from './pages/QRCodePage'
@@ -11,13 +11,33 @@ export default function App() {
   const [aceitePendente, setAceitePendente] = useState(() => {
     return localStorage.getItem('onboarding_concluido') !== '1'
   })
+  const [installPrompt, setInstallPrompt] = useState(null)
+
+  useEffect(() => {
+    const handler = (event) => {
+      event.preventDefault()
+      setInstallPrompt(event)
+      console.log('[beforeinstallprompt] Evento capturado e armazenado')
+    }
+    window.addEventListener('beforeinstallprompt', handler)
+    console.log('[App] Listener de beforeinstallprompt ativado')
+    return () => window.removeEventListener('beforeinstallprompt', handler)
+  }, [])
 
   function handleLogin(token, info, aceiteLgpd) {
     localStorage.setItem('jwt', token)
     localStorage.setItem('userInfo', JSON.stringify(info))
     localStorage.setItem('lgpd_servidor_aceito', aceiteLgpd ? '1' : '0')
+
+    if (aceiteLgpd) {
+      localStorage.setItem('onboarding_concluido', '1')
+    } else {
+      localStorage.removeItem('onboarding_concluido')
+      localStorage.removeItem('lgpd_aceito')
+    }
+
     setAutenticado(true)
-    setAceitePendente(localStorage.getItem('onboarding_concluido') !== '1')
+    setAceitePendente(!aceiteLgpd)
   }
 
   function handleAceite() {
@@ -30,6 +50,8 @@ export default function App() {
     localStorage.removeItem('jwt')
     localStorage.removeItem('userInfo')
     localStorage.removeItem('lgpd_servidor_aceito')
+    localStorage.removeItem('onboarding_concluido')
+    localStorage.removeItem('lgpd_aceito')
     setAutenticado(false)
     setAceitePendente(false)
   }
@@ -58,7 +80,7 @@ export default function App() {
         {/* Tela de consentimento */}
         {autenticado && aceitePendente && (
           <>
-            <Route path="/consente" element={<OnboardingPage onAceite={handleAceite} />} />
+            <Route path="/consente" element={<OnboardingPage onAceite={handleAceite} installPrompt={installPrompt} onInstallConsumed={() => setInstallPrompt(null)} />} />
             <Route path="*" element={<Navigate to="/consente" replace />} />
           </>
         )}
