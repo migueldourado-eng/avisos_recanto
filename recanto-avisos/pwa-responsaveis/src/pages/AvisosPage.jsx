@@ -446,35 +446,6 @@ export default function AvisosPage({ onLogout }) {
         )}
       </main>
 
-      {/* Botão flutuante para solicitações */}
-      {(tab === 'avisos' || tab === 'vida-escolar') && (
-        <button
-          onClick={() => setMostrarModal(true)}
-          className="fixed z-40 active:scale-95 transition-transform flex items-center justify-center gap-2.5"
-          style={{
-            right: '24px',
-            bottom: 'calc(env(safe-area-inset-bottom) + 84px)',
-            minHeight: '52px',
-            paddingLeft: '18px',
-            paddingRight: '18px',
-            borderRadius: '999px',
-            background: 'linear-gradient(135deg, #1f59c1 0%, #1a56be 100%)',
-            boxShadow: '0 12px 32px rgba(0, 63, 152, 0.25)',
-            border: 'none',
-            cursor: 'pointer',
-          }}
-        >
-          <span
-            className="material-symbols-outlined text-white"
-            style={{ fontSize: '20px', fontVariationSettings: "'FILL' 1, 'wght' 400" }}
-          >
-            chat_bubble
-          </span>
-          <span style={{ color: 'white', fontSize: '14px', fontWeight: 700, whiteSpace: 'nowrap' }}>
-            Falar com a Escola
-          </span>
-        </button>
-      )}
 
       {/* Modal de solicitações */}
       {mostrarModal && <SolicitacoesModal onClose={() => setMostrarModal(false)} />}

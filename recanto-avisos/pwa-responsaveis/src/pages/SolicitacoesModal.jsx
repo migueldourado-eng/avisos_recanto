@@ -27,7 +27,7 @@ const CATEGORIAS = [
   {
     id: 'quem_vai_buscar',
     emoji: '👤',
-    titulo: 'Quem vai buscar hoje',
+    titulo: 'Informar responsável que vai buscar hoje',
     subtitulo: 'Urgente',
     precisaCampo: true,
     placeholder: 'Nome completo da pessoa',
@@ -35,21 +35,21 @@ const CATEGORIAS = [
   {
     id: 'atestado_frequencia',
     emoji: '📄',
-    titulo: 'Atestado de Frequência',
+    titulo: 'Solicitar Atestado de Frequência',
     subtitulo: '',
     precisaCampo: false,
   },
   {
     id: 'atestado_matricula',
     emoji: '📋',
-    titulo: 'Atestado de Matrícula',
+    titulo: 'Solicitar Atestado de Matrícula',
     subtitulo: '',
     precisaCampo: false,
   },
   {
     id: 'historico_escolar',
     emoji: '📊',
-    titulo: 'Histórico Escolar',
+    titulo: 'Solicitar Histórico Escolar',
     subtitulo: '',
     precisaCampo: false,
   },
