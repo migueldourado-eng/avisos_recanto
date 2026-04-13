@@ -38,6 +38,7 @@ const loginLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Muitas tentativas de login. Tente novamente em 1 hora.' },
+  validate: { trustProxy: false },
 });
 
 const avisoLimiter = rateLimit({
