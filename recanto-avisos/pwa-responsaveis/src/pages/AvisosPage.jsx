@@ -134,7 +134,19 @@ export default function AvisosPage({ onLogout }) {
       }
     }
     document.addEventListener('visibilitychange', handleVisibility)
-    return () => document.removeEventListener('visibilitychange', handleVisibility)
+
+    const handleSwMessage = (event) => {
+      if (event.data?.type === 'NOVO_AVISO') {
+        carregarAvisos()
+        carregarResumoAluno()
+      }
+    }
+    navigator.serviceWorker?.addEventListener('message', handleSwMessage)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibility)
+      navigator.serviceWorker?.removeEventListener('message', handleSwMessage)
+    }
   }, [carregarAvisos, carregarResumoAluno])
 
   function handleTouchStart(e) { touchStartY.current = e.touches[0].clientY }

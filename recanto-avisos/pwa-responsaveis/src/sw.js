@@ -69,7 +69,11 @@ self.addEventListener('push', (event) => {
       tag:                 `aviso-${payload.data?.aviso_id ?? Date.now()}`,
       silent:              false,
       sound:               '/notification.mp3',
-    })
+    }).then(() =>
+      self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clients => {
+        clients.forEach(client => client.postMessage({ type: 'NOVO_AVISO' }))
+      })
+    )
   )
 })
 
