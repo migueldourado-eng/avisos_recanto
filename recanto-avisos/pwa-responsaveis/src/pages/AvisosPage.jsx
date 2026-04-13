@@ -143,9 +143,15 @@ export default function AvisosPage({ onLogout }) {
     }
     navigator.serviceWorker?.addEventListener('message', handleSwMessage)
 
+    const polling = setInterval(() => {
+      carregarAvisos()
+      carregarResumoAluno()
+    }, 30000)
+
     return () => {
       document.removeEventListener('visibilitychange', handleVisibility)
       navigator.serviceWorker?.removeEventListener('message', handleSwMessage)
+      clearInterval(polling)
     }
   }, [carregarAvisos, carregarResumoAluno])
 
