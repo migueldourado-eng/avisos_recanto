@@ -41,6 +41,22 @@ Observacoes:
 - As sugestoes de nome do aluno so aparecem apos `5` caracteres digitados.
 - O pedido de instalacao do atalho nao aparece mais na home nem no login; ele aparece depois do aceite.
 
+### Multiplos filhos por responsavel
+
+Um responsavel pode ter mais de um filho em turmas diferentes e acessar tudo na mesma conta:
+
+1. Apos o login com o primeiro filho, o responsavel vai em **Conta** → **Adicionar filho**.
+2. Le o QR Code da turma do segundo filho.
+3. Digita o nome do aluno → vinculado.
+4. O app passa a exibir dados dos dois filhos sem precisar sair e entrar novamente.
+
+Comportamento com multiplos filhos:
+- **Avisos**: o responsavel recebe avisos de todas as turmas dos seus filhos na mesma lista.
+- **Vida Escolar**: seletor de filho aparece no topo da aba para alternar entre os dados de cada um.
+- **Solicitacoes**: ao abrir o modal, a primeira tela pede para selecionar para qual filho e a solicitacao.
+- **Conta**: lista todos os filhos vinculados e exibe o botao de adicionar novo.
+- **Header**: quando ha multiplos filhos, o nome no topo vira botoes de alternancia entre eles.
+
 ### Notificacoes
 
 O backend suporta varios tokens FCM por responsavel.
@@ -59,15 +75,12 @@ O app dos pais exibe:
 
 ### Conta
 
-A aba `Conta` no app dos pais foi simplificada para exibir apenas:
+A aba `Conta` no app dos pais exibe:
 - nome do responsavel;
-- vinculo do responsavel;
-- aluno vinculado;
-- turma;
+- todos os filhos vinculados (com turma de cada um);
+- botao `Adicionar filho` para vincular novo filho via QR;
 - acao `Falar com a escola`;
 - saida do app com confirmacao.
-
-O nome da escola e outros dados repetidos foram removidos da aba.
 
 ### Horarios e datas
 
@@ -136,23 +149,45 @@ Arquivos principais do fluxo atual:
 
 - `pwa-responsaveis/src/App.jsx`
 - `pwa-responsaveis/src/pages/LandingPage.jsx`
-- `pwa-responsaveis/src/pages/QRCodePage.jsx`
+- `pwa-responsaveis/src/pages/QRCodePage.jsx` — suporta `?modo=adicionar` para vincular novo filho
 - `pwa-responsaveis/src/pages/StudentLoginPage.jsx`
 - `pwa-responsaveis/src/pages/OnboardingPage.jsx`
-- `pwa-responsaveis/src/pages/AvisosPage.jsx`
+- `pwa-responsaveis/src/pages/AvisosPage.jsx` — seletor de filho, vida escolar multi-filho
+- `pwa-responsaveis/src/pages/SolicitacoesModal.jsx` — seletor de filho ao enviar
 - `pwa-responsaveis/src/firebase.js`
+
+O `userInfo` salvo em `localStorage` inclui:
+```json
+{
+  "responsavel_nome": "...",
+  "aluno_nome": "...",
+  "turma_nome": "...",
+  "turma_codigo": "...",
+  "filhos": [
+    { "aluno_id": 1, "aluno_nome": "...", "turma_nome": "...", "turma_codigo": "..." }
+  ]
+}
+```
 
 ## Backend relevante
 
 - `backend/src/routes/auth.js`
-  - `POST /api/auth/login-turma`
-  - `GET /api/auth/sugestoes`
-  - `POST /api/auth/aceite-lgpd`
-  - `POST /api/auth/register-fcm-token`
+  - `POST /api/auth/login-turma` — autentica via QR + nome do aluno; retorna `filhos[]`
+  - `GET /api/auth/sugestoes` — sugestoes de nome de aluno
+  - `POST /api/auth/aceite-lgpd` — registra aceite LGPD
+  - `POST /api/auth/register-fcm-token` — registra dispositivo push
+  - `POST /api/auth/adicionar-filho` — vincula novo filho ao responsavel autenticado
+
+- `backend/src/routes/avisos.js`
+  - `GET /api/avisos` — avisos de todos os filhos do responsavel
+  - `GET /api/avisos/resumo-aluno` — retorna **array** com vida escolar de cada filho
+
+- `backend/src/routes/solicitacoes.js`
+  - `POST /api/solicitacoes/enviar` — aceita `aluno_id` opcional no body (multi-filhos)
 
 - `backend/src/routes/admin.js`
   - rotas do painel;
-  - envio de avisos;
+  - envio de avisos — usa `responsavel_alunos` para encontrar destinatarios;
   - listagem de alunos e dispositivos.
 
 - `backend/src/services/fcm.js`
@@ -166,14 +201,19 @@ Tabelas centrais:
 - `turmas`
 - `alunos`
 - `responsaveis`
+- `responsavel_alunos` — vinculo many-to-many entre responsavel e alunos (multiplos filhos)
 - `responsavel_dispositivos`
 - `avisos`
 - `entregas`
+- `solicitacoes_pais`
+- `aluno_vida_escolar`
 
 Pontos importantes:
 - `turmas.qr_token` identifica a turma no fluxo do app.
 - `responsaveis.aceite_lgpd` registra aceite no backend.
 - `responsavel_dispositivos` guarda varios tokens FCM por responsavel.
+- `responsavel_alunos` e a tabela chave para multiplos filhos; as queries de envio de aviso usam ela como fonte de destinatarios.
+- `responsaveis.aluno_id` mantem o filho primario para compatibilidade com dados anteriores.
 
 As migrations ficam em `backend/src/database.js`.
 
