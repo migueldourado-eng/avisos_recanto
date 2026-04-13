@@ -67,8 +67,13 @@ const CATEGORIAS = [
 ];
 
 export default function SolicitacoesModal({ onClose }) {
+  const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+  const filhos = userInfo.filhos || [];
+  const temMultiplosFilhos = filhos.length > 1;
+
   const [aba, setAba] = useState('nova'); // 'nova' | 'historico'
-  const [etapa, setEtapa] = useState('lista'); // 'lista' | 'campo' | 'aviso'
+  const [etapa, setEtapa] = useState(temMultiplosFilhos ? 'selecionar-filho' : 'lista');
+  const [filhoSelecionado, setFilhoSelecionado] = useState(temMultiplosFilhos ? null : (filhos[0] || null));
   const [categoriaEscolhida, setCategoriaEscolhida] = useState(null);
   const [mensagemAdicional, setMensagemAdicional] = useState('');
   const [enviando, setEnviando] = useState(false);
@@ -106,7 +111,9 @@ export default function SolicitacoesModal({ onClose }) {
   const enviarSolicitacao = async (tipo, mensagem_adicional) => {
     setEnviando(true);
     try {
-      await api.post('/solicitacoes/enviar', { tipo, mensagem_adicional });
+      const payload = { tipo, mensagem_adicional };
+      if (filhoSelecionado?.aluno_id) payload.aluno_id = filhoSelecionado.aluno_id;
+      await api.post('/solicitacoes/enviar', payload);
       alert('✓ Solicitação enviada com sucesso!');
       onClose();
     } catch (err) {
@@ -196,9 +203,19 @@ export default function SolicitacoesModal({ onClose }) {
               alignItems: 'center',
             }}
           >
-            <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 600 }}>
-              Falar com a Escola
-            </h2>
+            <div>
+              <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 600 }}>
+                Falar com a Escola
+              </h2>
+              {temMultiplosFilhos && filhoSelecionado && etapa !== 'selecionar-filho' && (
+                <button
+                  onClick={() => setEtapa('selecionar-filho')}
+                  style={{ background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '8px', padding: '2px 8px', color: 'white', fontSize: '12px', fontWeight: 600, cursor: 'pointer', marginTop: '4px' }}
+                >
+                  {filhoSelecionado.aluno_nome.split(' ')[0]} ▾
+                </button>
+              )}
+            </div>
             <button
               onClick={onClose}
               style={{
@@ -254,6 +271,40 @@ export default function SolicitacoesModal({ onClose }) {
 
         {/* Conteúdo */}
         <div style={{ padding: '20px' }}>
+          {/* ABA: Nova Solicitação - Selecionar filho */}
+          {aba === 'nova' && etapa === 'selecionar-filho' && (
+            <div>
+              <p style={{ fontSize: '14px', color: '#495057', marginBottom: '16px', fontWeight: 600 }}>
+                Para qual filho é esta solicitação?
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {filhos.map(f => (
+                  <button
+                    key={f.aluno_id}
+                    onClick={() => { setFilhoSelecionado(f); setEtapa('lista'); }}
+                    style={{
+                      textAlign: 'left',
+                      backgroundColor: '#f8f9fa',
+                      border: '2px solid #e9ecef',
+                      borderRadius: '12px',
+                      padding: '14px 16px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                    }}
+                  >
+                    <span style={{ fontSize: '24px' }}>👤</span>
+                    <div>
+                      <p style={{ fontSize: '15px', fontWeight: 700, color: '#1e558b', margin: 0 }}>{f.aluno_nome}</p>
+                      <p style={{ fontSize: '12px', color: '#6c757d', margin: 0 }}>{f.turma_nome}{f.turma_codigo ? ` - ${f.turma_codigo}` : ''}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* ABA: Nova Solicitação */}
           {aba === 'nova' && etapa === 'lista' && (
             <div

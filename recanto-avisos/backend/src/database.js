@@ -89,6 +89,16 @@ function migrate() {
     CREATE INDEX IF NOT EXISTS idx_resp_disp_responsavel ON responsavel_dispositivos(responsavel_id);
     CREATE INDEX IF NOT EXISTS idx_resp_disp_token ON responsavel_dispositivos(fcm_token);
 
+    CREATE TABLE IF NOT EXISTS responsavel_alunos (
+      responsavel_id INTEGER NOT NULL REFERENCES responsaveis(id) ON DELETE CASCADE,
+      aluno_id INTEGER NOT NULL REFERENCES alunos(id) ON DELETE CASCADE,
+      criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (responsavel_id, aluno_id)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_resp_alunos_resp ON responsavel_alunos(responsavel_id);
+    CREATE INDEX IF NOT EXISTS idx_resp_alunos_aluno ON responsavel_alunos(aluno_id);
+
     CREATE TABLE IF NOT EXISTS avisos (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       titulo TEXT NOT NULL,
@@ -144,6 +154,14 @@ function migrate() {
   try { db.exec(`ALTER TABLE responsaveis ADD COLUMN aceite_lgpd BOOLEAN DEFAULT 0`); } catch {}
   try { db.exec(`ALTER TABLE responsaveis ADD COLUMN aceite_lgpd_em DATETIME`); } catch {}
   try { db.exec(`ALTER TABLE solicitacoes_pais ADD COLUMN oculto_responsavel BOOLEAN DEFAULT 0`); } catch {}
+
+  // Migra vínculos responsavel→aluno para responsavel_alunos (suporte a múltiplos filhos)
+  try {
+    db.exec(`
+      INSERT OR IGNORE INTO responsavel_alunos (responsavel_id, aluno_id)
+      SELECT id, aluno_id FROM responsaveis WHERE aluno_id IS NOT NULL
+    `);
+  } catch {}
 
   // Migra tokens legados (responsaveis.fcm_token) para a tabela de dispositivos
   try {

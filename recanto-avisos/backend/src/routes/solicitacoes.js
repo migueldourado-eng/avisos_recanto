@@ -35,9 +35,10 @@ const MENSAGENS_PADRAO = {
 // ENVIAR SOLICITAÇÃO (Responsável)
 // ══════════════════════════════════════════════════════════════════════════════
 router.post('/enviar', autenticarResponsavel, (req, res) => {
-  const { tipo, mensagem_adicional } = req.body;
+  const { tipo, mensagem_adicional, aluno_id: aluno_id_body } = req.body;
   const responsavel_id = req.responsavel?.responsavel_id || req.responsavel?.id;
-  const aluno_id = req.responsavel?.aluno_id;
+  // Aceita aluno_id do body (multi-filhos) ou do JWT (retrocompatibilidade)
+  const aluno_id = aluno_id_body || req.responsavel?.aluno_id;
 
   if (!responsavel_id) {
     return res.status(401).json({ erro: 'Token de responsável inválido' });

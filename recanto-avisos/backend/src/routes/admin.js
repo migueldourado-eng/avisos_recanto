@@ -260,7 +260,8 @@ router.get('/alunos', (req, res) => {
       (
         SELECT r2.nome
         FROM responsaveis r2
-        WHERE r2.aluno_id = a.id
+        JOIN responsavel_alunos ra2 ON ra2.responsavel_id = r2.id
+        WHERE ra2.aluno_id = a.id
         ORDER BY r2.id
         LIMIT 1
       ) AS responsavel_nome,
@@ -381,12 +382,33 @@ router.delete('/alunos/:id', (req, res) => {
   if (!aluno) return res.status(404).json({ error: 'Aluno não encontrado.' });
 
   db.transaction(() => {
-    // Remove responsáveis vinculados (e suas entregas)
-    const responsaveis = db.prepare('SELECT id FROM responsaveis WHERE aluno_id = ?').all(req.params.id);
-    for (const r of responsaveis) {
-      db.prepare('DELETE FROM entregas WHERE responsavel_id = ?').run(r.id);
+    // Busca responsáveis vinculados via responsavel_alunos (novo) ou aluno_id (legado)
+    const responsaveisViaTabela = db.prepare(
+      'SELECT responsavel_id AS id FROM responsavel_alunos WHERE aluno_id = ?'
+    ).all(req.params.id);
+    const responsaveisLegados = db.prepare(
+      'SELECT id FROM responsaveis WHERE aluno_id = ? AND id NOT IN (SELECT responsavel_id FROM responsavel_alunos WHERE aluno_id = ?)'
+    ).all(req.params.id, req.params.id);
+    const todosResp = [...responsaveisViaTabela, ...responsaveisLegados];
+
+    // Remove o vínculo com este aluno
+    db.prepare('DELETE FROM responsavel_alunos WHERE aluno_id = ?').run(req.params.id);
+
+    // Deleta responsáveis que ficaram sem nenhum filho vinculado
+    for (const r of todosResp) {
+      const outrosFilhos = db.prepare(
+        'SELECT COUNT(*) AS cnt FROM responsavel_alunos WHERE responsavel_id = ?'
+      ).get(r.id);
+      const semFilhos = (outrosFilhos?.cnt ?? 0) === 0;
+      const semFilhoLegado = !db.prepare(
+        'SELECT 1 FROM responsaveis WHERE id = ? AND aluno_id IS NOT NULL AND aluno_id != ?'
+      ).get(r.id, req.params.id);
+      if (semFilhos && semFilhoLegado) {
+        db.prepare('DELETE FROM entregas WHERE responsavel_id = ?').run(r.id);
+        db.prepare('DELETE FROM responsaveis WHERE id = ?').run(r.id);
+      }
     }
-    db.prepare('DELETE FROM responsaveis WHERE aluno_id = ?').run(req.params.id);
+
     db.prepare('DELETE FROM alunos WHERE id = ?').run(req.params.id);
   })();
 
@@ -591,9 +613,10 @@ router.post('/responsaveis/desvincular-notificacoes', (req, res) => {
       return res.status(400).json({ error: 'turma_id inválido.' });
     }
     ids = db.prepare(`
-      SELECT r.id
+      SELECT DISTINCT r.id
       FROM responsaveis r
-      JOIN alunos a ON a.id = r.aluno_id
+      JOIN responsavel_alunos ra ON ra.responsavel_id = r.id
+      JOIN alunos a ON a.id = ra.aluno_id
       WHERE a.turma_id = ?
     `).all(Number(turma_id)).map(r => r.id);
   } else {
@@ -654,7 +677,8 @@ router.post('/avisos', avisoLimiter, async (req, res, next) => {
     responsaveis = db.prepare(`
       SELECT DISTINCT r.id
       FROM responsaveis r
-      JOIN alunos a ON r.aluno_id = a.id
+      JOIN responsavel_alunos ra ON ra.responsavel_id = r.id
+      JOIN alunos a ON a.id = ra.aluno_id
       WHERE a.ativo = 1
     `).all();
   } else if (tipo === 'turmas') {
@@ -662,7 +686,8 @@ router.post('/avisos', avisoLimiter, async (req, res, next) => {
     responsaveis = db.prepare(`
       SELECT DISTINCT r.id
       FROM responsaveis r
-      JOIN alunos a ON r.aluno_id = a.id
+      JOIN responsavel_alunos ra ON ra.responsavel_id = r.id
+      JOIN alunos a ON a.id = ra.aluno_id
       WHERE a.turma_id IN (${ph}) AND a.ativo = 1
     `).all(...ids);
   } else if (tipo === 'alunos') {
@@ -670,7 +695,8 @@ router.post('/avisos', avisoLimiter, async (req, res, next) => {
     responsaveis = db.prepare(`
       SELECT DISTINCT r.id
       FROM responsaveis r
-      WHERE r.aluno_id IN (${ph})
+      JOIN responsavel_alunos ra ON ra.responsavel_id = r.id
+      WHERE ra.aluno_id IN (${ph})
     `).all(...ids);
   }
 
@@ -1008,11 +1034,19 @@ router.post('/importar-csv', upload.single('arquivo'), (req, res) => {
         'SELECT * FROM responsaveis WHERE aluno_id = ?'
       ).get(alunoEncontrado.id);
 
+      let responsavelId;
       if (existente) {
         updateResponsavel.run(nomeResponsavel, telefone, existente.id);
+        responsavelId = existente.id;
       } else {
-        insertResponsavel.run(nomeResponsavel, telefone, alunoEncontrado.id, uuidv4());
+        const { lastInsertRowid } = insertResponsavel.run(nomeResponsavel, telefone, alunoEncontrado.id, uuidv4());
+        responsavelId = lastInsertRowid;
       }
+
+      // Garante vínculo na tabela responsavel_alunos
+      db.prepare(
+        'INSERT OR IGNORE INTO responsavel_alunos (responsavel_id, aluno_id) VALUES (?, ?)'
+      ).run(responsavelId, alunoEncontrado.id);
 
       vinculados++;
     }
@@ -1052,6 +1086,10 @@ router.post('/vincular-manual', (req, res) => {
   const { lastInsertRowid } = db.prepare(
     'INSERT INTO responsaveis (nome, telefone, aluno_id, link_token) VALUES (?, ?, ?, ?)'
   ).run(nome_responsavel.trim(), telefone || null, aluno_id, uuidv4());
+
+  db.prepare(
+    'INSERT OR IGNORE INTO responsavel_alunos (responsavel_id, aluno_id) VALUES (?, ?)'
+  ).run(lastInsertRowid, aluno_id);
 
   res.status(201).json(
     db.prepare('SELECT * FROM responsaveis WHERE id = ?').get(lastInsertRowid)

@@ -73,6 +73,7 @@ export default function App() {
         {autenticado && !aceitePendente && (
           <>
             <Route path="/avisos" element={<AvisosPage onLogout={handleLogout} />} />
+            <Route path="/qrcode" element={<QRCodePage />} />
             <Route path="*" element={<Navigate to="/avisos" replace />} />
           </>
         )}

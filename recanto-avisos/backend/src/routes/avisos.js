@@ -66,31 +66,64 @@ router.delete('/:id', autenticarResponsavel, (req, res) => {
 });
 
 // GET /api/avisos/resumo-aluno
-// Retorna faltas, comportamento e observacoes do aluno da sessao
+// Retorna faltas, comportamento e observacoes de todos os filhos vinculados ao responsavel
 router.get('/resumo-aluno', autenticarResponsavel, (req, res) => {
   const db = getDb();
-  const alunoId = req.responsavel.aluno_id;
+  const responsavelId = req.responsavel.responsavel_id;
 
-  const linha = db.prepare(`
+  // Busca todos os filhos vinculados via responsavel_alunos
+  const filhos = db.prepare(`
     SELECT
+      a.id AS aluno_id,
+      a.nome AS aluno_nome,
+      t.nome AS turma_nome,
+      t.codigo AS turma_codigo,
       COALESCE(v.faltas_total, 0) AS faltas_total,
       COALESCE(v.comportamento, 'nao_avaliado') AS comportamento,
       COALESCE(v.observacoes, '') AS observacoes,
       v.atualizado_em
-    FROM alunos a
+    FROM responsavel_alunos ra
+    JOIN alunos a ON a.id = ra.aluno_id
+    LEFT JOIN turmas t ON t.id = a.turma_id
     LEFT JOIN aluno_vida_escolar v ON v.aluno_id = a.id
-    WHERE a.id = ?
-    LIMIT 1
-  `).get(alunoId);
+    WHERE ra.responsavel_id = ?
+    ORDER BY a.nome
+  `).all(responsavelId);
 
-  if (!linha) {
-    return res.status(404).json({ error: 'Aluno não encontrado.' });
+  if (filhos.length === 0) {
+    // Fallback para aluno_id no JWT (compatibilidade com contas antigas sem responsavel_alunos)
+    const alunoId = req.responsavel.aluno_id;
+    if (!alunoId) return res.status(404).json({ error: 'Nenhum aluno vinculado.' });
+
+    const linha = db.prepare(`
+      SELECT
+        a.id AS aluno_id,
+        a.nome AS aluno_nome,
+        t.nome AS turma_nome,
+        t.codigo AS turma_codigo,
+        COALESCE(v.faltas_total, 0) AS faltas_total,
+        COALESCE(v.comportamento, 'nao_avaliado') AS comportamento,
+        COALESCE(v.observacoes, '') AS observacoes,
+        v.atualizado_em
+      FROM alunos a
+      LEFT JOIN turmas t ON t.id = a.turma_id
+      LEFT JOIN aluno_vida_escolar v ON v.aluno_id = a.id
+      WHERE a.id = ?
+      LIMIT 1
+    `).get(alunoId);
+
+    if (!linha) return res.status(404).json({ error: 'Aluno não encontrado.' });
+
+    return res.json([{
+      ...linha,
+      comportamento_label: COMPORTAMENTO_LABELS[linha.comportamento] || COMPORTAMENTO_LABELS.nao_avaliado,
+    }]);
   }
 
-  res.json({
-    ...linha,
-    comportamento_label: COMPORTAMENTO_LABELS[linha.comportamento] || COMPORTAMENTO_LABELS.nao_avaliado,
-  });
+  res.json(filhos.map(f => ({
+    ...f,
+    comportamento_label: COMPORTAMENTO_LABELS[f.comportamento] || COMPORTAMENTO_LABELS.nao_avaliado,
+  })));
 });
 
 module.exports = router;

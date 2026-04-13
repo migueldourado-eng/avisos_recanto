@@ -4,21 +4,34 @@ import { Html5Qrcode, Html5QrcodeScanner } from 'html5-qrcode'
 
 export default function QRCodePage() {
   const navigate = useNavigate()
+  const params = new URLSearchParams(window.location.search)
+  const modoAdicionar = params.get('modo') === 'adicionar'
+  const jwt = localStorage.getItem('jwt')
+
   const [manualCode, setManualCode] = useState('')
   const [showManual, setShowManual] = useState(false)
   const [scanning, setScanning] = useState(false)
   const [error, setError] = useState('')
   const [isMobile, setIsMobile] = useState(false)
+  const [adicionando, setAdicionando] = useState(false)
+  const [nomeFilho, setNomeFilho] = useState('')
+  const [turmaToken, setTurmaToken] = useState('')
   const scannerRef = useRef(null)
   const qrScannerRef = useRef(null)
   const redirectingRef = useRef(false)
 
   useEffect(() => {
     // Verifica se chegou via QR Code (parâmetro ?turma=XXX na URL)
-    const params = new URLSearchParams(window.location.search)
-    const qrToken = params.get('turma')
+    const urlParams = new URLSearchParams(window.location.search)
+    const qrToken = urlParams.get('turma')
 
     if (qrToken) {
+      if (modoAdicionar && jwt) {
+        // Modo adicionar filho: mostra formulário com turma pré-preenchida
+        setTurmaToken(qrToken)
+        setAdicionando(true)
+        return
+      }
       // QR Code detectado! Redireciona para login com o token
       navigate(`/login?turma=${qrToken}`)
       return
@@ -49,7 +62,13 @@ export default function QRCodePage() {
             await qrScannerRef.current?.clear?.()
           } catch {}
 
-          window.location.assign(`/login?turma=${encodeURIComponent(token)}`)
+          if (modoAdicionar && jwt) {
+            setTurmaToken(token)
+            setAdicionando(true)
+            redirectingRef.current = false
+          } else {
+            window.location.assign(`/login?turma=${encodeURIComponent(token)}`)
+          }
         }
 
         if (mobile) {
@@ -117,11 +136,84 @@ export default function QRCodePage() {
     }
   }, [navigate])
 
+  async function handleAdicionarFilho(e) {
+    e.preventDefault()
+    if (!nomeFilho.trim() || !turmaToken) return
+    setError('')
+    try {
+      const { default: api } = await import('../api/axios')
+      const { data } = await api.post('/auth/adicionar-filho', {
+        qr_token: turmaToken,
+        nome_aluno: nomeFilho.trim(),
+      })
+      // Atualiza filhos no userInfo
+      const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+      userInfo.filhos = data.filhos
+      localStorage.setItem('userInfo', JSON.stringify(userInfo))
+      alert(`✓ ${data.aluno_nome} adicionado com sucesso!`)
+      window.location.href = '/avisos'
+    } catch (err) {
+      setError(err.response?.data?.error || 'Erro ao adicionar filho. Tente novamente.')
+    }
+  }
+
   function handleManualSubmit(e) {
     e.preventDefault()
     if (manualCode.trim()) {
-      navigate(`/login?turma=${manualCode.trim()}`)
+      if (modoAdicionar && jwt) {
+        setTurmaToken(manualCode.trim())
+        setAdicionando(true)
+      } else {
+        navigate(`/login?turma=${manualCode.trim()}`)
+      }
     }
+  }
+
+  // Tela de formulário para adicionar filho após QR lido
+  if (adicionando) {
+    return (
+      <div style={{ minHeight: '100vh', background: '#f7f9fc', padding: '1.5rem' }}>
+        <button
+          onClick={() => { setAdicionando(false); setNomeFilho(''); setError('') }}
+          style={{ background: 'white', border: '1px solid #e3e9ee', borderRadius: '1rem', width: '3rem', height: '3rem', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', marginBottom: '1.5rem' }}
+        >
+          <span className="material-symbols-outlined" style={{ color: '#2d6197', fontSize: '1.5rem' }}>arrow_back</span>
+        </button>
+
+        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#2c3338', marginBottom: '0.5rem' }}>
+          Adicionar filho
+        </h1>
+        <p style={{ fontSize: '0.875rem', color: '#596065', fontWeight: 500, marginBottom: '2rem' }}>
+          QR Code lido com sucesso! Informe o nome do aluno para vincular à sua conta.
+        </p>
+
+        <div style={{ background: 'white', borderRadius: '2rem', padding: '1.5rem', boxShadow: '0 12px 40px rgba(44,51,56,0.08)', border: '1px solid #e3e9ee' }}>
+          <form onSubmit={handleAdicionarFilho}>
+            <label style={{ display: 'block', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#596065', marginBottom: '0.75rem' }}>
+              Nome completo do aluno
+            </label>
+            <input
+              type="text"
+              value={nomeFilho}
+              onChange={e => setNomeFilho(e.target.value)}
+              placeholder="Digite o nome completo"
+              autoComplete="off"
+              style={{ width: '100%', padding: '0.875rem 1rem', fontSize: '0.875rem', fontWeight: 500, borderRadius: '1rem', border: '1.5px solid rgba(171,179,185,0.5)', background: '#f0f4f8', color: '#2c3338', fontFamily: "'Manrope', system-ui, sans-serif", marginBottom: '1rem' }}
+            />
+            {error && (
+              <p style={{ fontSize: '0.875rem', fontWeight: 600, color: '#dc2626', marginBottom: '1rem' }}>{error}</p>
+            )}
+            <button
+              type="submit"
+              disabled={!nomeFilho.trim()}
+              style={{ width: '100%', padding: '1rem', background: nomeFilho.trim() ? 'linear-gradient(160deg,#1e558b,#2d6197)' : '#e3e9ee', color: nomeFilho.trim() ? 'white' : '#abb3b9', fontWeight: 700, fontSize: '0.875rem', borderRadius: '1rem', border: 'none', cursor: nomeFilho.trim() ? 'pointer' : 'not-allowed' }}
+            >
+              Vincular aluno
+            </button>
+          </form>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -130,7 +222,7 @@ export default function QRCodePage() {
       {/* Header */}
       <div style={{ marginBottom: '2rem' }}>
         <button
-          onClick={() => navigate('/')}
+          onClick={() => modoAdicionar ? window.history.back() : navigate('/')}
           style={{
             background: 'white',
             border: '1px solid #e3e9ee',
@@ -150,7 +242,7 @@ export default function QRCodePage() {
         </button>
 
         <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#2c3338', marginBottom: '0.5rem' }}>
-          Escanear QR Code
+          {modoAdicionar ? 'Adicionar filho' : 'Escanear QR Code'}
         </h1>
         <p style={{ fontSize: '0.875rem', color: '#596065', fontWeight: 500 }}>
           {isMobile

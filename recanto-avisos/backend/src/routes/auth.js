@@ -59,9 +59,18 @@ router.post('/login-turma', (req, res, next) => {
       return res.status(404).json({ error: 'Aluno não encontrado nesta turma.' });
     }
 
-    let responsavel = db.prepare(
-      'SELECT * FROM responsaveis WHERE aluno_id = ?'
-    ).get(aluno.id);
+    // Busca responsavel já vinculado a este aluno (via responsavel_alunos ou campo legado)
+    let responsavel = db.prepare(`
+      SELECT r.* FROM responsaveis r
+      JOIN responsavel_alunos ra ON ra.responsavel_id = r.id
+      WHERE ra.aluno_id = ?
+      LIMIT 1
+    `).get(aluno.id);
+
+    // Fallback para dados legados (pré-migração)
+    if (!responsavel) {
+      responsavel = db.prepare('SELECT * FROM responsaveis WHERE aluno_id = ?').get(aluno.id);
+    }
 
     if (!responsavel) {
       const { lastInsertRowid } = db.prepare(
@@ -69,6 +78,11 @@ router.post('/login-turma', (req, res, next) => {
       ).run(`Responsável de ${aluno.nome}`, aluno.id, uuidv4());
       responsavel = db.prepare('SELECT * FROM responsaveis WHERE id = ?').get(lastInsertRowid);
     }
+
+    // Garante vínculo na tabela responsavel_alunos
+    db.prepare(
+      'INSERT OR IGNORE INTO responsavel_alunos (responsavel_id, aluno_id) VALUES (?, ?)'
+    ).run(responsavel.id, aluno.id);
 
     db.prepare(
       'UPDATE responsaveis SET ultimo_acesso = CURRENT_TIMESTAMP WHERE id = ?'
@@ -80,6 +94,16 @@ router.post('/login-turma', (req, res, next) => {
       { expiresIn: '30d' }
     );
 
+    // Busca todos os filhos vinculados a este responsavel
+    const filhos = db.prepare(`
+      SELECT ra.aluno_id, a.nome AS aluno_nome, t.nome AS turma_nome, t.codigo AS turma_codigo
+      FROM responsavel_alunos ra
+      JOIN alunos a ON a.id = ra.aluno_id
+      LEFT JOIN turmas t ON t.id = a.turma_id
+      WHERE ra.responsavel_id = ?
+      ORDER BY a.nome
+    `).all(responsavel.id);
+
     res.json({
       token,
       responsavel_nome: responsavel.nome,
@@ -87,6 +111,7 @@ router.post('/login-turma', (req, res, next) => {
       turma_nome: turma.nome,
       turma_codigo: turma.codigo,
       aceite_lgpd: !!responsavel.aceite_lgpd,
+      filhos,
     });
   } catch (err) {
     next(err);
@@ -118,6 +143,88 @@ router.get('/sugestoes', (req, res, next) => {
       .map(a => a.nome);
 
     res.json(matches);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/auth/adicionar-filho
+// Vincula um novo aluno (filho) ao responsável já autenticado
+router.post('/adicionar-filho', autenticarResponsavel, (req, res, next) => {
+  try {
+    const { qr_token, nome_aluno } = req.body;
+
+    if (!qr_token || !nome_aluno || !nome_aluno.trim()) {
+      return res.status(400).json({ error: 'qr_token e nome_aluno são obrigatórios.' });
+    }
+
+    const db = getDb();
+
+    const turma = db.prepare(
+      'SELECT * FROM turmas WHERE qr_token = ? AND ativa = 1'
+    ).get(qr_token);
+
+    if (!turma) {
+      return res.status(404).json({ error: 'QR Code inválido ou turma inativa.' });
+    }
+
+    const alunos = db.prepare(
+      'SELECT * FROM alunos WHERE turma_id = ? AND ativo = 1'
+    ).all(turma.id);
+
+    const nomeNorm = normalizar(nome_aluno);
+    let aluno = alunos.find(a => normalizar(a.nome) === nomeNorm);
+
+    if (!aluno) {
+      const parciais = alunos.filter(a => normalizar(a.nome).includes(nomeNorm));
+      if (parciais.length === 1) {
+        aluno = parciais[0];
+      } else if (parciais.length > 1) {
+        return res.status(400).json({ error: 'Nome ambíguo. Informe o nome completo do aluno.' });
+      }
+    }
+
+    if (!aluno) {
+      return res.status(404).json({ error: 'Aluno não encontrado nesta turma.' });
+    }
+
+    // Verifica se o aluno já está vinculado a outro responsável
+    const jaVinculado = db.prepare(`
+      SELECT r.id FROM responsaveis r
+      JOIN responsavel_alunos ra ON ra.responsavel_id = r.id
+      WHERE ra.aluno_id = ? AND r.id != ?
+      LIMIT 1
+    `).get(aluno.id, req.responsavel.responsavel_id);
+
+    if (jaVinculado) {
+      return res.status(409).json({ error: 'Este aluno já está vinculado a outro responsável. Fale com a secretaria.' });
+    }
+
+    // Verifica se já está vinculado a este responsável
+    const jaEsteVinculo = db.prepare(
+      'SELECT 1 FROM responsavel_alunos WHERE responsavel_id = ? AND aluno_id = ?'
+    ).get(req.responsavel.responsavel_id, aluno.id);
+
+    if (jaEsteVinculo) {
+      return res.status(409).json({ error: 'Este aluno já está vinculado à sua conta.' });
+    }
+
+    // Vincula
+    db.prepare(
+      'INSERT INTO responsavel_alunos (responsavel_id, aluno_id) VALUES (?, ?)'
+    ).run(req.responsavel.responsavel_id, aluno.id);
+
+    // Retorna lista atualizada de filhos
+    const filhos = db.prepare(`
+      SELECT ra.aluno_id, a.nome AS aluno_nome, t.nome AS turma_nome, t.codigo AS turma_codigo
+      FROM responsavel_alunos ra
+      JOIN alunos a ON a.id = ra.aluno_id
+      LEFT JOIN turmas t ON t.id = a.turma_id
+      WHERE ra.responsavel_id = ?
+      ORDER BY a.nome
+    `).all(req.responsavel.responsavel_id);
+
+    res.json({ sucesso: true, filhos, aluno_nome: aluno.nome, turma_nome: turma.nome });
   } catch (err) {
     next(err);
   }

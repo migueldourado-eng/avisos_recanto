@@ -58,15 +58,22 @@ function AvisoCard({ aviso }) {
 
 export default function AvisosPage({ onLogout }) {
   const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+  const filhos = userInfo.filhos || []
+  const temMultiplosFilhos = filhos.length > 1
 
   const [avisos,     setAvisos]     = useState([])
   const [loading,    setLoading]    = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [tab,        setTab]        = useState('avisos') // 'avisos' | 'vida-escolar' | 'conta'
   const [vidaEscolarTab, setVidaEscolarTab] = useState('faltas') // 'faltas' | 'comportamento' | 'observacoes'
+  const [filhoSelecionado, setFilhoSelecionado] = useState(filhos[0] || null)
   const [mostrarModal, setMostrarModal] = useState(false)
   const [confirmandoSaida, setConfirmandoSaida] = useState(false)
-  const [resumoAluno, setResumoAluno] = useState(null)
+  const [resumoFilhos, setResumoFilhos] = useState([])
+  // Compatibilidade: resumoAluno aponta para o filho selecionado
+  const resumoAluno = temMultiplosFilhos
+    ? resumoFilhos.find(f => f.aluno_id === filhoSelecionado?.aluno_id) || resumoFilhos[0] || null
+    : resumoFilhos[0] || null
 
   const containerRef = useRef(null)
   const touchStartY  = useRef(0)
@@ -90,7 +97,8 @@ export default function AvisosPage({ onLogout }) {
   const carregarResumoAluno = useCallback(async () => {
     try {
       const { data } = await api.get('/avisos/resumo-aluno')
-      setResumoAluno(data)
+      // API agora retorna array; atualiza lista de filhos com dados de vida escolar
+      setResumoFilhos(Array.isArray(data) ? data : [data])
     } catch (err) {
       if (err.response?.status === 401) onLogout()
     }
@@ -165,9 +173,27 @@ export default function AvisosPage({ onLogout }) {
                 <p className="text-[13px] leading-5 text-on-surface-variant truncate">
                   Escola Municipal Recanto das Margaridas
                 </p>
-                <p className="text-[1.05rem] font-extrabold text-on-surface truncate">
-                  {userInfo.aluno_nome || 'Meu Filho'}
-                </p>
+                {temMultiplosFilhos ? (
+                  <div className="flex items-center gap-1 flex-wrap">
+                    {filhos.map(f => (
+                      <button
+                        key={f.aluno_id}
+                        onClick={() => setFilhoSelecionado(f)}
+                        className={`text-[0.85rem] font-bold px-2 py-0.5 rounded-full transition-colors ${
+                          filhoSelecionado?.aluno_id === f.aluno_id
+                            ? 'bg-primary text-white'
+                            : 'bg-primary/10 text-primary'
+                        }`}
+                      >
+                        {f.aluno_nome.split(' ')[0]}
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-[1.05rem] font-extrabold text-on-surface truncate">
+                    {userInfo.aluno_nome || 'Meu Filho'}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -264,6 +290,25 @@ export default function AvisosPage({ onLogout }) {
         {/* Aba Vida Escolar */}
         {tab === 'vida-escolar' && (
           <div className="px-6 max-w-xl mx-auto w-full space-y-6">
+            {/* Seletor de filho — só aparece com múltiplos filhos */}
+            {temMultiplosFilhos && (
+              <div className="flex gap-2 flex-wrap">
+                {filhos.map(f => (
+                  <button
+                    key={f.aluno_id}
+                    onClick={() => setFilhoSelecionado(f)}
+                    className={`px-4 py-2 rounded-full text-sm font-bold transition-all active:scale-95 ${
+                      filhoSelecionado?.aluno_id === f.aluno_id
+                        ? 'bg-primary text-white shadow-md'
+                        : 'bg-surface-container-low text-on-surface-variant border border-outline-variant/20'
+                    }`}
+                  >
+                    {f.aluno_nome.split(' ')[0]}
+                    {f.turma_codigo ? ` · ${f.turma_codigo}` : ''}
+                  </button>
+                ))}
+              </div>
+            )}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {(resumoAluno?.faltas_total ?? 0) > 0 ? (
                 <button
@@ -375,34 +420,35 @@ export default function AvisosPage({ onLogout }) {
             </section>
 
             <section className="bg-surface-container-low rounded-[1.75rem] p-5">
-              <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-on-surface-variant/70 mb-4">
-                Aluno vinculado
-              </p>
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-on-surface-variant/70">
+                  {temMultiplosFilhos ? 'Filhos vinculados' : 'Aluno vinculado'}
+                </p>
+                <button
+                  onClick={() => { window.location.href = '/qrcode?modo=adicionar' }}
+                  className="flex items-center gap-1 text-[11px] font-bold text-primary"
+                >
+                  <span className="material-symbols-outlined text-[16px]">add</span>
+                  Adicionar filho
+                </button>
+              </div>
 
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
-                    <span className="material-symbols-outlined text-primary">person</span>
+              <div className="space-y-3">
+                {(filhos.length > 0 ? filhos : [{ aluno_nome: userInfo.aluno_nome || 'Aluno', turma_nome: userInfo.turma_nome, turma_codigo: userInfo.turma_codigo }]).map((f, i) => (
+                  <div key={f.aluno_id ?? i} className={`flex items-center gap-3 ${i > 0 ? 'pt-3 border-t border-outline-variant/20' : ''}`}>
+                    <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined text-primary">person</span>
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-on-surface font-bold text-base truncate">
+                        {f.aluno_nome || 'Aluno'}
+                      </p>
+                      <p className="text-xs text-on-surface-variant font-semibold">
+                        {f.turma_nome || 'Turma'}{f.turma_codigo ? ` - ${f.turma_codigo}` : ''}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-xs font-semibold text-on-surface-variant">Aluno</p>
-                    <p className="text-on-surface font-bold text-lg">
-                      {userInfo.aluno_nome || 'Aluno'}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 pt-4 border-t border-outline-variant/20">
-                  <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center shrink-0">
-                    <span className="material-symbols-outlined text-on-surface-variant text-[20px]">school</span>
-                  </div>
-                  <div>
-                    <p className="text-xs font-semibold text-on-surface-variant">Turma</p>
-                    <p className="text-on-surface text-sm font-semibold">
-                      {userInfo.turma_nome || 'Turma'}{userInfo.turma_codigo ? ` - ${userInfo.turma_codigo}` : ''}
-                    </p>
-                  </div>
-                </div>
+                ))}
               </div>
             </section>
 

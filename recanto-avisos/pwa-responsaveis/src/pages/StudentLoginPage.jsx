@@ -71,7 +71,8 @@ export default function StudentLoginPage({ onLogin }) {
           responsavel_nome: data.responsavel_nome,
           aluno_nome: data.aluno_nome,
           turma_nome: data.turma_nome,
-          turma_codigo: data.turma_codigo
+          turma_codigo: data.turma_codigo,
+          filhos: data.filhos || [],
         },
         data.aceite_lgpd
       )
