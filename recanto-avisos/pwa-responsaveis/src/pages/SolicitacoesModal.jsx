@@ -133,18 +133,6 @@ export default function SolicitacoesModal({ onClose }) {
     }
   };
 
-  const apagarSolicitacao = async (id) => {
-    if (!confirm('Tem certeza que deseja apagar esta solicitação?')) return;
-
-    try {
-      await api.delete(`/solicitacoes/minhas/${id}`);
-      setMinhasSolicitacoes(prev => prev.filter(s => s.id !== id));
-    } catch (err) {
-      console.error('Erro ao apagar solicitação:', err);
-      alert('Não foi possível apagar a solicitação. Tente novamente.');
-    }
-  };
-
   const irParaRespostas = () => {
     setAba('historico');
   };
@@ -497,22 +485,6 @@ export default function SolicitacoesModal({ onClose }) {
                             {new Date(sol.criada_em).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                           </p>
                         </div>
-                        <button
-                          onClick={() => apagarSolicitacao(sol.id)}
-                          style={{
-                            backgroundColor: '#fff3f2',
-                            border: '1px solid #f5c2c7',
-                            color: '#dc3545',
-                            cursor: 'pointer',
-                            padding: '6px 10px',
-                            borderRadius: '8px',
-                            fontSize: '12px',
-                            fontWeight: 700,
-                          }}
-                          title="Apagar solicitação"
-                        >
-                          Apagar
-                        </button>
                       </div>
 
                       {/* Mensagem enviada */}

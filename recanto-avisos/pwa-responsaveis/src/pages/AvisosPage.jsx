@@ -17,7 +17,7 @@ function formatarData(dateStr) {
   return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
 
-function AvisoCard({ aviso, onDelete }) {
+function AvisoCard({ aviso }) {
   if (aviso.urgente) {
     return (
       <article className="bg-surface-container-lowest px-5 py-5 rounded-[1.75rem] shadow-[0_12px_32px_rgba(0,63,152,0.05)] relative overflow-hidden">
@@ -26,16 +26,7 @@ function AvisoCard({ aviso, onDelete }) {
           <span className="inline-flex items-center rounded-full bg-[#a24a16] px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.16em] text-white">
             Urgente
           </span>
-          <div className="flex items-center gap-2 shrink-0">
-            <span className="text-[13px] font-medium text-on-surface-variant">{formatarData(aviso.criado_em)}</span>
-            <button
-              onClick={() => onDelete(aviso.id)}
-              className="w-8 h-8 rounded-full bg-error/10 hover:bg-error/20 active:scale-95 transition-all flex items-center justify-center"
-              aria-label="Apagar aviso"
-            >
-              <span className="material-symbols-outlined text-error text-[18px]">close</span>
-            </button>
-          </div>
+          <span className="text-[13px] font-medium text-on-surface-variant shrink-0">{formatarData(aviso.criado_em)}</span>
         </div>
         <h3 className="relative text-[1.6rem] font-extrabold tracking-tight text-on-surface leading-tight mb-3">
           {aviso.titulo}
@@ -53,16 +44,7 @@ function AvisoCard({ aviso, onDelete }) {
         <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
           <span className="material-symbols-outlined text-primary text-[20px]">campaign</span>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <span className="text-[13px] font-medium text-on-surface-variant">{formatarData(aviso.criado_em)}</span>
-          <button
-            onClick={() => onDelete(aviso.id)}
-            className="w-8 h-8 rounded-full bg-outline-variant/10 hover:bg-outline-variant/20 active:scale-95 transition-all flex items-center justify-center"
-            aria-label="Apagar aviso"
-          >
-            <span className="material-symbols-outlined text-outline-variant text-[18px]">close</span>
-          </button>
-        </div>
+        <span className="text-[13px] font-medium text-on-surface-variant shrink-0">{formatarData(aviso.criado_em)}</span>
       </div>
       <h3 className="text-[1.6rem] font-extrabold tracking-tight text-on-surface leading-tight mb-3">
         {aviso.titulo}
@@ -104,15 +86,6 @@ export default function AvisosPage({ onLogout }) {
     }
   }, [onLogout])
 
-  const apagarAviso = async (avisoId) => {
-    try {
-      await api.delete(`/avisos/${avisoId}`)
-      setAvisos(prev => prev.filter(a => a.id !== avisoId))
-    } catch (err) {
-      console.error('Erro ao apagar aviso:', err)
-      alert('Não foi possível apagar o aviso. Tente novamente.')
-    }
-  }
 
   const carregarResumoAluno = useCallback(async () => {
     try {
@@ -282,7 +255,7 @@ export default function AvisosPage({ onLogout }) {
             ) : (
               /* Lista única ordenada por data (mais recente primeiro) */
               <div className="space-y-4">
-                {avisosOrdenados.map(a => <AvisoCard key={a.id} aviso={a} onDelete={apagarAviso} />)}
+                {avisosOrdenados.map(a => <AvisoCard key={a.id} aviso={a} />)}
               </div>
             )}
           </div>
