@@ -813,52 +813,45 @@ router.delete('/avisos', (req, res) => {
 
 router.get('/avisos/exportar', (req, res) => {
   const db = getDb();
+
+  // Uma linha por entrega (destinatário), com todos os detalhes
   const linhas = db.prepare(`
     SELECT
-      a.id,
       a.titulo,
       a.mensagem,
-      CASE WHEN a.urgente THEN 'Sim' ELSE 'Não' END AS urgente,
+      CASE WHEN a.urgente THEN 'Sim' ELSE 'Não' END  AS urgente,
       a.enviado_por,
-      adm.nome                                        AS admin_nome,
-      COUNT(DISTINCT e.id)                            AS total_destinatarios,
-      SUM(e.push_enviado)                             AS push_enviados,
-      SUM(e.aberto)                                   AS abertos,
-      strftime('%d/%m/%Y %H:%M', a.criado_em)        AS data_envio
-    FROM avisos a
-    LEFT JOIN admins   adm ON adm.id = a.admin_id
-    LEFT JOIN entregas   e ON e.aviso_id = a.id
-    GROUP BY a.id
-    ORDER BY a.criado_em DESC
+      adm.nome                                         AS admin_nome,
+      t.nome                                           AS turma_nome,
+      t.codigo                                         AS turma_codigo,
+      al.nome                                          AS aluno_nome,
+      r.nome                                           AS responsavel_nome,
+      CASE WHEN e.push_enviado THEN 'Sim' ELSE 'Não' END AS push_enviado,
+      CASE WHEN e.aberto       THEN 'Sim' ELSE 'Não' END AS aberto,
+      strftime('%d/%m/%Y %H:%M', a.criado_em)         AS data_envio
+    FROM entregas e
+    JOIN avisos      a   ON a.id   = e.aviso_id
+    LEFT JOIN admins adm ON adm.id = a.admin_id
+    LEFT JOIN responsaveis r  ON r.id  = e.responsavel_id
+    LEFT JOIN alunos       al ON al.id = r.aluno_id
+    LEFT JOIN turmas       t  ON t.id  = al.turma_id
+    ORDER BY a.criado_em DESC, t.nome, al.nome
   `).all();
 
-  // Busca turmas de cada aviso (via responsáveis → alunos → turmas)
-  const turmasStmt = db.prepare(`
-    SELECT DISTINCT t.nome
-    FROM entregas e
-    JOIN responsaveis r ON r.id = e.responsavel_id
-    JOIN alunos al ON al.id = r.aluno_id
-    JOIN turmas t ON t.id = al.turma_id
-    WHERE e.aviso_id = ?
-  `);
-  const linhasComTurmas = linhas.map(l => {
-    const turmas = turmasStmt.all(l.id).map(t => t.nome)
-    return { ...l, turma: turmas.length > 0 ? turmas.join(', ') : 'Todas as turmas' }
-  });
-
-  const cabecalho = ['Título', 'Mensagem', 'Urgente', 'Enviado por', 'Perfil', 'Turma', 'Destinatários', 'Push enviados', 'Abertos', 'Data envio'];
+  const cabecalho = ['Título', 'Mensagem', 'Urgente', 'Enviado por', 'Perfil', 'Turma', 'Aluno', 'Responsável', 'Push enviado', 'Aberto', 'Data envio'];
   const csv = [
     cabecalho.join(';'),
-    ...linhasComTurmas.map(l => [
-      `"${(l.titulo||'').replace(/"/g,'""')}"`,
-      `"${(l.mensagem||'').replace(/"/g,'""')}"`,
+    ...linhas.map(l => [
+      `"${(l.titulo         ||'').replace(/"/g,'""')}"`,
+      `"${(l.mensagem       ||'').replace(/"/g,'""')}"`,
       l.urgente,
-      `"${(l.enviado_por||'').replace(/"/g,'""')}"`,
-      `"${(l.admin_nome||'').replace(/"/g,'""')}"`,
-      `"${(l.turma||'').replace(/"/g,'""')}"`,
-      l.total_destinatarios || 0,
-      l.push_enviados || 0,
-      l.abertos || 0,
+      `"${(l.enviado_por    ||'').replace(/"/g,'""')}"`,
+      `"${(l.admin_nome     ||'').replace(/"/g,'""')}"`,
+      `"${(l.turma_codigo   ? l.turma_codigo+' — '+l.turma_nome : '').replace(/"/g,'""')}"`,
+      `"${(l.aluno_nome     ||'').replace(/"/g,'""')}"`,
+      `"${(l.responsavel_nome||'').replace(/"/g,'""')}"`,
+      l.push_enviado,
+      l.aberto,
       l.data_envio,
     ].join(';'))
   ].join('\r\n');
