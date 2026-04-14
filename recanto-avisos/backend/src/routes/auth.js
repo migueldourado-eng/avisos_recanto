@@ -241,6 +241,27 @@ router.post('/aceite-lgpd', autenticarResponsavel, (req, res, next) => {
   } catch (err) { next(err); }
 });
 
+// PATCH /api/auth/atualizar-perfil
+// Atualiza nome e telefone do responsavel
+router.patch('/atualizar-perfil', autenticarResponsavel, (req, res, next) => {
+  try {
+    const { nome, telefone } = req.body;
+    const db = getDb();
+
+    if (!nome || !nome.trim()) {
+      return res.status(400).json({ error: 'Nome é obrigatório.' });
+    }
+
+    db.prepare(
+      'UPDATE responsaveis SET nome = ?, telefone = ? WHERE id = ?'
+    ).run(nome.trim(), telefone?.trim() || null, req.responsavel.responsavel_id);
+
+    res.json({ ok: true, nome: nome.trim(), telefone: telefone?.trim() || null });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // POST /api/auth/register-fcm-token
 router.post('/register-fcm-token', autenticarResponsavel, (req, res, next) => {
   try {

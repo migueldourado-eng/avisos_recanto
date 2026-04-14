@@ -1096,4 +1096,91 @@ router.post('/vincular-manual', (req, res) => {
   );
 });
 
+// ─── POST /api/admin/perguntas ────────────────────────────────────────────────
+
+router.post('/perguntas', autenticarAdmin, (req, res) => {
+  try {
+    const { texto, turma_id } = req.body;
+
+    if (!texto || !texto.trim()) {
+      return res.status(400).json({ error: 'Texto da pergunta é obrigatório.' });
+    }
+
+    const db = getDb();
+    const { lastInsertRowid } = db.prepare(
+      'INSERT INTO perguntas (texto, turma_id, admin_id, ativa) VALUES (?, ?, ?, 1)'
+    ).run(texto.trim(), turma_id || null, req.admin.id);
+
+    res.status(201).json({ ok: true, pergunta_id: lastInsertRowid });
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao criar pergunta' });
+  }
+});
+
+// ─── GET /api/admin/perguntas ─────────────────────────────────────────────────
+
+router.get('/perguntas', autenticarAdmin, (req, res) => {
+  try {
+    const db = getDb();
+    const perguntas = db.prepare(`
+      SELECT p.*, t.nome AS turma_nome, t.codigo AS turma_codigo,
+             COUNT(rp.id) AS total_respostas
+      FROM perguntas p
+      LEFT JOIN turmas t ON t.id = p.turma_id
+      LEFT JOIN respostas_pais rp ON rp.pergunta_id = p.id
+      GROUP BY p.id
+      ORDER BY p.ativa DESC, p.criada_em DESC
+    `).all();
+
+    res.json(perguntas);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao listar perguntas' });
+  }
+});
+
+// ─── GET /api/admin/perguntas/:id/respostas ───────────────────────────────────
+
+router.get('/perguntas/:id/respostas', autenticarAdmin, (req, res) => {
+  try {
+    const db = getDb();
+    const pergunta = db.prepare('SELECT * FROM perguntas WHERE id = ?').get(req.params.id);
+
+    if (!pergunta) {
+      return res.status(404).json({ error: 'Pergunta não encontrada.' });
+    }
+
+    const respostas = db.prepare(`
+      SELECT rp.*, r.nome AS responsavel_nome, a.nome AS aluno_nome,
+             t.nome AS turma_nome, t.codigo AS turma_codigo
+      FROM respostas_pais rp
+      JOIN responsaveis r ON r.id = rp.responsavel_id
+      JOIN alunos a ON a.id = rp.aluno_id
+      LEFT JOIN turmas t ON t.id = a.turma_id
+      WHERE rp.pergunta_id = ?
+      ORDER BY t.nome, a.nome
+    `).all(req.params.id);
+
+    res.json({ pergunta, respostas });
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao buscar respostas' });
+  }
+});
+
+// ─── DELETE /api/admin/perguntas/:id ───────────────────────────────────────────
+
+router.delete('/perguntas/:id', autenticarAdmin, (req, res) => {
+  try {
+    const db = getDb();
+    const result = db.prepare('DELETE FROM perguntas WHERE id = ?').run(req.params.id);
+
+    if (result.changes === 0) {
+      return res.status(404).json({ error: 'Pergunta não encontrada.' });
+    }
+
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao deletar pergunta' });
+  }
+});
+
 module.exports = router;

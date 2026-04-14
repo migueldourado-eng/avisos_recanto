@@ -126,4 +126,89 @@ router.get('/resumo-aluno', autenticarResponsavel, (req, res) => {
   })));
 });
 
+// GET /api/avisos/perguntas
+// Retorna perguntas ativas para o responsavel (filtra por turma dos seus filhos)
+router.get('/perguntas', autenticarResponsavel, (req, res) => {
+  try {
+    const db = getDb();
+    const responsavelId = req.responsavel.responsavel_id;
+
+    // Busca turmas dos filhos do responsavel
+    const turmasDoResponsavel = db.prepare(`
+      SELECT DISTINCT a.turma_id
+      FROM responsavel_alunos ra
+      JOIN alunos a ON a.id = ra.aluno_id
+      WHERE ra.responsavel_id = ?
+    `).all(responsavelId).map(row => row.turma_id).filter(Boolean);
+
+    if (turmasDoResponsavel.length === 0) {
+      return res.json([]);
+    }
+
+    const placeholders = turmasDoResponsavel.map(() => '?').join(',');
+    const perguntas = db.prepare(`
+      SELECT p.id, p.texto, t.nome AS turma_nome,
+             rp.id AS respondida_id
+      FROM perguntas p
+      LEFT JOIN turmas t ON t.id = p.turma_id
+      LEFT JOIN respostas_pais rp ON rp.pergunta_id = p.id AND rp.responsavel_id = ?
+      WHERE p.ativa = 1
+        AND (p.turma_id IN (${placeholders}) OR p.turma_id IS NULL)
+      ORDER BY p.criada_em DESC
+    `).all(responsavelId, ...turmasDoResponsavel);
+
+    res.json(perguntas);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao buscar perguntas' });
+  }
+});
+
+// POST /api/avisos/perguntas/:id/responder
+// Pai responde uma pergunta
+router.post('/perguntas/:id/responder', autenticarResponsavel, (req, res) => {
+  try {
+    const { resposta } = req.body;
+    const perguntaId = req.params.id;
+    const responsavelId = req.responsavel.responsavel_id;
+
+    if (!resposta || !resposta.trim()) {
+      return res.status(400).json({ error: 'Resposta é obrigatória.' });
+    }
+
+    const db = getDb();
+
+    // Verifica se pergunta existe e esta ativa
+    const pergunta = db.prepare('SELECT id FROM perguntas WHERE id = ? AND ativa = 1').get(perguntaId);
+    if (!pergunta) {
+      return res.status(404).json({ error: 'Pergunta não encontrada ou foi fechada.' });
+    }
+
+    // Verifica se responsavel ja respondeu
+    const jaRespondeu = db.prepare(
+      'SELECT id FROM respostas_pais WHERE pergunta_id = ? AND responsavel_id = ?'
+    ).get(perguntaId, responsavelId);
+
+    if (jaRespondeu) {
+      return res.status(409).json({ error: 'Você já respondeu esta pergunta.' });
+    }
+
+    // Insere resposta (usa primeiro aluno do responsavel como referencia)
+    const primeiroAluno = db.prepare(
+      'SELECT aluno_id FROM responsavel_alunos WHERE responsavel_id = ? LIMIT 1'
+    ).get(responsavelId);
+
+    if (!primeiroAluno) {
+      return res.status(400).json({ error: 'Nenhum aluno vinculado.' });
+    }
+
+    db.prepare(
+      'INSERT INTO respostas_pais (pergunta_id, responsavel_id, aluno_id, resposta) VALUES (?, ?, ?, ?)'
+    ).run(perguntaId, responsavelId, primeiroAluno.aluno_id, resposta.trim());
+
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao enviar resposta' });
+  }
+});
+
 module.exports = router;

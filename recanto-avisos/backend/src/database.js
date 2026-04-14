@@ -145,6 +145,30 @@ function migrate() {
       atualizado_por_admin_id INTEGER REFERENCES admins(id),
       atualizado_em DATETIME DEFAULT CURRENT_TIMESTAMP
     );
+
+    CREATE TABLE IF NOT EXISTS perguntas (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      texto TEXT NOT NULL,
+      turma_id INTEGER REFERENCES turmas(id),
+      admin_id INTEGER NOT NULL REFERENCES admins(id),
+      ativa BOOLEAN DEFAULT 1,
+      criada_em DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS respostas_pais (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      pergunta_id INTEGER NOT NULL REFERENCES perguntas(id) ON DELETE CASCADE,
+      responsavel_id INTEGER NOT NULL REFERENCES responsaveis(id) ON DELETE CASCADE,
+      aluno_id INTEGER NOT NULL REFERENCES alunos(id),
+      resposta TEXT NOT NULL,
+      criada_em DATETIME DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE(pergunta_id, responsavel_id)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_perguntas_turma ON perguntas(turma_id);
+    CREATE INDEX IF NOT EXISTS idx_perguntas_ativa ON perguntas(ativa);
+    CREATE INDEX IF NOT EXISTS idx_respostas_pergunta ON respostas_pais(pergunta_id);
+    CREATE INDEX IF NOT EXISTS idx_respostas_responsavel ON respostas_pais(responsavel_id);
   `);
 
   // Migrações incrementais — seguro rodar múltiplas vezes (ignoram se coluna já existe)

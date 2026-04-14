@@ -62,6 +62,7 @@ export default function AvisosPage({ onLogout }) {
   const temMultiplosFilhos = filhos.length > 1
 
   const [avisos,     setAvisos]     = useState([])
+  const [perguntas,  setPerguntas]  = useState([])
   const [loading,    setLoading]    = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [tab,        setTab]        = useState('avisos') // 'avisos' | 'vida-escolar' | 'conta'
@@ -70,6 +71,7 @@ export default function AvisosPage({ onLogout }) {
   const [mostrarModal, setMostrarModal] = useState(false)
   const [confirmandoSaida, setConfirmandoSaida] = useState(false)
   const [resumoFilhos, setResumoFilhos] = useState([])
+  const [respostaPergunta, setRespostaPergunta] = useState({})
   // Compatibilidade: resumoAluno aponta para o filho selecionado
   const resumoAluno = temMultiplosFilhos
     ? resumoFilhos.find(f => f.aluno_id === filhoSelecionado?.aluno_id) || resumoFilhos[0] || null
@@ -104,14 +106,25 @@ export default function AvisosPage({ onLogout }) {
     }
   }, [onLogout])
 
+  const carregarPerguntas = useCallback(async () => {
+    try {
+      const { data } = await api.get('/avisos/perguntas')
+      setPerguntas(data || [])
+    } catch (err) {
+      if (err.response?.status === 401) onLogout()
+    }
+  }, [onLogout])
+
   useEffect(() => {
     carregarAvisos()
     carregarResumoAluno()
+    carregarPerguntas()
     requestNotificationPermission().catch(() => {})
     const handleVisibility = () => {
       if (document.visibilityState === 'visible') {
         carregarAvisos()
         carregarResumoAluno()
+        carregarPerguntas()
       }
     }
     document.addEventListener('visibilitychange', handleVisibility)
@@ -120,6 +133,7 @@ export default function AvisosPage({ onLogout }) {
       if (event.data?.type === 'NOVO_AVISO') {
         carregarAvisos()
         carregarResumoAluno()
+        carregarPerguntas()
       }
     }
     navigator.serviceWorker?.addEventListener('message', handleSwMessage)
@@ -127,6 +141,7 @@ export default function AvisosPage({ onLogout }) {
     const polling = setInterval(() => {
       carregarAvisos()
       carregarResumoAluno()
+      carregarPerguntas()
     }, 30000)
 
     return () => {
@@ -134,13 +149,27 @@ export default function AvisosPage({ onLogout }) {
       navigator.serviceWorker?.removeEventListener('message', handleSwMessage)
       clearInterval(polling)
     }
-  }, [carregarAvisos, carregarResumoAluno])
+  }, [carregarAvisos, carregarResumoAluno, carregarPerguntas])
 
   function handleTouchStart(e) { touchStartY.current = e.touches[0].clientY }
   function handleTouchEnd(e) {
     const delta     = e.changedTouches[0].clientY - touchStartY.current
     const scrollTop = containerRef.current?.scrollTop ?? 0
     if (delta > 72 && scrollTop === 0 && !refreshing) { setRefreshing(true); carregarAvisos() }
+  }
+
+  async function enviarResposta(perguntaId) {
+    if (!respostaPergunta[perguntaId]?.trim()) return
+    try {
+      await api.post(`/avisos/perguntas/${perguntaId}/responder`, {
+        resposta: respostaPergunta[perguntaId]
+      })
+      alert('✓ Resposta enviada com sucesso!')
+      carregarPerguntas()
+      setRespostaPergunta({ ...respostaPergunta, [perguntaId]: '' })
+    } catch (err) {
+      alert(err.response?.data?.error || 'Erro ao enviar resposta.')
+    }
   }
 
   // Ordenar avisos por data (mais recente primeiro)
@@ -252,6 +281,31 @@ export default function AvisosPage({ onLogout }) {
         {/* Aba Avisos */}
         {tab === 'avisos' && (
           <div className="px-6 max-w-xl mx-auto w-full">
+            {/* Perguntas abertas */}
+            {perguntas.filter(p => !p.respondida_id).length > 0 && (
+              <div className="mb-6 space-y-3">
+                {perguntas.filter(p => !p.respondida_id).map(pergunta => (
+                  <div key={pergunta.id} className="bg-blue-50 border border-blue-200 rounded-[1.5rem] p-4">
+                    <p className="text-sm font-semibold text-blue-900 mb-3">{pergunta.texto}</p>
+                    <textarea
+                      value={respostaPergunta[pergunta.id] || ''}
+                      onChange={(e) => setRespostaPergunta({ ...respostaPergunta, [pergunta.id]: e.target.value })}
+                      placeholder="Sua resposta aqui..."
+                      rows="2"
+                      style={{ width: '100%', padding: '0.75rem', fontSize: '0.85rem', borderRadius: '0.75rem', border: '1px solid #bfdbfe', fontFamily: 'inherit', marginBottom: '0.75rem' }}
+                    />
+                    <button
+                      onClick={() => enviarResposta(pergunta.id)}
+                      disabled={!respostaPergunta[pergunta.id]?.trim()}
+                      style={{ width: '100%', padding: '0.5rem', background: respostaPergunta[pergunta.id]?.trim() ? 'linear-gradient(135deg, #1f59c1, #7ea8f5)' : '#e5e7eb', color: 'white', border: 'none', borderRadius: '0.75rem', fontSize: '0.85rem', fontWeight: 600, cursor: respostaPergunta[pergunta.id]?.trim() ? 'pointer' : 'not-allowed' }}
+                    >
+                      Responder
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
             {/* Loading */}
             {loading ? (
               <div className="bg-surface-container-lowest rounded-[1.75rem] p-10 flex flex-col items-center text-center shadow-[0_12px_32px_rgba(0,63,152,0.05)]">
