@@ -94,6 +94,18 @@ app.use('/api/solicitacoes', solicitacoesRoutes);
 app.get('/health',     (req, res) => res.json({ status: 'ok', timestamp: new Date() }));
 app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Date() }));
 
+// Servir arquivos estáticos da PWA (build de produção)
+const pwaProdPath = path.join(__dirname, '../../pwa-responsaveis/dist');
+app.use(express.static(pwaProdPath, {
+  maxAge: 0, // Sem cache para index.html
+  etag: false
+}));
+
+// Fallback para SPA: redireciona todas as rotas não mapeadas para index.html
+app.get(/^(?!\/api|\/admin)/, (req, res) => {
+  res.sendFile(path.join(pwaProdPath, 'index.html'));
+});
+
 // Painel admin servido diretamente pelo backend (evita problemas de CORS com file://)
 const adminPanelPath = path.join(__dirname, '../../admin-panel/index.html');
 app.get('/admin', (req, res) => {
