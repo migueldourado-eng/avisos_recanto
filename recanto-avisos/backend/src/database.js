@@ -178,6 +178,8 @@ function migrate() {
   try { db.exec(`ALTER TABLE responsaveis ADD COLUMN aceite_lgpd BOOLEAN DEFAULT 0`); } catch {}
   try { db.exec(`ALTER TABLE responsaveis ADD COLUMN aceite_lgpd_em DATETIME`); } catch {}
   try { db.exec(`ALTER TABLE solicitacoes_pais ADD COLUMN oculto_responsavel BOOLEAN DEFAULT 0`); } catch {}
+  try { db.exec(`ALTER TABLE perguntas ADD COLUMN aluno_id INTEGER REFERENCES alunos(id)`); } catch {}
+  try { db.exec(`CREATE INDEX IF NOT EXISTS idx_perguntas_aluno ON perguntas(aluno_id)`); } catch {}
 
   // Migra vínculos responsavel→aluno para responsavel_alunos (suporte a múltiplos filhos)
   try {

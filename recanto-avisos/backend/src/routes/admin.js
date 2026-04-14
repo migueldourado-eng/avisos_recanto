@@ -1100,7 +1100,7 @@ router.post('/vincular-manual', (req, res) => {
 
 router.post('/perguntas', autenticarAdmin, (req, res) => {
   try {
-    const { texto, turma_id } = req.body;
+    const { texto, turma_id, aluno_id } = req.body;
 
     if (!texto || !texto.trim()) {
       return res.status(400).json({ error: 'Texto da pergunta é obrigatório.' });
@@ -1108,8 +1108,8 @@ router.post('/perguntas', autenticarAdmin, (req, res) => {
 
     const db = getDb();
     const { lastInsertRowid } = db.prepare(
-      'INSERT INTO perguntas (texto, turma_id, admin_id, ativa) VALUES (?, ?, ?, 1)'
-    ).run(texto.trim(), turma_id || null, req.admin.id);
+      'INSERT INTO perguntas (texto, turma_id, aluno_id, admin_id, ativa) VALUES (?, ?, ?, ?, 1)'
+    ).run(texto.trim(), turma_id || null, aluno_id || null, req.admin.id);
 
     res.status(201).json({ ok: true, pergunta_id: lastInsertRowid });
   } catch (err) {
@@ -1124,9 +1124,11 @@ router.get('/perguntas', autenticarAdmin, (req, res) => {
     const db = getDb();
     const perguntas = db.prepare(`
       SELECT p.*, t.nome AS turma_nome, t.codigo AS turma_codigo,
+             a.nome AS aluno_nome,
              COUNT(rp.id) AS total_respostas
       FROM perguntas p
       LEFT JOIN turmas t ON t.id = p.turma_id
+      LEFT JOIN alunos a ON a.id = p.aluno_id
       LEFT JOIN respostas_pais rp ON rp.pergunta_id = p.id
       GROUP BY p.id
       ORDER BY p.ativa DESC, p.criada_em DESC
