@@ -1098,7 +1098,7 @@ router.post('/vincular-manual', (req, res) => {
 
 // ─── POST /api/admin/perguntas ────────────────────────────────────────────────
 
-router.post('/perguntas', autenticarAdmin, (req, res) => {
+router.post('/perguntas', autenticarAdmin, async (req, res) => {
   try {
     const { texto, turma_id, aluno_id } = req.body;
 
@@ -1111,8 +1111,46 @@ router.post('/perguntas', autenticarAdmin, (req, res) => {
       'INSERT INTO perguntas (texto, turma_id, aluno_id, admin_id, ativa) VALUES (?, ?, ?, ?, 1)'
     ).run(texto.trim(), turma_id || null, aluno_id || null, req.admin.id);
 
-    res.status(201).json({ ok: true, pergunta_id: lastInsertRowid });
+    // Buscar tokens FCM dos responsáveis destinatários para enviar push
+    let tokenQuery;
+    let tokenParams;
+
+    if (aluno_id) {
+      // Pergunta para aluno específico — notifica só o responsável desse aluno
+      tokenQuery = `
+        SELECT DISTINCT rd.fcm_token
+        FROM responsavel_dispositivos rd
+        JOIN responsavel_alunos ra ON ra.responsavel_id = rd.responsavel_id
+        WHERE ra.aluno_id = ?
+      `;
+      tokenParams = [aluno_id];
+    } else if (turma_id) {
+      // Pergunta para turma — notifica responsáveis de alunos da turma
+      tokenQuery = `
+        SELECT DISTINCT rd.fcm_token
+        FROM responsavel_dispositivos rd
+        JOIN responsavel_alunos ra ON ra.responsavel_id = rd.responsavel_id
+        JOIN alunos a ON a.id = ra.aluno_id
+        WHERE a.turma_id = ?
+      `;
+      tokenParams = [turma_id];
+    } else {
+      // Toda a escola
+      tokenQuery = `SELECT DISTINCT fcm_token FROM responsavel_dispositivos`;
+      tokenParams = [];
+    }
+
+    const tokens = db.prepare(tokenQuery).all(...tokenParams)
+      .map(r => r.fcm_token).filter(Boolean);
+
+    if (tokens.length > 0) {
+      enviarPush(tokens, '❓ Nova pergunta da escola', texto.trim(), false, lastInsertRowid)
+        .catch(err => console.error('Erro ao enviar push de pergunta:', err.message));
+    }
+
+    res.status(201).json({ ok: true, pergunta_id: lastInsertRowid, push_enviados: tokens.length });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Erro ao criar pergunta' });
   }
 });
