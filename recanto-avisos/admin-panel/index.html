@@ -665,12 +665,17 @@
 
         <!-- Modal de respostas -->
         <div id="modal-respostas" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center;padding:1rem;">
-          <div style="background:white;border-radius:1.5rem;padding:2rem;max-width:90%;max-height:90vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
-              <h3 style="margin:0;color:#2c3338;">Respostas recebidas</h3>
-              <button onclick="fecharModalRespostas()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:#596065;">✕</button>
+          <div style="background:white;border-radius:1.5rem;padding:2rem;width:100%;max-width:560px;max-height:90vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;gap:1rem;">
+              <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+                <h3 style="margin:0;color:#2c3338;">Respostas recebidas</h3>
+                <span id="modal-respostas-total" style="font-size:0.75rem;background:#eef4fb;color:#2d6197;padding:0.2rem 0.6rem;border-radius:999px;font-weight:700;"></span>
+              </div>
+              <button onclick="fecharModalRespostas()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:#596065;flex-shrink:0;">✕</button>
             </div>
-            <div id="modal-respostas-content" style="display:flex;flex-direction:column;gap:1rem;"></div>
+            <div id="modal-respostas-content" style="display:flex;flex-direction:column;gap:1rem;min-height:4rem;">
+              <p style="color:#596065;text-align:center;padding:2rem;">Carregando...</p>
+            </div>
           </div>
         </div>
       </section>
@@ -2356,50 +2361,45 @@ async function criarPergunta() {
 }
 
 let _pollingRespostasId = null
-let _pollingPerguntaId = null
 
 async function renderRespostas(perguntaId) {
-  try {
-    const res = await api(`/admin/perguntas/${perguntaId}/respostas`)
-    const content = document.getElementById('modal-respostas-content')
-    const totalEl = document.getElementById('modal-respostas-total')
-    const total = res.respostas.length
-    if (totalEl) totalEl.textContent = `${total} resposta${total !== 1 ? 's' : ''}`
-    content.innerHTML = total === 0
-      ? '<p style="color:#596065;text-align:center;padding:2rem;">Nenhuma resposta ainda. Aguardando os pais responderem...</p>'
-      : res.respostas.map(r => `
-        <div style="border:1px solid #e3e9ee;border-radius:0.75rem;padding:1rem;">
-          <p style="font-weight:600;color:#2c3338;margin:0 0 0.5rem;"><strong>${r.aluno_nome}</strong>${r.turma_nome ? ` (${r.turma_nome} - ${r.turma_codigo})` : ''}</p>
-          <p style="color:#596065;margin:0 0 0.5rem;font-size:0.875rem;"><strong>Responsável:</strong> ${r.responsavel_nome}</p>
-          <p style="background:#f0f4f8;padding:0.75rem;border-radius:0.5rem;margin:0;color:#2c3338;">${r.resposta}</p>
-          <p style="font-size:0.7rem;color:#abb3b9;margin:0.5rem 0 0;text-align:right;">${new Date(r.criada_em).toLocaleString('pt-BR')}</p>
-        </div>
-      `).join('')
-  } catch(err) { /* silencioso no polling */ }
+  const res = await api(`/admin/perguntas/${perguntaId}/respostas`)
+  const content = document.getElementById('modal-respostas-content')
+  const totalEl = document.getElementById('modal-respostas-total')
+  const total = res.respostas.length
+  totalEl.textContent = `${total} resposta${total !== 1 ? 's' : ''}`
+  content.innerHTML = total === 0
+    ? '<p style="color:#596065;text-align:center;padding:2rem;">Nenhuma resposta ainda. Aguardando os pais responderem...</p>'
+    : res.respostas.map(r => `
+      <div style="border:1px solid #e3e9ee;border-radius:0.75rem;padding:1rem;">
+        <p style="font-weight:600;color:#2c3338;margin:0 0 0.5rem;"><strong>${r.aluno_nome}</strong>${r.turma_nome ? ` (${r.turma_nome} - ${r.turma_codigo})` : ''}</p>
+        <p style="color:#596065;margin:0 0 0.5rem;font-size:0.875rem;"><strong>Responsável:</strong> ${r.responsavel_nome}</p>
+        <p style="background:#f0f4f8;padding:0.75rem;border-radius:0.5rem;margin:0;color:#2c3338;">${r.resposta}</p>
+        <p style="font-size:0.7rem;color:#abb3b9;margin:0.5rem 0 0;text-align:right;">${new Date(r.criada_em).toLocaleString('pt-BR')}</p>
+      </div>
+    `).join('')
 }
 
 async function verRespostas(perguntaId) {
-  _pollingPerguntaId = perguntaId
   const modal = document.getElementById('modal-respostas')
-
-  // Adicionar contador de respostas no cabeçalho se ainda não existe
-  const header = modal.querySelector('div > div:first-child')
-  if (header && !document.getElementById('modal-respostas-total')) {
-    const span = document.createElement('span')
-    span.id = 'modal-respostas-total'
-    span.style.cssText = 'font-size:0.75rem;background:#eef4fb;color:#2d6197;padding:0.2rem 0.6rem;border-radius:999px;font-weight:700;'
-    header.insertBefore(span, header.querySelector('button'))
-  }
-
   modal.style.display = 'flex'
-  await renderRespostas(perguntaId)
+
+  try {
+    await renderRespostas(perguntaId)
+  } catch(err) {
+    document.getElementById('modal-respostas-content').innerHTML =
+      `<p style="color:#a83836;text-align:center;padding:2rem;">Erro ao carregar respostas: ${err.message}</p>`
+    return
+  }
 
   // Polling a cada 8 segundos enquanto o modal estiver aberto
   clearInterval(_pollingRespostasId)
-  _pollingRespostasId = setInterval(() => {
+  _pollingRespostasId = setInterval(async () => {
     if (modal.style.display === 'none') { clearInterval(_pollingRespostasId); return }
-    renderRespostas(perguntaId)
-    carregarPerguntas() // Atualiza o contador na tabela também
+    try {
+      await renderRespostas(perguntaId)
+      carregarPerguntas()
+    } catch(_) {}
   }, 8000)
 }
 
