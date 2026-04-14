@@ -26,6 +26,9 @@
       "Bash(cat backend/.gitignore)",
       "Bash(npx vite:*)",
       "Read(//c/Users/**)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\Coordenação\\.claude\\projects\\c--Users-Coordena--o-OneDrive-APP-Escola-Aviso-Recanto\\memory"
     ]
   }
 }
